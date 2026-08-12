@@ -2,73 +2,166 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://www.bentos-group.com</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-    <lastmod>2026-04-11</lastmod>
+    <loc>https://www.bentos-group.com/</loc>
+    <lastmod>2026-08-12</lastmod>
   </url>
 
   <url>
     <loc>https://www.bentos-group.com/services</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
     <lastmod>2026-04-08</lastmod>
   </url>
 
   <url>
     <loc>https://www.bentos-group.com/about-us</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
     <lastmod>2026-04-08</lastmod>
   </url>
 
   <url>
     <loc>https://www.bentos-group.com/gallery</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
     <lastmod>2026-04-08</lastmod>
   </url>
 
   <url>
     <loc>https://www.bentos-group.com/blog</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
     <lastmod>2026-01-11</lastmod>
   </url>
-  
+
   <url>
     <loc>https://www.bentos-group.com/contact</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
     <lastmod>2026-04-11</lastmod>
   </url>
 
+
+  <!-- Alpharetta, GA -->
   <url>
     <loc>https://www.bentos-group.com/kitchen-remodeling-alpharetta-ga</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <lastmod>2026-02-01</lastmod>
-  </url>
-
-  <url>
-    <loc>https://www.bentos-group.com/kitchen-remodeling-roswell-ga</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-08-12</lastmod>
   </url>
 
   <url>
     <loc>https://www.bentos-group.com/bathroom-remodeling-alpharetta-ga</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <lastmod>2026-02-01</lastmod>
+    <lastmod>2026-08-12</lastmod>
   </url>
 
   <url>
     <loc>https://www.bentos-group.com/home-remodeling-alpharetta-ga</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
     <lastmod>2026-02-01</lastmod>
   </url>
+
+
+  <!-- Roswell, GA -->
+  <url>
+    <loc>https://www.bentos-group.com/kitchen-remodeling-roswell-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/bathroom-remodeling-roswell-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+
+  <!-- Cumming, GA -->
+  <url>
+    <loc>https://www.bentos-group.com/new-construction-cumming-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/home-additions-cumming-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/full-home-renovation-cumming-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/kitchen-remodeling-cumming-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/bathroom-remodeling-cumming-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/flooring-solutions-cumming-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <!-- <url>
+    <loc>https://www.bentos-group.com/interior-exterior-painting-cumming-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url> -->
+
+  <url>
+    <loc>https://www.bentos-group.com/pavers-hardscaping-cumming-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <!-- <url>
+    <loc>https://www.bentos-group.com/property-maintenance-cumming-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/handyman-services-cumming-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url> -->
+
+
+  <!-- Johns Creek, GA -->
+  <url>
+    <loc>https://www.bentos-group.com/new-construction-johns-creek-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/home-additions-johns-creek-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/full-home-renovation-johns-creek-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/kitchen-remodeling-johns-creek-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/bathroom-remodeling-johns-creek-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/flooring-solutions-johns-creek-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <!-- <url>
+    <loc>https://www.bentos-group.com/interior-exterior-painting-johns-creek-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url> -->
+
+  <url>
+    <loc>https://www.bentos-group.com/pavers-hardscaping-johns-creek-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <!-- <url>
+    <loc>https://www.bentos-group.com/property-maintenance-johns-creek-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.bentos-group.com/handyman-services-johns-creek-ga</loc>
+    <lastmod>2026-08-12</lastmod>
+  </url> -->
 
 </urlset>
