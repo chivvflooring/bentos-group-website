@@ -1,5 +1,5 @@
 import { businessHours } from './business-hours.js';
-import { sendToNtfy, scrollToChatBottom } from './utils.js';
+import { scrollToChatBottom } from './utils.js';
 
 //sessionStorage.setItem('previousPage', './' + location.pathname.split('/')[location.pathname.split('/').length - 1]);
 
@@ -53,7 +53,7 @@ function handleSplashScreen() {
             // Só registra se a aba ainda estiver visível (bots de análise fecham rápido)
             if (document.visibilityState === 'visible') {
                 // Executa ações da nova sessão (geolocalização e mostrar chat)
-                requestVisitorLocation();
+                // No visitor data is collected during chat initialization.
             }
         }, 3000); // 3 segundos de delay para garantir que é um humano lendo
     }
@@ -151,82 +151,6 @@ function updateOpenStatus() {
 }
 
 updateOpenStatus();
-
-/**
- * Constrói a string de localização para a notificação.
- */
-function buildLocationString(locationArray, label, value) {
-    const parts = locationArray.filter(Boolean);
-    let message = parts.join(', ');
-    if (value) {
-        message += `\n${label}: ${value}`;
-    }
-    return message;
-}
-
-/**
- * Solicita a localização do visitante, usando GPS como preferência.
- */
-function requestVisitorLocation() {
-    /*if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { title, message } = await getLocationFromGPS(position.coords.latitude, position.coords.longitude);
-                sendToNtfy(title, message);
-            },
-            async (error) => {
-                // Em caso de erro (usuário negou ou timeout), tenta por IP
-                console.warn('Geolocation Error, falling back to IP:', error.message);
-                const { title, message } = await getLocationFromIP();
-                sendToNtfy(title, message);
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
-            }
-        );
-    } else {*/
-    // Se o navegador não suportar, tenta por IP
-    getLocationFromIP().then(({ title, message }) => sendToNtfy(title, message, 'min', 'round_pushpin'));
-    //}
-}
-
-/**
- * Obtém a localização (cidade, estado) a partir de coordenadas GPS.
- */
-async function getLocationFromGPS(lat, lon) {
-    // Nota: O snippet original usava essa API para timezone, ajustei para buscar localização.
-    const res = await fetch(`https://api.ipgeolocation.io/timezone?apiKey=da0b5ca322a24e8fa5efa1bc140f7c7e&lat=${lat}&long=${lon}`);
-    const data = await res.json();
-
-    const city = data.geo.city || '';
-    const state = data.geo.state_prov || '';
-    const country = data.geo.country_name || '';
-    const postcode = data.geo.zipcode || '';
-
-    const message = buildLocationString([city, state, country], 'Postal Code', postcode);
-    const title = 'Precise user location (GPS)';
-    return { title, message };
-};
-
-/**
- * Obtém a localização aproximada a partir do IP da rede.
- */
-async function getLocationFromIP() {
-    const res = await fetch('https://api.ipgeolocation.io/v2/ipgeo?apiKey=da0b5ca322a24e8fa5efa1bc140f7c7e&fields=location');
-    const data = await res.json();
-    const loc = data.location || {};
-
-    const city = loc.city || loc.district || loc.state_prov;
-    const state = loc.state_prov;
-    const country = loc.country_name;
-    const zipcode = loc.zipcode;
-
-    const message = buildLocationString([city, state, country], 'Zipcode', zipcode);
-    const title = 'User network IP location';
-    return { title, message };
-};
 
 /*const contactMethodsWindow = document.querySelector('.contact-methods-window');
 const getInTouchButton = document.querySelector('.button.get-in-touch');
