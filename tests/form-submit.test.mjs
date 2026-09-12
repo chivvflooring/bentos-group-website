@@ -1,40 +1,31 @@
-import assert from "node:assert/strict";
 import test from "node:test";
+import assert from "node:assert/strict";
+import { createSubmissionGuard, formSubmitAjaxUrl, sendFormSubmit } from "../js/form-submit.js";
 
-import { submitForm } from "../js/form-submit.js";
-
-test("submits form data to the configured action as JSON-aware AJAX", async () => {
-  const form = { action: "https://formsubmit.co/charlesbgroup@gmail.com" };
-  const payload = { project: "Kitchen remodeling" };
-  let request;
-
-  const response = await submitForm(form, {
-    createFormData: (target) => {
-      assert.equal(target, form);
-      return payload;
-    },
-    fetchImpl: async (url, options) => {
-      request = { url, options };
-      return { ok: true, status: 200 };
-    },
+test("successful HTTP response is accepted without parsing its body", async () => {
+  let requestedUrl;
+  const response = await sendFormSubmit("https://formsubmit.co/example@example.com", {}, async (url) => {
+    requestedUrl = url;
+    return { ok: true, status: 200, text: () => { throw new Error("must not parse"); } };
   });
-
   assert.equal(response.status, 200);
-  assert.equal(request.url, form.action);
-  assert.equal(request.options.method, "POST");
-  assert.equal(request.options.body, payload);
-  assert.deepEqual(request.options.headers, { Accept: "application/json" });
+  assert.equal(requestedUrl, "https://formsubmit.co/ajax/example@example.com");
 });
 
-test("rejects a non-successful FormSubmit response", async () => {
-  await assert.rejects(
-    submitForm(
-      { action: "https://formsubmit.co/charlesbgroup@gmail.com" },
-      {
-        createFormData: () => ({}),
-        fetchImpl: async () => ({ ok: false, status: 429 }),
-      },
-    ),
-    /Form submission failed \(429\)/,
-  );
+test("network failure remains a network failure", async () => {
+  await assert.rejects(sendFormSubmit("https://formsubmit.co/example@example.com", {}, async () => {
+    throw new TypeError("Network error");
+  }), TypeError);
+});
+
+test("unsuccessful HTTP response is rejected", async () => {
+  await assert.rejects(sendFormSubmit("https://formsubmit.co/example@example.com", {}, async () => ({ ok: false, status: 500 })), /HTTP 500/);
+});
+
+test("submission guard prevents double submission and recovers", () => {
+  const guard = createSubmissionGuard();
+  assert.equal(guard.begin(), true);
+  assert.equal(guard.begin(), false);
+  guard.finish();
+  assert.equal(guard.begin(), true);
 });
