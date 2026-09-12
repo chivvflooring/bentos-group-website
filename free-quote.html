@@ -236,9 +236,10 @@
             transition: background 0.3s;
         }
 
-        .btn-submit:hover {
-            background-color: var(--accent-orange);
-        }
+        .btn-submit:hover { background-color: var(--accent-orange); }
+        .btn-submit:disabled { opacity: 0.65; cursor: wait; }
+        .form-status { margin-top: 12px; min-height: 1.5em; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+        .form-status[data-state="error"] { color: #b91c1c; }
 
         /* Decorative Ruler */
         .ruler {
@@ -384,7 +385,7 @@
 
                         <div class="input-group">
                             <label for="location" class="tech-label">Project Location (City/Zip) *</label>
-                            <input type="text" id="location" name="Location" class="form-control" autocomplete="postal-code"
+                            <input type="text" id="location" name="Project Location" class="form-control" autocomplete="postal-code"
                                 placeholder="Alpharetta, GA" required>
                         </div>
                     </div>
@@ -433,10 +434,22 @@
                             <label for="budget" class="tech-label">Estimated Budget</label>
                             <select id="budget" name="Estimated Budget" class="form-control">
                                 <option value="" selected disabled>Select range...</option>
-                                <option value="Under 5000">Under $5,000</option>
-                                <option value="5000 - 20000">$5,000 - $20,000</option>
-                                <option value="20000 - 50000">$20,000 - $50,000</option>
-                                <option value="50000+">$50,000+</option>
+                                <option value="$5,000-$20,000">$5,000-$20,000</option>
+                                <option value="$20,000-$50,000">$20,000-$50,000</option>
+                                <option value="$50,000-$150,000">$50,000-$150,000</option>
+                                <option value="$150,000-$300,000">$150,000-$300,000</option>
+                                <option value="$300,000-$700,000">$300,000-$700,000</option>
+                                <option value="$700,000-$2,000,000">$700,000-$2,000,000</option>
+                                <option value="$2,000,000+">$2,000,000+</option>
+                                <option value="Not sure / Need an estimate">Not sure / Need an estimate</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="financing-interest" class="tech-label">Financing Interest</label>
+                            <select id="financing-interest" name="Financing Interest" class="form-control">
+                                <option value="" selected>Choose an option...</option>
+                                <option value="Yes">Yes</option><option value="Maybe">Maybe</option><option value="No">No</option>
                             </select>
                         </div>
 
@@ -457,6 +470,7 @@
                         <p class="stamp-signature">Your details help us respond to your project request</p>
                         <p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. The form is processed by FormSubmit.</p>
                         <button type="submit" class="btn-submit">Submit Request</button>
+                        <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
                     </div>
                 </div>
             </form>

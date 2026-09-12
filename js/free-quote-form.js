@@ -1,9 +1,13 @@
+import { createSubmissionGuard, sendFormSubmit } from "./form-submit.js";
+
 document.addEventListener("DOMContentLoaded", function () {
   const backBtn = document.querySelector('.back-btn');
   const form = document.querySelector("#reformaForm");
   const btnSubmit = document.querySelector(".btn-submit");
   const successModal = document.querySelector("#successModal");
   const btnReset = document.querySelector('.btn-reset');
+  const formStatus = document.querySelector('#formStatus');
+  const submissionGuard = createSubmissionGuard();
 
   // 1. Pega os parâmetros da URL atual
   const urlParams = new URLSearchParams(window.location.search);
@@ -34,6 +38,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     btnSubmit.disabled = false;
     btnSubmit.textContent = "Submit Request";
+    submissionGuard.finish();
+    formStatus.textContent = "";
   }
 
   function handleBackNavigation(event) {
@@ -117,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
       description: document.getElementById("notes").value.trim(),
       budget: document.getElementById("budget").value,
       timeline: document.getElementById("timeline").value,
+      financingInterest: document.getElementById("financing-interest").value,
     };
 
     const errors = validateForm(data);
@@ -127,28 +134,30 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // Feedback Visual
+    if (!submissionGuard.begin()) return;
     btnSubmit.disabled = true;
     const originalText = btnSubmit.textContent;
     btnSubmit.textContent = "UPLOADING DATA...";
 
     try {
-      const formData = new FormData(form);
-      const response = await fetch(form.action, {
-        method: "POST",
-        body: formData,
-        headers: { 'Accept': 'application/json' }
-      });
-
-      if (!response.ok) throw new Error(`Form submission failed (${response.status})`);
+      formStatus.textContent = "Sending your request…";
+      formStatus.dataset.state = "processing";
+      await sendFormSubmit(form.action, new FormData(form));
+      formStatus.textContent = "";
       successModal.style.display = "flex";
+      successModal.setAttribute("role", "dialog");
+      successModal.setAttribute("aria-modal", "true");
       form.reset();
 
     } catch (err) {
-      console.error("Transmission Failure:", err);
+      console.error("Submission failed:", err);
       btnSubmit.disabled = false;
       btnSubmit.textContent = originalText;
-      alert("CRITICAL ERROR: Connection issue. Please check your internet or try again.");
+      formStatus.dataset.state = "error";
+      formStatus.textContent = err.cause === "http"
+        ? "We could not accept your request. Please try again or call (678) 571-7028."
+        : "We could not connect. Check your connection and try again; your form entries are still here.";
+      submissionGuard.finish();
     }
   });
 });
