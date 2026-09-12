@@ -1,0 +1,15 @@
+# Targeted legacy URL redirects. Canonical host is https://www.bentos-group.com.
+https://bentos-group.com/* https://www.bentos-group.com/:splat 301!
+/index.html /
+/about-us.html /about-us 301
+/services.html /services 301
+/gallery.html /gallery 301
+/blog.html /blog 301
+/contact.html /contact 301
+/free-quote.html /free-quote 301
+/financing.html /financing 301
+/home-remodeling-alpharetta-ga.html /home-remodeling-alpharetta-ga 301
+/kitchen-remodeling-service.html /kitchen-remodeling-service 301
+/cabinetry.html /cabinetry 301
+/homecare-membership.html /homecare-membership 301
+/home-remodeling-guide-2025.html /home-remodeling-guide-2025 301
