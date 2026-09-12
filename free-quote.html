@@ -359,31 +359,32 @@
                 <input type="hidden" name="_next" id="nextField">
                 <input type="hidden" name="_template" value="table">
                 <input type="hidden" name="_subject" value="New Quote Request">
+                <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
 
                 <fieldset>
                     <legend>Quick Contact</legend>
                     <div class="form-grid">
                         <div class="input-group">
                             <label for="client-name" class="tech-label">Full Name *</label>
-                            <input type="text" id="client-name" name="Name" class="form-control"
+                            <input type="text" id="client-name" name="Name" class="form-control" autocomplete="name"
                                 placeholder="John Doe" required>
                         </div>
 
                         <div class="input-group">
                             <label for="client-email" class="tech-label">Email Address *</label>
-                            <input type="email" id="client-email" name="Email" class="form-control"
+                            <input type="email" id="client-email" name="Email" class="form-control" autocomplete="email"
                                 placeholder="email@example.com" required>
                         </div>
 
                         <div class="input-group">
                             <label for="client-phone" class="tech-label">Phone Number *</label>
-                            <input type="tel" id="client-phone" name="Phone" class="form-control"
+                            <input type="tel" id="client-phone" name="Phone" class="form-control" autocomplete="tel" inputmode="tel"
                                 placeholder="(678) 000-0000" required>
                         </div>
 
                         <div class="input-group">
                             <label for="location" class="tech-label">Project Location (City/Zip) *</label>
-                            <input type="text" id="location" name="Location" class="form-control"
+                            <input type="text" id="location" name="Location" class="form-control" autocomplete="postal-code"
                                 placeholder="Alpharetta, GA" required>
                         </div>
                     </div>
@@ -453,7 +454,8 @@
                 <div class="stamp-area">
                     <div class="stamp-box">
                         <span class="tech-label">Request Estimate</span>
-                        <p class="stamp-signature">Your data is safe with Bento's Group</p>
+                        <p class="stamp-signature">Your details help us respond to your project request</p>
+                        <p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. The form is processed by FormSubmit.</p>
                         <button type="submit" class="btn-submit">Submit Request</button>
                     </div>
                 </div>

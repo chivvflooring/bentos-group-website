@@ -1,5 +1,3 @@
-import { sendToNtfy } from './utils.js';
-
 document.addEventListener("DOMContentLoaded", function () {
   const backBtn = document.querySelector('.back-btn');
   const form = document.querySelector("#reformaForm");
@@ -106,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
     clearErrors();
 
     // Coleta os serviços marcados
-    const selectedServices = Array.from(form.querySelectorAll('input[name="service"]:checked'))
+    const selectedServices = Array.from(form.querySelectorAll('input[name="Service"]:checked'))
       .map(cb => cb.parentElement.textContent.trim());
 
     const data = {
@@ -135,31 +133,16 @@ document.addEventListener("DOMContentLoaded", function () {
     btnSubmit.textContent = "UPLOADING DATA...";
 
     try {
-      const ntfyMessage = dataToText(data);
-      const ntfyPromise = sendToNtfy("New Quote Request", ntfyMessage, 'high', 'memo');
-
       const formData = new FormData(form);
-      const formSubmitPromise = fetch(form.action, {
+      const response = await fetch(form.action, {
         method: "POST",
         body: formData,
         headers: { 'Accept': 'application/json' }
       });
 
-      // Usamos Promise.allSettled em vez de Promise.all
-      // Ele espera ambas terminarem, independente de sucesso ou erro individual
-      const results = await Promise.allSettled([ntfyPromise, formSubmitPromise]);
-
-      // Checamos se pelo menos o FormSubmit ou o Ntfy deu certo
-      const isFormSent = results[1].status === 'fulfilled';
-
-      if (isFormSent || results[0].status === 'fulfilled') {
-        // Sucesso (pelo menos um canal funcionou)
-        successModal.style.display = "flex";
-        form.reset();
-      } else {
-        // Se AMBOS falharem de verdade
-        throw new Error("Both services failed");
-      }
+      if (!response.ok) throw new Error(`Form submission failed (${response.status})`);
+      successModal.style.display = "flex";
+      form.reset();
 
     } catch (err) {
       console.error("Transmission Failure:", err);
