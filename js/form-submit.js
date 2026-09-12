@@ -1,28 +1,33 @@
-/**
- * Submit an HTML form to FormSubmit without navigating away from the page.
- * Keeping this small adapter separate makes the network behavior testable.
- */
-export async function submitForm(form, options = {}) {
-  if (!form?.action) {
-    throw new TypeError("A form with an action URL is required.");
+export function createSubmissionGuard() {
+  let processing = false;
+  return {
+    begin() {
+      if (processing) return false;
+      processing = true;
+      return true;
+    },
+    finish() { processing = false; },
+    isProcessing() { return processing; }
+  };
+}
+
+export function formSubmitAjaxUrl(action) {
+  const url = new URL(action);
+  if (url.hostname === "formsubmit.co" && !url.pathname.startsWith("/ajax/")) {
+    url.pathname = `/ajax${url.pathname}`;
   }
+  return url.toString();
+}
 
-  const fetchImpl = options.fetchImpl ?? globalThis.fetch;
-  const createFormData = options.createFormData ?? ((target) => new FormData(target));
-
-  if (typeof fetchImpl !== "function") {
-    throw new TypeError("A fetch implementation is required.");
-  }
-
-  const response = await fetchImpl(form.action, {
+export async function sendFormSubmit(action, formData, fetchImpl = fetch) {
+  const response = await fetchImpl(formSubmitAjaxUrl(action), {
     method: "POST",
-    body: createFormData(form),
-    headers: { Accept: "application/json" },
+    body: formData,
+    headers: { Accept: "application/json" }
   });
-
   if (!response.ok) {
-    throw new Error(`Form submission failed (${response.status})`);
+    throw new Error(`HTTP ${response.status}`, { cause: "http" });
   }
-
+  // FormSubmit may return JSON, HTML, or text. HTTP success is authoritative.
   return response;
 }
