@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createSubmissionGuard, formSubmitAjaxUrl, sendFormSubmit } from "../js/form-submit.js";
+import { selectedCategoryValues, validatePunchList } from "../js/homecare-form.js";
 
 test("successful HTTP response is accepted without parsing its body", async () => {
   let requestedUrl;
@@ -51,4 +52,20 @@ test("submission guard prevents double submission and recovers", () => {
   assert.equal(guard.begin(), false);
   guard.finish();
   assert.equal(guard.begin(), true);
+});
+
+test("punch list accepts several categories in one valid request", () => {
+  const data = { name: "Jane Doe", email: "jane@example.com", phone: "6785551212", location: "30004", timing: "Within 1 month", details: "Repair drywall and adjust a door.", categories: ["Drywall", "Door"], interest: "One-Time Punch List" };
+  assert.deepEqual(validatePunchList(data), []);
+});
+
+test("punch list requires a category and contact details", () => {
+  const data = { name: "", email: "bad", phone: "12", location: "", timing: "", details: "", categories: [], interest: "" };
+  assert.deepEqual(validatePunchList(data), ["name", "email", "phone", "location", "timing", "details", "categories", "interest"]);
+});
+
+test("selected categories preserve every checked choice", () => {
+  const inputs = [{ value: "Drywall" }, { value: "Flooring" }, { value: "Other" }];
+  const form = { querySelectorAll: selector => selector.includes(":checked") ? inputs : [] };
+  assert.deepEqual(selectedCategoryValues(form), ["Drywall", "Flooring", "Other"]);
 });
