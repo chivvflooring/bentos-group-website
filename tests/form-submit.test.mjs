@@ -22,6 +22,29 @@ test("unsuccessful HTTP response is rejected", async () => {
   await assert.rejects(sendFormSubmit("https://formsubmit.co/example@example.com", {}, async () => ({ ok: false, status: 500 })), /HTTP 500/);
 });
 
+test("multiple service categories are submitted as one readable FormData field", async () => {
+  const formData = new FormData();
+  const categories = [
+    "Drywall / Sheetrock Repair",
+    "Interior Painting / Touch-Ups",
+    "Door Adjustment / Repair",
+    "Light Fixture Replacement / Electrical Coordination",
+    "Deck Repair",
+    "Other"
+  ];
+  categories.forEach((category) => formData.append("Service Categories", category));
+  formData.append("Name", "Test Customer");
+
+  let submittedFormData;
+  await sendFormSubmit("https://formsubmit.co/example@example.com", formData, async (_url, options) => {
+    submittedFormData = options.body;
+    return { ok: true, status: 200 };
+  });
+
+  assert.deepEqual(submittedFormData.getAll("Service Categories"), [categories.join("\n")]);
+  assert.equal(submittedFormData.get("Name"), "Test Customer");
+});
+
 test("submission guard prevents double submission and recovers", () => {
   const guard = createSubmissionGuard();
   assert.equal(guard.begin(), true);
