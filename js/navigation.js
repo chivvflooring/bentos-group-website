@@ -14,6 +14,13 @@ document.addEventListener("DOMContentLoaded", () => {
         navList.insertBefore(financingItem, moreMenu || null);
     }
 
+    // Expose the homeowner repair funnel across pages without changing its production URL.
+    if (navList && !navList.querySelector('[href*="homecare-membership"]')) {
+        const punchListItem = document.createElement("li");
+        punchListItem.innerHTML = '<a href="./homecare-membership.html" class="button" id="menu-punch-list">Punch List</a>';
+        navList.insertBefore(punchListItem, moreMenu || null);
+    }
+
     // Seleção dos itens (li)
     const aboutUsMenu = document.querySelector("#menu-about")?.parentElement;
     const galleryMenu = document.querySelector("#menu-gallery")?.parentElement;
