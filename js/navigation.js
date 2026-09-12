@@ -6,6 +6,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const toggleButton = document.querySelector(".more-toggle");
     const hamburguerBtn = document.querySelector(".menu-hamburguer");
 
+    // Financing is a planning resource, not an enabled lending offer. Add the
+    // link consistently to shared navigation without duplicating page markup.
+    if (navList && !navList.querySelector('[href$="financing"], [href$="financing.html"]')) {
+        const financingItem = document.createElement("li");
+        financingItem.innerHTML = '<a href="./financing.html" class="button" id="menu-financing">Financing</a>';
+        navList.insertBefore(financingItem, moreMenu || null);
+    }
+
     // Seleção dos itens (li)
     const aboutUsMenu = document.querySelector("#menu-about")?.parentElement;
     const galleryMenu = document.querySelector("#menu-gallery")?.parentElement;

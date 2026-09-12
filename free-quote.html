@@ -13,466 +13,115 @@
     <link rel="canonical" href="https://www.bentos-group.com/free-quote" />
 
     <style>
-        /* Import fonts for technical style */
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600&display=swap');
-
-        :root {
-            --blueprint-green: #2c5531;
-            --grid-color: rgba(30, 58, 138, 0.1);
-            --accent-orange: #1e293b;
-            --slate-800: #1e293b;
-            --slate-400: #94a3b8;
-            --border-color: #334155;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: #f1f5f9;
-            font-family: 'Outfit', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 20px 40px;
-            color: var(--slate-800);
-
-            /* Trava o scroll da página */
-            height: 100dvh;
-            overflow: hidden;
-        }
-
-        .back-btn {
-            margin-bottom: 20px;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            background: #1e293b;
-            color: white;
-            text-decoration: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            align-self: start;
-        }
-
-        .scroll-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            overflow-y: auto;
-            /* Permite o scroll apenas aqui */
-            height: 100%;
-            /* Ocupa o restante da tela */
-            padding-bottom: 40px;
-            /* Espaço para a folha não colar no fim ao rolar */
-
-            /* Opcional: esconde a barra de scroll para um visual mais limpo */
-            scrollbar-width: thin;
-            scrollbar-color: var(--grid-color) transparent;
-        }
-
-        /* Main Container (Drawing Board) */
-        .blueprint-canvas {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 850px;
-            height: fit-content;
-            border: 2px solid var(--border-color);
-            position: relative;
-            box-shadow: 15px 15px 0px rgba(0, 0, 0, 0.05);
-            /* Graph Paper with CSS Gradient */
-            background-image:
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 20px 20px;
-            padding: 60px 50px;
-        }
-
-        /* Decorative inner frame */
-        .blueprint-border {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            bottom: 15px;
-            border: 1px solid var(--border-color);
-            pointer-events: none;
-            opacity: 0.5;
-        }
-
-        /* Header */
-        .header-section {
-            border-bottom: 3px solid var(--border-color);
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .header-title h1 {
-            font-size: 1.8rem;
-            text-transform: uppercase;
-            letter-spacing: -1px;
-            font-weight: 700;
-        }
-
-        .tech-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--blueprint-green);
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .status-badge {
-            text-align: right;
-        }
-
-        .status-text {
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: var(--accent-orange);
-            font-family: 'JetBrains Mono', monospace;
-            text-transform: uppercase;
-        }
-
-        /* Form Layout */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-
-        .full-row {
-            grid-column: span 2;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Input styling */
-        .form-control {
-            background: rgba(255, 255, 255, 0.7);
-            border: 1px solid #cbd5e1;
-            border-bottom: 2px solid var(--border-color);
-            padding: 12px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-
-        .form-control:focus {
-            outline: none;
-            background: #fff;
-            border-bottom-color: var(--accent-orange);
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        /* Custom checkbox for services grid */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-
-        .checkbox-item input {
-            margin-right: 8px;
-            accent-color: var(--accent-orange);
-        }
-
-        /* Stamp and Button */
-        .stamp-area {
-            margin-top: 50px;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .stamp-box {
-            border: 2px solid var(--border-color);
-            padding: 20px;
-            background: white;
-            text-align: center;
-            min-width: 250px;
-        }
-
-        .stamp-signature {
-            font-size: 0.7rem;
-            color: var(--slate-400);
-            font-style: italic;
-            margin: 10px 0 15px 0;
-        }
-
-        .btn-submit {
-            background-color: var(--blueprint-green);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.3s;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--accent-orange);
-        }
-
-        /* Decorative Ruler */
-        .ruler {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 18px;
-            background: #fcd34d;
-            border: 1px solid #b45309;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding: 0 5px;
-            font-size: 7px;
-            font-weight: bold;
-        }
-
-        /* Success Feedback */
-        .modal-success {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #2c5531eb;
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            text-align: center;
-        }
-
-        .modal-content h2 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
-
-        .btn-reset {
-            margin-top: 30px;
-            background: transparent;
-            border: 1px solid white;
-            color: white;
-            padding: 10px 30px;
-            cursor: pointer;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .btn-reset:hover {
-            background: white;
-            color: var(--blueprint-green);
-        }
-
-        /* Responsiveness */
-        @media (max-width: 640px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .full-row {
-                grid-column: span 1;
-            }
-
-            .blueprint-canvas {
-                padding: 40px 20px;
-            }
-
-            .header-section {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
-            .status-badge {
-                text-align: left;
-            }
-        }
+        :root { --blueprint-green:#2c5531; --grid-color:rgba(30,58,138,.1); --accent-orange:#1e293b; --slate-800:#1e293b; --slate-400:#94a3b8; --border-color:#334155; }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { background-color:#f1f5f9; font-family:'Outfit',sans-serif; display:flex; flex-direction:column; align-items:center; padding:20px 20px 40px; color:var(--slate-800); height:100dvh; overflow:hidden; }
+        .back-btn { margin-bottom:20px; border-radius:50%; width:36px; height:36px; background:#1e293b; color:white; text-decoration:none; display:flex; justify-content:center; align-items:center; align-self:start; }
+        .scroll-container { width:100%; display:flex; justify-content:center; overflow-y:auto; height:100%; padding-bottom:40px; scrollbar-width:thin; scrollbar-color:var(--grid-color) transparent; }
+        .blueprint-canvas { background-color:#fff; width:100%; max-width:850px; height:fit-content; border:2px solid var(--border-color); position:relative; box-shadow:15px 15px 0 rgba(0,0,0,.05); background-image:linear-gradient(var(--grid-color) 1px,transparent 1px),linear-gradient(90deg,var(--grid-color) 1px,transparent 1px); background-size:20px 20px; padding:60px 50px; }
+        .blueprint-border { position:absolute; top:15px; left:15px; right:15px; bottom:15px; border:1px solid var(--border-color); pointer-events:none; opacity:.5; }
+        .header-section { border-bottom:3px solid var(--border-color); margin-bottom:40px; padding-bottom:20px; display:flex; justify-content:space-between; align-items:flex-end; }
+        .header-title h1 { font-size:1.8rem; text-transform:uppercase; letter-spacing:-1px; font-weight:700; }
+        .tech-label { font-family:'JetBrains Mono',monospace; font-size:.7rem; text-transform:uppercase; color:var(--blueprint-green); font-weight:bold; margin-bottom:5px; display:block; }
+        .status-badge { text-align:right; }
+        .status-text { font-size:.8rem; font-weight:bold; color:var(--accent-orange); font-family:'JetBrains Mono',monospace; text-transform:uppercase; }
+        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:25px; }
+        .full-row { grid-column:span 2; }
+        .input-group { display:flex; flex-direction:column; }
+        .form-control { background:rgba(255,255,255,.7); border:1px solid #cbd5e1; border-bottom:2px solid var(--border-color); padding:12px; font-family:'JetBrains Mono',monospace; font-size:.9rem; transition:all .2s ease; }
+        .form-control:focus { outline:none; background:#fff; border-bottom-color:var(--accent-orange); }
+        textarea.form-control { resize:vertical; min-height:120px; }
+        .services-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:10px; }
+        .checkbox-item { display:flex; align-items:center; font-size:.85rem; cursor:pointer; }
+        .checkbox-item input { margin-right:8px; accent-color:var(--accent-orange); }
+        .stamp-area { margin-top:50px; display:flex; justify-content:flex-end; }
+        .stamp-box { border:2px solid var(--border-color); padding:20px; background:white; text-align:center; min-width:250px; }
+        .stamp-signature { font-size:.7rem; color:var(--slate-400); font-style:italic; margin:10px 0 15px; }
+        .btn-submit { background-color:var(--blueprint-green); color:white; border:none; padding:12px 25px; font-family:'JetBrains Mono',monospace; font-weight:bold; text-transform:uppercase; cursor:pointer; width:100%; transition:background .3s; }
+        .btn-submit:hover { background-color:var(--accent-orange); }
+        .ruler { position:absolute; top:0; left:50%; transform:translateX(-50%); width:200px; height:18px; background:#fcd34d; border:1px solid #b45309; display:flex; justify-content:space-between; align-items:flex-end; padding:0 5px; font-size:7px; font-weight:bold; }
+        .modal-success { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#2c5531eb; z-index:1000; justify-content:center; align-items:center; color:white; text-align:center; }
+        .modal-content h2 { font-size:2.5rem; margin-bottom:15px; text-transform:uppercase; }
+        .btn-reset { margin-top:30px; background:transparent; border:1px solid white; color:white; padding:10px 30px; cursor:pointer; font-family:'JetBrains Mono',monospace; }
+        .btn-reset:hover { background:white; color:var(--blueprint-green); }
+        #formStatus { margin-top:12px; min-height:1.2em; font-size:.8rem; }
+        @media (max-width:640px) { .form-grid{grid-template-columns:1fr}.full-row{grid-column:span 1}.blueprint-canvas{padding:40px 20px}.header-section{flex-direction:column;align-items:flex-start;gap:10px}.status-badge{text-align:left} }
     </style>
-
-    <!-- =========================================================
-        5. FAVICONS
-      ========================================================== -->
     <link rel="icon" type="image/png" href="./assets/favicons/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="./assets/favicons/favicon.svg" />
     <link rel="shortcut icon" href="./assets/favicons/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="./assets/favicons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Bento's Group" />
 </head>
-
 <body>
-
     <a class="back-btn" href="/">❮</a>
-
-    <div class="scroll-container">
-        <div class="blueprint-canvas">
-            <div class="blueprint-border"></div>
-
-            <div class="ruler">
-                <span>0</span><span>|</span><span>|</span><span>|</span><span>|</span><span>5</span><span>|</span><span>|</span><span>|</span><span>|</span><span>10</span>
-            </div>
-
-            <header class="header-section">
-                <div class="header-title">
-                    <span class="tech-label">Technical Document: #RENOV-2026</span>
-                    <h1>Quote Form</h1>
-                </div>
-                <div class="status-badge">
-                    <span class="tech-label">Current Status</span>
-                    <span class="status-text">Quote Request</span>
-                </div>
-            </header>
-
-            <form id="reformaForm" action="https://formsubmit.co/charlesbgroup@gmail.com" method="POST">
-                <input type="hidden" name="_captcha" value="false">
-                <input type="hidden" name="_next" id="nextField">
-                <input type="hidden" name="_template" value="table">
-                <input type="hidden" name="_subject" value="New Quote Request">
-                <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
-
-                <fieldset>
-                    <legend>Quick Contact</legend>
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label for="client-name" class="tech-label">Full Name *</label>
-                            <input type="text" id="client-name" name="Name" class="form-control" autocomplete="name"
-                                placeholder="John Doe" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="client-email" class="tech-label">Email Address *</label>
-                            <input type="email" id="client-email" name="Email" class="form-control" autocomplete="email"
-                                placeholder="email@example.com" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="client-phone" class="tech-label">Phone Number *</label>
-                            <input type="tel" id="client-phone" name="Phone" class="form-control" autocomplete="tel" inputmode="tel"
-                                placeholder="(678) 000-0000" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="location" class="tech-label">Project Location (City/Zip) *</label>
-                            <input type="text" id="location" name="Location" class="form-control" autocomplete="postal-code"
-                                placeholder="Alpharetta, GA" required>
-                        </div>
-                    </div>
-                </fieldset>
-
-                <fieldset>
-                    <legend>Project Details (Optional)</legend>
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label for="floor-area" class="tech-label">Approx. Area (sq ft)</label>
-                            <input type="number" id="floor-area" name="Square Footage" class="form-control"
-                                placeholder="Ex: 2500">
-                        </div>
-
-                        <div class="input-group full-row">
-                            <label class="tech-label">Services Needed</label>
-                            <div class="services-grid">
-                                <label class="checkbox-item"><input type="checkbox" name="Service"
-                                    value="New Construction">New Construction</label>
-                                <label class="checkbox-item"><input type="checkbox" name="Service"
-                                    value="Home Addition">Home Addition</label>
-                                <label class="checkbox-item"><input type="checkbox" name="Service"
-                                        value="Full Renovation">Full Renovation</label>
-                                <label class="checkbox-item"><input type="checkbox" name="Service"
-                                        value="Kitchen Remodeling">Kitchen Remodeling</label>
-                                <label class="checkbox-item"><input type="checkbox" name="Service"
-                                        value="Bathroom Remodeling">Bathroom Remodeling</label>
-                                <label class="checkbox-item"><input type="checkbox" name="Service"
-                                        value="Flooring">Flooring Solutions</label>
-                                <label class="checkbox-item"><input type="checkbox" name="Service"
-                                        value="outdoor">Pavers &amp; Hardscaping</label>
-                                <label class="checkbox-item"><input type="checkbox" name="Service"
-                                        value="painting">Painting</label>
-                                <label class="checkbox-item"><input type="checkbox" name="Service"
-                                        value="Handyman / Repair">Handyman / Repairs</label>
-                            </div>
-                        </div>
-
-                        <div class="input-group full-row">
-                            <label for="notes" class="tech-label">Project Description</label>
-                            <textarea id="notes" name="Project Description" class="form-control"
-                                placeholder="Tell us about your vision, specific changes, or any concerns..."></textarea>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="budget" class="tech-label">Estimated Budget</label>
-                            <select id="budget" name="Estimated Budget" class="form-control">
-                                <option value="" selected disabled>Select range...</option>
-                                <option value="Under 5000">Under $5,000</option>
-                                <option value="5000 - 20000">$5,000 - $20,000</option>
-                                <option value="20000 - 50000">$20,000 - $50,000</option>
-                                <option value="50000+">$50,000+</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="timeline" class="tech-label">Ideal Timeline</label>
-                            <select id="timeline" name="Timeline" class="form-control">
-                                <option>Immediate / Urgent</option>
-                                <option>Within 1 month</option>
-                                <option>Planning phase (3+ months)</option>
-                            </select>
-                        </div>
-                    </div>
-                </fieldset>
-
-                <div class="stamp-area">
-                    <div class="stamp-box">
-                        <span class="tech-label">Request Estimate</span>
-                        <p class="stamp-signature">Your details help us respond to your project request</p>
-                        <p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. The form is processed by FormSubmit.</p>
-                        <button type="submit" class="btn-submit">Submit Request</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="successModal" class="modal-success">
-        <div class="modal-content">
-            <h2>Request Sent</h2>
-            <p>Success! Your request has been sent. Expect to hear from us soon.</p>
-            <button class="btn-reset">New Form</button>
-        </div>
-    </div>
-
+    <div class="scroll-container"><div class="blueprint-canvas"><div class="blueprint-border"></div>
+        <div class="ruler"><span>0</span><span>|</span><span>|</span><span>|</span><span>|</span><span>5</span><span>|</span><span>|</span><span>|</span><span>|</span><span>10</span></div>
+        <header class="header-section"><div class="header-title"><span class="tech-label">Technical Document: #RENOV-2026</span><h1>Quote Form</h1></div><div class="status-badge"><span class="tech-label">Current Status</span><span class="status-text">Quote Request</span></div></header>
+        <form id="reformaForm" action="https://formsubmit.co/charlesbgroup@gmail.com" method="POST">
+            <input type="hidden" name="_captcha" value="false"><input type="hidden" name="_next" id="nextField"><input type="hidden" name="_template" value="table"><input type="hidden" name="_subject" value="New Quote Request"><input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
+            <fieldset><legend>Quick Contact</legend><div class="form-grid">
+                <div class="input-group"><label for="client-name" class="tech-label">Full Name *</label><input type="text" id="client-name" name="Name" class="form-control" autocomplete="name" placeholder="John Doe" required></div>
+                <div class="input-group"><label for="client-email" class="tech-label">Email Address *</label><input type="email" id="client-email" name="Email" class="form-control" autocomplete="email" placeholder="email@example.com" required></div>
+                <div class="input-group"><label for="client-phone" class="tech-label">Phone Number *</label><input type="tel" id="client-phone" name="Phone" class="form-control" autocomplete="tel" inputmode="tel" placeholder="(678) 000-0000" required></div>
+                <div class="input-group"><label for="location" class="tech-label">Project Location (City/Zip) *</label><input type="text" id="location" name="Location" class="form-control" autocomplete="postal-code" placeholder="Alpharetta, GA" required></div>
+            </div></fieldset>
+            <fieldset><legend>Project Details (Optional)</legend><div class="form-grid">
+                <div class="input-group"><label for="floor-area" class="tech-label">Approx. Area (sq ft)</label><input type="number" id="floor-area" name="Square Footage" class="form-control" placeholder="Ex: 2500"></div>
+                <div class="input-group full-row"><label class="tech-label">Services Needed</label><div class="services-grid">
+                    <label class="checkbox-item"><input type="checkbox" name="Service" value="New Construction">New Construction</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Home Addition">Home Addition</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Full Renovation">Full Renovation</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Kitchen Remodeling">Kitchen Remodeling</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Bathroom Remodeling">Bathroom Remodeling</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Flooring">Flooring Solutions</label><label class="checkbox-item"><input type="checkbox" name="Service" value="outdoor">Pavers &amp; Hardscaping</label><label class="checkbox-item"><input type="checkbox" name="Service" value="painting">Painting</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Handyman / Repair">Handyman / Repairs</label>
+                </div></div>
+                <div class="input-group full-row"><label for="notes" class="tech-label">Project Description</label><textarea id="notes" name="Project Description" class="form-control" placeholder="Tell us about your vision, specific changes, or any concerns..."></textarea></div>
+                <div class="input-group"><label for="budget" class="tech-label">Estimated Budget</label><select id="budget" name="Estimated Budget" class="form-control"><option value="" selected disabled>Select range...</option><option>$5,000–$20,000</option><option>$20,000–$50,000</option><option>$50,000–$150,000</option><option>$150,000–$300,000</option><option>$300,000–$700,000</option><option>$700,000–$2,000,000</option><option>$2,000,000+</option><option>Not sure / Need an estimate</option></select></div>
+                <div class="input-group"><label for="financing-interest" class="tech-label">Financing Interest</label><select id="financing-interest" name="Financing Interest" class="form-control"><option>Yes</option><option>Maybe</option><option>No</option></select><small>Interest only—not a financing application. Bento’s Group is not a lender, and no financing provider is currently enabled.</small></div>
+                <div class="input-group"><label for="timeline" class="tech-label">Ideal Timeline</label><select id="timeline" name="Timeline" class="form-control"><option>Immediate / Urgent</option><option>Within 1 month</option><option>Planning phase (3+ months)</option></select></div>
+            </div></fieldset>
+            <div class="stamp-area"><div class="stamp-box"><span class="tech-label">Request Estimate</span><p class="stamp-signature">Your details help us respond to your project request</p><p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. The form is processed by FormSubmit.</p><button type="submit" class="btn-submit">Submit Request</button><p id="formStatus" role="status" aria-live="polite"></p></div></div>
+        </form>
+    </div></div>
+    <div id="successModal" class="modal-success"><div class="modal-content"><h2>Request Sent</h2><p>Success! Your request has been sent. Expect to hear from us soon.</p><button class="btn-reset">New Form</button></div></div>
     <script src="./js/free-quote-form.js" type="module"></script>
+    <script>
+      // Resilient fallback: if the module above fails to load for any reason,
+      // keep the visitor on Bento's site and submit through FormSubmit's AJAX endpoint.
+      document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('reformaForm');
+        const submitButton = form?.querySelector('.btn-submit');
+        const status = document.getElementById('formStatus');
+        const modal = document.getElementById('successModal');
+        if (!form || !submitButton || !status || !modal) return;
 
+        form.addEventListener('submit', async function (event) {
+          if (event.defaultPrevented) return;
+          event.preventDefault();
+
+          const originalText = submitButton.textContent;
+          submitButton.disabled = true;
+          submitButton.textContent = 'UPLOADING DATA...';
+          status.textContent = 'Sending your request…';
+
+          try {
+            const ajaxUrl = form.action.replace('https://formsubmit.co/', 'https://formsubmit.co/ajax/');
+            const response = await fetch(ajaxUrl, {
+              method: 'POST',
+              body: new FormData(form),
+              headers: { Accept: 'application/json' }
+            });
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            status.textContent = '';
+            modal.style.display = 'flex';
+            modal.setAttribute('role', 'dialog');
+            modal.setAttribute('aria-modal', 'true');
+            form.reset();
+          } catch (error) {
+            console.error('Submission failed:', error);
+            status.textContent = 'We could not send your request. Please try again or call (678) 571-7028.';
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+          }
+        });
+      });
+    </script>
 </body>
-
 </html>
