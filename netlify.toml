@@ -1,0 +1,40 @@
+[build]
+  # This repository is the deployable static site; no generated build output is
+  # required. Keeping the publish directory explicit prevents Netlify from
+  # publishing an empty or stale subdirectory when site settings are changed.
+  publish = "."
+
+[build.processing]
+  skip_processing = false
+
+[build.processing.html]
+  pretty_urls = true
+
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), geolocation=(), microphone=()"
+
+[[headers]]
+  for = "/assets/*"
+
+  [headers.values]
+    # Asset filenames are not content-hashed, so deployments must be allowed to
+    # replace them without leaving returning visitors on an older design.
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/js/*"
+
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*.html"
+
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
