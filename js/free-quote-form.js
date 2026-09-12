@@ -1,3 +1,5 @@
+import { submitForm } from "./form-submit.js";
+
 document.addEventListener("DOMContentLoaded", function () {
   const backBtn = document.querySelector('.back-btn');
   const form = document.querySelector("#reformaForm");
@@ -133,14 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
     btnSubmit.textContent = "UPLOADING DATA...";
 
     try {
-      const formData = new FormData(form);
-      const response = await fetch(form.action, {
-        method: "POST",
-        body: formData,
-        headers: { 'Accept': 'application/json' }
-      });
-
-      if (!response.ok) throw new Error(`Form submission failed (${response.status})`);
+      await submitForm(form);
       successModal.style.display = "flex";
       form.reset();
 
