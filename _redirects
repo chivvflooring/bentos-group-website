@@ -1,5 +1,4 @@
-# Targeted legacy URL redirects. Canonical host is https://www.bentos-group.com.
-https://bentos-group.com/* https://www.bentos-group.com/:splat 301!
+# Targeted legacy URL redirects. Netlify primary domain handles host canonicalization.
 /index.html /
 /about-us.html /about-us 301
 /services.html /services 301
