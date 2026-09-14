@@ -3,26 +3,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Project Financing Information | Bento's Group</title>
-  <meta name="description" content="Share financing interest while planning a residential construction or remodeling project. Bento’s Group is not a lender, and no financing provider is currently enabled.">
+  <title>Project Financing Options | Bento's Group</title>
+  <meta name="description" content="Explore illustrative monthly project financing estimates, then securely check actual options from Acorn Finance's participating lenders.">
   <link rel="canonical" href="https://www.bentos-group.com/financing">
   <link rel="stylesheet" href="./styles/reset.css">
   <link rel="stylesheet" href="./styles/styles.css">
+  <link rel="stylesheet" href="./styles/financing.css">
 </head>
 <body>
   <header class="header glass-backdrop" id="main-header">
     <div class="header-wrapper left"><a href="./index.html" class="logo-link"><img src="./assets/svgs/bentos-group-combination-mark.svg" width="50" height="62" alt="Bento's Group"></a></div>
     <nav class="menu-nav" aria-label="Main Navigation"><ul><li><a href="./index.html" class="button">Home</a></li><li><a href="./services.html" class="button">Services</a></li><li><a href="./free-quote.html" class="button">Free Quote</a></li></ul></nav>
   </header>
-  <main class="page-margin section-margin">
+  <main class="page-margin section-margin financing-page">
     <section class="section-header">
       <span class="badge">Project Planning</span>
-      <h1>Financing Interest Information</h1>
-      <p>Bento’s Group is not a lender and does not make credit decisions. No financing provider is currently enabled, so approval, rates, terms, loan amounts, and availability are not promised.</p>
-      <p>The quote form asks only whether financing is of interest. Do not submit Social Security numbers, income, credit scores, bank or card details, or financing application information.</p>
-      <div class="btn-group"><a class="btn-primary" href="./free-quote.html">Request a Project Quote</a><a class="btn-dark" href="./contact.html">Contact Us</a></div>
+      <h1>Plan Your Project Investment</h1>
+      <p>Explore illustrative monthly estimates, then continue securely to Acorn Finance to check actual financing options from participating lenders.</p>
+    </section>
+
+    <section class="financing-calculator" aria-labelledby="calculator-title">
+      <div class="calculator-intro">
+        <p class="eyebrow">Financing calculator</p>
+        <h2 id="calculator-title">Estimate a monthly project budget</h2>
+        <p>Enter the total project investment to compare principal-only planning estimates across several repayment periods.</p>
+      </div>
+
+      <div class="investment-field">
+        <label for="project-investment">Total Project Investment</label>
+        <div class="currency-input"><span aria-hidden="true">$</span><input id="project-investment" name="project-investment" type="number" min="1000" step="500" value="30000" inputmode="decimal" aria-describedby="estimate-disclaimer"></div>
+      </div>
+
+      <div class="estimate-heading">
+        <h3>Estimated Monthly Financing</h3>
+        <p>Illustrative principal-only estimates</p>
+      </div>
+      <div class="term-grid" id="financing-estimates" aria-live="polite">
+        <article class="term-card"><strong data-term="36">$833.33</strong><span>36-month option</span></article>
+        <article class="term-card"><strong data-term="60">$500.00</strong><span>60-month option</span></article>
+        <article class="term-card"><strong data-term="84">$357.14</strong><span>84-month option</span></article>
+        <article class="term-card"><strong data-term="120">$250.00</strong><span>120-month option</span></article>
+      </div>
+
+      <p class="estimate-disclaimer" id="estimate-disclaimer"><strong>Illustrative estimates only—not a loan offer or guaranteed payment.</strong> These amounts divide the project investment by each term and do not include interest, lender fees, or other charges. Actual rates, payments, terms, and eligibility are determined by Acorn Finance's participating lenders.</p>
+
+      <div class="acorn-action">
+        <a class="btn-primary acorn-cta" href="https://www.acornfinance.com/pre-qualify/?d=VSZXA&amp;utm_medium=web_pre_qual_banner" target="_blank" rel="noopener noreferrer">Check Financing Options</a>
+        <p>You will continue to Acorn Finance to view actual options. Bento's Group / CHIVV Flooring LLC is not a lender.</p>
+      </div>
+    </section>
+
+    <section class="acorn-banner-section" aria-labelledby="acorn-heading">
+      <h2 id="acorn-heading">Explore payment options with Acorn Finance</h2>
+      <p>Loan-application information stays in Acorn's experience. Do not send Social Security numbers, income, credit, banking, or loan-application information to Bento's Group.</p>
+      <div class="acorn-banner">
+        <a href="https://www.acornfinance.com/pre-qualify/?d=VSZXA&utm_medium=web_pre_qual_banner" target="_blank" rel="noopener noreferrer"><img id="acornBanner" style="margin: 10px; padding: 1px; border: 1px solid black; border-radius: 5px;" src="https://fs.acornfinance.com/banners/acorn-finance-banner-easy-payment-options-horizontal-small.png" alt="Acorn Finance apply and get affordable payment options from multiple lenders" longdesc="false"></a>
+      </div>
     </section>
   </main>
   <script src="./js/navigation.js" defer></script>
+  <script src="./js/financing.js" type="module"></script>
 </body>
 </html>
