@@ -1,0 +1,172 @@
+.financing-page {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+
+.financing-calculator,
+.acorn-banner-section {
+  border: 1px solid rgb(26 32 44 / 14%);
+  border-radius: 16px;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  background: rgb(255 255 255 / 72%);
+  box-shadow: 0 18px 45px rgb(26 32 44 / 10%);
+}
+
+.calculator-intro {
+  max-width: 720px;
+}
+
+.calculator-intro h2,
+.acorn-banner-section h2 {
+  margin-bottom: .75rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+}
+
+.eyebrow {
+  margin-bottom: .5rem;
+  color: var(--primary);
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.investment-field {
+  margin-block: 2rem;
+}
+
+.investment-field label,
+.estimate-heading h3 {
+  display: block;
+  margin-bottom: .6rem;
+  font-weight: 750;
+}
+
+.currency-input {
+  display: flex;
+  align-items: center;
+  width: min(100%, 420px);
+  border: 2px solid #9a8764;
+  border-radius: 8px;
+  background: white;
+  font-size: 1.35rem;
+}
+
+.currency-input:focus-within {
+  outline: 3px solid rgb(154 135 100 / 25%);
+}
+
+.currency-input span {
+  padding-left: 1rem;
+  font-weight: 700;
+}
+
+.currency-input input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  padding: .9rem;
+  background: transparent;
+  font-weight: 700;
+}
+
+.estimate-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.estimate-heading p {
+  color: #596273;
+  font-size: .82rem;
+}
+
+.term-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.term-card {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  border-radius: 10px;
+  padding: 1.25rem 1rem;
+  background: #f1eee7;
+  text-align: center;
+}
+
+.term-card strong {
+  color: #1a202c;
+  font-size: clamp(1.15rem, 2.4vw, 1.65rem);
+}
+
+.term-card span {
+  color: #596273;
+  font-size: .85rem;
+}
+
+.estimate-disclaimer {
+  margin-top: 1.5rem;
+  color: #4a5568;
+  font-size: .84rem;
+  line-height: 1.6;
+}
+
+.acorn-action {
+  margin-top: 1.75rem;
+  border-top: 1px solid rgb(26 32 44 / 12%);
+  padding-top: 1.75rem;
+  text-align: center;
+}
+
+.acorn-cta {
+  display: inline-block;
+}
+
+.acorn-action p {
+  margin: .9rem auto 0;
+  max-width: 650px;
+  font-size: .82rem;
+}
+
+.acorn-banner-section {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.acorn-banner {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+  overflow: hidden;
+}
+
+#acornBanner {
+  box-sizing: border-box;
+  max-width: calc(100% - 20px);
+  height: auto;
+}
+
+@media (max-width: 720px) {
+  .term-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .estimate-heading {
+    display: block;
+  }
+}
+
+@media (max-width: 420px) {
+  .term-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .acorn-cta {
+    width: 100%;
+  }
+}
