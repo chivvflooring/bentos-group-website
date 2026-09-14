@@ -77,10 +77,21 @@
                 <div class="input-group"><label for="financing-interest" class="tech-label">Financing Interest</label><select id="financing-interest" name="Financing Interest" class="form-control"><option>Yes</option><option>Maybe</option><option>No</option></select><small>Interest only—not a financing application. Bento’s Group is not a lender, and no financing provider is currently enabled.</small></div>
                 <div class="input-group"><label for="timeline" class="tech-label">Ideal Timeline</label><select id="timeline" name="Timeline" class="form-control"><option>Immediate / Urgent</option><option>Within 1 month</option><option>Planning phase (3+ months)</option></select></div>
             </div></fieldset>
+            <fieldset id="showroom-appointment"><legend>Flooring Estimate &amp; Showroom Visit</legend>
+                <p style="margin-bottom: 1rem;">Request a flooring estimate and a time to explore materials at our supplier's showroom, DDCC FLOOR INC, 2865 N Berkeley Lake Rd NW #8, Duluth, GA 30096. Bento's Group / CHIVV Flooring will coordinate your visit with the supplier.</p>
+                <div class="form-grid">
+                    <div class="input-group"><label for="showroom-request" class="tech-label">Would you like a showroom appointment?</label><select id="showroom-request" name="Showroom Appointment Request" class="form-control"><option value="No appointment requested">Estimate only / No appointment requested</option><option value="Please arrange a DDCC showroom visit">Yes, please arrange a showroom visit</option></select></div>
+                    <div class="input-group"><label for="flooring-type" class="tech-label">Flooring Interest</label><select id="flooring-type" name="Flooring Interest" class="form-control"><option value="">Select if applicable...</option><option>Engineered hardwood</option><option>Luxury vinyl</option><option>Laminate</option><option>Need help choosing</option></select></div>
+                    <div class="input-group"><label for="showroom-date" class="tech-label">Preferred Visit Date</label><input type="date" id="showroom-date" name="Preferred Showroom Date" class="form-control" aria-describedby="appointment-confirmation"></div>
+                    <div class="input-group"><label for="showroom-time" class="tech-label">Preferred Visit Time (Georgia time)</label><input type="time" id="showroom-time" name="Preferred Showroom Time (America/New_York)" class="form-control" aria-describedby="appointment-confirmation"></div>
+                    <div class="input-group full-row"><label for="showroom-alternative" class="tech-label">Alternative Times or Visit Notes</label><input type="text" id="showroom-alternative" name="Showroom Alternative Times and Notes" class="form-control" placeholder="For example: weekday afternoons, or please call to discuss"></div>
+                </div>
+                <p id="appointment-confirmation" style="margin-top: 1rem;"><strong>This is an appointment request.</strong> Please wait for our team to confirm the date and time before visiting. For your confirmed visit, tell the showroom team you are working with Bento's Group / CHIVV Flooring.</p>
+            </fieldset>
             <div class="stamp-area"><div class="stamp-box"><span class="tech-label">Request Estimate</span><p class="stamp-signature">Your details help us respond to your project request</p><p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. The form is processed by FormSubmit.</p><button type="submit" class="btn-submit">Submit Request</button><p id="formStatus" role="status" aria-live="polite"></p></div></div>
         </form>
     </div></div>
-    <div id="successModal" class="modal-success"><div class="modal-content"><h2>Request Sent</h2><p>Success! Your request has been sent. Expect to hear from us soon.</p><button class="btn-reset">New Form</button></div></div>
+    <div id="successModal" class="modal-success"><div class="modal-content"><h2>Request Sent</h2><p>Your request has been sent. If you requested a showroom visit, our team will contact you to confirm availability and the appointment time. Please wait for confirmation before visiting.</p><button class="btn-reset">New Form</button></div></div>
     <script src="./js/free-quote-form.js" type="module"></script>
     <script>
       // Resilient fallback: if the module above fails to load for any reason,
