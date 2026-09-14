@@ -3,6 +3,7 @@
  * Vanilla JavaScript ES6+ implementation focused on performance.
  * Now fetching dynamic data from Decap CMS (/content/cabinets.json) grouped by series.
  */
+import { renderFinancingSummary } from "./financing-calculator.js";
 
 // 1. DYNAMIC DATA HOLDER
 let cabinetModels = [];
@@ -236,7 +237,7 @@ function calculateAndShowEstimate(linearFeet) {
         maximumFractionDigits: 0
     });
 
-    DOM.estimateResult.innerHTML = `Your estimated project layout is between <strong>${formatter.format(lowerBound)}</strong> and <strong>${formatter.format(upperBound)}</strong> including installation.`;
+    DOM.estimateResult.innerHTML = `Your estimated project range is <strong>${formatter.format(lowerBound)}–${formatter.format(upperBound)}</strong>, including installation.${renderFinancingSummary({ projectTotal: baseEstimate })}`;
 
     DOM.appView.classList.add('hidden');
     DOM.appView.style.display = 'none';

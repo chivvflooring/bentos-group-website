@@ -8,6 +8,7 @@
   <link rel="canonical" href="https://www.bentos-group.com/financing">
   <link rel="stylesheet" href="./styles/reset.css">
   <link rel="stylesheet" href="./styles/styles.css">
+  <link rel="stylesheet" href="./styles/financing.css">
 </head>
 <body>
   <header class="header glass-backdrop" id="main-header">
@@ -17,12 +18,27 @@
   <main class="page-margin section-margin">
     <section class="section-header">
       <span class="badge">Project Planning</span>
-      <h1>Financing Interest Information</h1>
-      <p>Bento’s Group is not a lender and does not make credit decisions. No financing provider is currently enabled, so approval, rates, terms, loan amounts, and availability are not promised.</p>
-      <p>The quote form asks only whether financing is of interest. Do not submit Social Security numbers, income, credit scores, bank or card details, or financing application information.</p>
-      <div class="btn-group"><a class="btn-primary" href="./free-quote.html">Request a Project Quote</a><a class="btn-dark" href="./contact.html">Contact Us</a></div>
+      <h1>Plan Your Project Investment</h1>
+      <p>Explore illustrative monthly payments alongside your total project investment. Adjust the project total and APR to compare common terms.</p>
+    </section>
+    <section class="financing-calculator" data-financing-calculator aria-labelledby="payment-calculator-title">
+      <div class="financing-controls">
+        <div class="financing-control"><label for="project-total">Project investment</label><input id="project-total" data-financing-amount type="number" min="1000" step="500" value="10000" inputmode="decimal"></div>
+        <div class="financing-control"><label for="illustrative-apr">Illustrative APR</label><select id="illustrative-apr" data-financing-apr><option value="7.99">7.99%</option><option value="9.99" selected>9.99%</option><option value="12.99">12.99%</option></select></div>
+      </div>
+      <div class="financing-project-total"><span id="payment-calculator-title">Project Investment</span><strong data-project-total>$10,000</strong></div>
+      <div class="financing-options" aria-live="polite">
+        <article class="financing-option"><span class="financing-option__tag"></span><h3>36 months</h3><output data-financing-term="36">—</output></article>
+        <article class="financing-option financing-option--recommended"><span class="financing-option__tag">Recommended</span><h3>60 months</h3><output data-financing-term="60">—</output></article>
+        <article class="financing-option"><span class="financing-option__tag"></span><h3>84 months</h3><output data-financing-term="84">—</output></article>
+        <article class="financing-option"><span class="financing-option__tag"></span><h3>120 months</h3><output data-financing-term="120">—</output></article>
+      </div>
+      <p class="financing-apr-note">Estimated payments shown at <strong><span data-selected-apr>9.99</span>% illustrative APR</strong>.</p>
+      <a class="financing-cta" href="./free-quote.html?financing=interested">Check Financing Options</a>
+      <p class="financing-disclosure">*Illustrative estimate only. Actual APR, term, eligibility, approval, loan amount, and monthly payment are determined by participating lenders. Bento’s Group is not a lender.</p>
     </section>
   </main>
   <script src="./js/navigation.js" defer></script>
+  <script src="./js/financing-calculator.js" type="module"></script>
 </body>
 </html>
