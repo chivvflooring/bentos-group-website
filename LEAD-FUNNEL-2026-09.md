@@ -1,0 +1,60 @@
+# Bento's Group lead funnel — September 14, 2026
+
+## Verified baseline and limits
+- GSC report retrieved earlier today, August 15–September 11: 3,550 impressions, 14 clicks, 0.39% CTR, average position 18.9.
+- Earlier query examples: "affordable bathroom remodel roswell": 19 impressions, zero clicks, position 14.47; "alpharetta kitchen remodeling": 6 impressions, zero clicks, position 13.5. These are small samples, not forecasts or the highest-volume queries.
+- Google Business Profile screenshots: verified combined Bento's/CHIVV profile, 4.9 rating with 49 reviews; second profile marked Duplicate. Do not delete or rename listings without reviewing ownership and review continuity.
+- Canonical/sitemap correction and supplier-showroom request form were deployed earlier today.
+- Fresh GSC Wizard reports are currently blocked: trial ended / subscription required. Do not buy a subscription without owner authorization. The owner can export Search Console performance by query and page instead.
+- Changes below do not establish ranking improvements or verified email delivery.
+
+## Funnel implemented in this pass
+Search or Business Profile → relevant service page → estimate request → staff response → consultation/site measurement or confirmed supplier visit → written estimate → accepted scope and deposit → completed work → review request.
+
+1. Roswell bathroom and Alpharetta kitchen estimate buttons now go directly to the form with editable service/city context.
+2. Homepage provides flooring, bathroom and kitchen estimate choices.
+3. Supplier-showroom link preselects flooring and the appointment request. DDCC remains clearly identified as the supplier, not Bento's business address.
+4. Form records contact preference and best contact time, allows budgets below $5,000, and no longer defaults to financing interest or urgent scheduling.
+5. Inquiry Source Page accompanies the existing email submission; only allowed labels or same-site pathname are captured, excluding referrer query strings and fragments. This is page-level attribution, not full campaign analytics.
+6. Quote form uses normal document scrolling for mobile usability.
+7. No new analytics account, CRM, paid ad campaign or automated outbound messaging has been connected.
+
+## Staff workflow
+| Stage | Required action | Next record |
+|---|---|---|
+| New inquiry | Check scope, city, contact preference and timing | Assigned person and next follow-up date |
+| Contacted | Confirm needs, approximate area, material selection and access | Qualified / not a fit / waiting |
+| Appointment requested | Coordinate with homeowner and supplier if applicable | Confirmed date/time |
+| Measured | Verify quantities and scope | Estimate due date |
+| Estimate sent | Record amount and agreed follow-up | Accepted / declined / pending |
+| Won | Obtain agreement and applicable deposit | Job schedule |
+| Completed | Close out and request an honest review | Review request date |
+
+Suggested response target: same business day when staffing allows; this is an internal target, not a public promise.
+
+## Immediate gates
+- Submit one clearly labelled test inquiry and verify arrival in charlesbgroup@gmail.com, including all appointment/context fields. Browser success alone is not inbox verification.
+- Use the existing verified Business Profile. Since customers are not served at the operating address, hide it using Google's service-area settings; owner has not yet confirmed this was done.
+- Confirm the real-world business name, core category and accurate services before changing profile identity.
+- Confirm DDCC arrangements before confirming customer visits.
+- Retrieve 3 months of Search Console queries/pages and Business Profile performance. Separate branded searches from service searches.
+
+## Next content work
+- Prioritize services by actual profit, capacity and observed demand, not ranking position alone.
+- Improve the two initial pages using actual project photos, scope details, material choices and useful FAQs. Obtain permission before publishing customer names, addresses or identifiable project details.
+- Expand to additional cities only with genuine service coverage and distinct useful content.
+- Review internal links, mobile rendering, submitted sitemap processing and inquiry delivery.
+- Keep business description and supported service facts consistent across website, Business Profile and existing directories.
+- Request honest reviews from completed customers without incentives or review gating; respond to existing reviews.
+
+## Weekly measures
+Track organic clicks, qualified inquiries, appointments held, estimates sent, won jobs and booked revenue. Record service, city, source page, stage, next action and owner per lead in a private tracker. Never store customer lead data in this public repository.
+Do not start paid traffic until inquiry delivery is verified and budget/target services are approved.
+
+## Sources
+- Google local ranking guidance: https://support.google.com/business/answer/7091?hl=en
+- Google service-area settings: https://support.google.com/business/answer/9157481?hl=en
+- User-provided Business Profile screenshots and GSC data retrieved in this conversation.
+
+## Validation
+Parsed HTML for duplicate IDs and required form fields; checked inline JavaScript syntax; passed six isolated context/appointment/privacy scenarios. Browser rendering could not be tested because the local browser executable is unavailable. No real inquiry or outbound customer message was sent.
