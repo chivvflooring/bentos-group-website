@@ -21,9 +21,8 @@
   <meta name="author" content="Bento's Group - Home Remodeling Experts" />
   <link rel="canonical" href="https://bentos-group.com/" />
 
-  <link rel="preload" fetchpriority="high" as="image"
-    href="https://images.unsplash.com/photo-1616137422495-1e9e46e2aa77?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-    type="image/avif">
+  <link rel="preload" fetchpriority="high" as="image" href="/assets/images/hero.webp" type="image/webp">
+  <link rel="stylesheet" href="/styles/lead-actions.css">
 
   <link rel="preload" href="./assets/fonts/Inter-VariableFont_opsz,wght.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="./assets/fonts/PlayfairDisplay-VariableFont_wght.woff2" as="font" type="font/woff2"
@@ -822,26 +821,21 @@
   ],
   "logo": {
     "@type": "ImageObject",
-    "url": "https://bentos-group.com/assets/images/bentos-group-combination-mark.png.png",
+    "url": "https://bentos-group.com/assets/images/bentos-group-combination-mark.png",
     "width": 112,
     "height": 112
   },
   "name": "Bento's Group",
   "alternateName": "Chivv Flooring LLC",
   "slogan": "Transforming Homes. Building Trust.",
-  "description": "Bento's Group (formerly Chivv Flooring) is a trusted home remodeling company serving Alpharetta, Atlanta, and nearby cities. We specialize in home remodeling — our team comes to you.",
+  "description": "Bento's Group provides residential construction, remodeling, project development, painting and flooring services in Metro and North Atlanta.",
   "foundingDate": "2021",
   "founder": {
     "@type": "Person",
     "name": "Charles Bento Silva"
   },
   "telephone": "+1-678-571-7028",
-  "image": "https://bentos-group.com/assets/images/bentos-group-monogram.png",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://bentos-group.com/search?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  },
+  "image": "https://bentos-group.com/assets/images/hero.webp",
   "openingHoursSpecification": [
     {
       "@type": "OpeningHoursSpecification",
@@ -1030,6 +1024,7 @@
 </head>
 
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <!--<div class="splash-screen-overlay" aria-hidden="true" role="presentation">
         <div class="splash-screen">
             <img src="./assets/svgs/bentos-group-combination-mark.svg" alt="Bento's Group Logo" fetchpriority="high"
@@ -1087,12 +1082,12 @@
     </div>
   </header>
 
-  <main>
+  <main id="main-content">
     <!-- Hero -->
     <section class="hero">
       <div class="hero-img-wrap">
-        <img alt="Renovated kitchen drawers" class="hero-img"
-          src="https://images.unsplash.com/photo-1616137422495-1e9e46e2aa77?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        <img alt="Renovated kitchen drawers" class="hero-img" width="1024" height="1536"
+          src="/assets/images/hero.webp"
           fetchpriority="high" loading="eager">
         <div class="sua-classe"></div>
       </div>
@@ -1652,7 +1647,13 @@
       </section>
     </div>
 
-    </main>
+  </main>
+
+  <nav class="mobile-lead-actions" aria-label="Quick contact">
+    <a href="tel:+16785717028">Call</a>
+    <a href="sms:+16785717028">Text</a>
+    <a class="mobile-estimate" href="/free-quote?source=home">Request Estimate</a>
+  </nav>
 
   <button class="chat-fab" aria-label="Open chat">
     <img src="./assets/svgs/chat.svg" width="24" height="24" alt="">

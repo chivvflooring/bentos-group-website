@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --require ./tests/node-compat.cjs --test"
   },
   "devDependencies": {
     "jsdom": "^30.0.1"
