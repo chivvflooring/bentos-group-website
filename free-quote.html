@@ -115,7 +115,7 @@
         const params = new URLSearchParams(window.location.search);
         const services = {flooring: 'Flooring', kitchen: 'Kitchen Remodeling', bathroom: 'Bathroom Remodeling', 'new-construction': 'New Construction', painting: 'painting'};
         const cities = {roswell: 'Roswell, GA', alpharetta: 'Alpharetta, GA', 'johns-creek': 'Johns Creek, GA', cumming: 'Cumming, GA'};
-        const pages = {home: '/', contact: '/contact', 'roswell-bathroom': '/bathroom-remodeling-roswell-ga', 'alpharetta-kitchen': '/kitchen-remodeling-alpharetta-ga', 'supplier-showroom': '/contact#supplier-showroom', 'johns-creek-flooring': '/flooring-solutions-johns-creek-ga', 'cumming-flooring': '/flooring-solutions-cumming-ga', 'johns-creek-construction': '/new-construction-johns-creek-ga', 'cumming-construction': '/new-construction-cumming-ga'};
+        const pages = {flooring: '/flooring', painting: '/painting', 'custom-homes': '/custom-homes', home: '/', contact: '/contact', 'roswell-bathroom': '/bathroom-remodeling-roswell-ga', 'alpharetta-kitchen': '/kitchen-remodeling-alpharetta-ga', 'supplier-showroom': '/contact#supplier-showroom', 'johns-creek-flooring': '/flooring-solutions-johns-creek-ga', 'cumming-flooring': '/flooring-solutions-cumming-ga', 'johns-creek-construction': '/new-construction-johns-creek-ga', 'cumming-construction': '/new-construction-cumming-ga'};
         const key = params.get('service');
         const service = Object.prototype.hasOwnProperty.call(services, key) ? services[key] : '';
         const cityKey = params.get('city');
