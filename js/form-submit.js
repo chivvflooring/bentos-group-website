@@ -46,6 +46,12 @@ export async function sendFormSubmit(action, formData, fetchImpl = fetch) {
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`, { cause: "http" });
   }
-  // FormSubmit may return JSON, HTML, or text. HTTP success is authoritative.
+  // A 200 response alone does not establish acceptance by the form service.
+  let result;
+  try { result = await response.json(); }
+  catch { throw new Error("Unconfirmed form response", { cause: "http" }); }
+  if (result.success !== true && result.success !== "true") {
+    throw new Error("Form service did not accept request", { cause: "http" });
+  }
   return response;
 }

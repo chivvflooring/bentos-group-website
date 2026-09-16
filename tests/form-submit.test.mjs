@@ -3,14 +3,25 @@ import assert from "node:assert/strict";
 import { createSubmissionGuard, formSubmitAjaxUrl, sendFormSubmit } from "../js/form-submit.js";
 import { selectedCategoryValues, validatePunchList } from "../js/homecare-form.js";
 
-test("successful HTTP response is accepted without parsing its body", async () => {
+test("accepted JSON response uses the AJAX endpoint", async () => {
   let requestedUrl;
   const response = await sendFormSubmit("https://formsubmit.co/example@example.com", {}, async (url) => {
     requestedUrl = url;
-    return { ok: true, status: 200, text: () => { throw new Error("must not parse"); } };
+    return { ok: true, status: 200, json: async () => ({ success: "true" }) };
   });
   assert.equal(response.status, 200);
   assert.equal(requestedUrl, "https://formsubmit.co/ajax/example@example.com");
+});
+
+test("HTTP 200 rejection or unconfirmed response does not become a lead", async () => {
+  for (const success of [false, "false", undefined]) {
+    await assert.rejects(sendFormSubmit("https://formsubmit.co/example@example.com", {}, async () => ({
+      ok: true, status: 200, json: async () => ({ success })
+    })), /did not accept/);
+  }
+  await assert.rejects(sendFormSubmit("https://formsubmit.co/example@example.com", {}, async () => ({
+    ok: true, status: 200, json: async () => { throw new Error("HTML response"); }
+  })), /Unconfirmed/);
 });
 
 test("network failure remains a network failure", async () => {
@@ -39,7 +50,7 @@ test("multiple service categories are submitted as one readable FormData field",
   let submittedFormData;
   await sendFormSubmit("https://formsubmit.co/example@example.com", formData, async (_url, options) => {
     submittedFormData = options.body;
-    return { ok: true, status: 200 };
+    return { ok: true, status: 200, json: async () => ({ success: true }) };
   });
 
   assert.deepEqual(submittedFormData.getAll("Service Categories"), [categories.join("\n")]);
