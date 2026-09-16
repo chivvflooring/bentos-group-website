@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const btnReset = document.querySelector('.btn-reset');
   const formStatus = document.querySelector('#formStatus');
   const submissionGuard = createSubmissionGuard();
+  form.dataset.submitHandler = "module";
 
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('success') === '1') {
@@ -27,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
     btnSubmit.textContent = "Submit Request";
     submissionGuard.finish();
     formStatus.textContent = "";
+    btnSubmit.focus();
   }
 
   function handleBackNavigation(event) {
@@ -61,8 +63,8 @@ document.addEventListener("DOMContentLoaded", function () {
   function validateForm(data) {
     const errors = [];
     if (!data.name || data.name.length < 2) errors.push({ field: "client-name", message: "Name too short." });
-    if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.push({ field: "client-email", message: "Invalid address." });
-    if (!data.phone || data.phone.length < 7) errors.push({ field: "client-phone", message: "Check phone number." });
+    if ((data.email || document.getElementById("contact-preference").value === "Email") && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.push({ field: "client-email", message: "Invalid address." });
+    if (!data.phone || data.phone.replace(/\D/g, "").length < 7) errors.push({ field: "client-phone", message: "Check phone number." });
     if (!data.location || data.location.length < 2) errors.push({ field: "location", message: "Required field." });
     return errors;
   }
@@ -70,6 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
     clearErrors();
+    if (form.elements._honey.value) return;
 
     const selectedServices = Array.from(form.querySelectorAll('input[name="Service"]:checked'))
       .map(cb => cb.parentElement.textContent.trim());
@@ -97,16 +100,20 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!submissionGuard.begin()) return;
     btnSubmit.disabled = true;
     const originalText = btnSubmit.textContent;
-    btnSubmit.textContent = "UPLOADING DATA...";
+    btnSubmit.textContent = "Sending request…";
 
     try {
       formStatus.textContent = "Sending your request…";
       formStatus.dataset.state = "processing";
+      window.bentosTrack?.("estimate_form_attempt");
       await sendFormSubmit(form.action, new FormData(form));
+      window.bentosTrack?.("generate_lead");
       formStatus.textContent = "";
       successModal.style.display = "flex";
       successModal.setAttribute("role", "dialog");
       successModal.setAttribute("aria-modal", "true");
+      successModal.setAttribute("aria-labelledby", "success-title");
+      document.getElementById("success-title").focus();
       form.reset();
 
     } catch (err) {

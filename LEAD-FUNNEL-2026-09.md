@@ -58,3 +58,20 @@ Do not start paid traffic until inquiry delivery is verified and budget/target s
 
 ## Validation
 Parsed HTML for duplicate IDs and required form fields; checked inline JavaScript syntax; passed six isolated context/appointment/privacy scenarios. Browser rendering could not be tested because the local browser executable is unavailable. No real inquiry or outbound customer message was sent.
+
+
+## September 15 update
+- Owner confirmed receipt of the test estimate by email. A later unsolicited vendor message is not a qualified customer lead.
+- Quote page now allows phone-only inquiries; email is required when email is the selected contact method. Contact preferences and showroom options use expandable sections. Flooring links open showroom options and prefill service/city.
+- Fixed competing module/fallback submit listeners so one submission triggers one request. Both paths check explicit FormSubmit JSON acceptance; rejected/unconfirmed requests retain visitor entries and allow retry.
+- Preserved the existing honeypot and added a pre-send check. This is limited bot filtering, not a guarantee against human solicitations.
+- Added local dataLayer events for estimate clicks, submission attempts, accepted requests, phone and text clicks. No personal form fields or query strings are included. No analytics vendor or reporting destination is installed; these are instrumentation hooks only. generate_lead indicates provider acceptance, not inbox delivery or a qualified customer.
+- Confirmation explains the next step and includes call/text links. Showroom requests still require staff confirmation.
+- Existing flooring pages in Johns Creek and Cumming now link directly to a contextual estimate request.
+- Automated tests cover acceptance/rejection, duplicate-submit prevention, fallback-only submission, failure recovery, prefilled context and event privacy. DOM tests use jsdom. Visual browser QA could not run because browser installation timed out; no actual customer inquiry was sent during automated tests.
+- Remaining work: connect the owner's analytics property and verify reports; maintain the private lead follow-up tracker; use current Search Console data and real project evidence to prioritize further content improvements. No paid campaigns or automated outbound messages were started.
+
+## September 16 owner priorities and release status
+- Priority inquiries: flooring, custom new construction and painting. Added dedicated homepage entry points with service preselection and relevant project-description prompts. Existing kitchen/bathroom choices remain.
+- Johns Creek and Cumming construction estimate buttons now carry service/city context. These are inquiries, not confirmed appointments or construction commitments.
+- Prepared locally; GitHub publication/deployment remains blocked by automatic approval review pending explicit approval of the public repository destination chivvflooring/bentos-group-website. No release or live improvement is claimed.
