@@ -20,7 +20,7 @@
 
 @media (max-width: 700px) {
   body {
-    padding-bottom: 4.25rem;
+    padding-bottom: calc(4.25rem + env(safe-area-inset-bottom));
   }
 
   .mobile-lead-actions {
