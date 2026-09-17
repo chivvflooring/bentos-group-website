@@ -10,6 +10,8 @@ const sendButton = chatForm?.querySelector('button');
 const HISTORY_KEY = 'bentos_project_helper_history';
 
 if (chatFab && chatContainer && closeChatBtn && chatForm && messageList && messageInput && sendButton && !chatContainer.dataset.initialized) {
+  // Keep helper dialogue out of search-result snippets on every page.
+  chatContainer.setAttribute('data-nosnippet', '');
   chatContainer.dataset.initialized = 'true';
 
   function displayMessage(sender, role, content, save = true) {
