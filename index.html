@@ -23,6 +23,7 @@
 
   <link rel="preload" fetchpriority="high" as="image" href="/assets/images/hero.webp" type="image/webp">
   <link rel="stylesheet" href="/styles/lead-actions.css">
+  <link rel="stylesheet" href="/styles/customer-reviews.css">
 
   <link rel="preload" href="./assets/fonts/Inter-VariableFont_opsz,wght.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="./assets/fonts/PlayfairDisplay-VariableFont_wght.woff2" as="font" type="font/woff2"
@@ -1617,6 +1618,44 @@
       </section>
     </div>
 
+    <section id="customer-reviews" class="page-margin section-margin" aria-labelledby="customer-reviews-heading">
+      <div class="section-header">
+        <h2 id="customer-reviews-heading"><span class="badge">Customer Reviews</span>What Our Customers Say</h2>
+        <div class="divider" aria-hidden="true"></div>
+      </div>
+      <p class="customer-reviews-intro">Selected customer feedback from our earlier website, including flooring projects under the CHIVV Flooring name.</p>
+      <div class="customer-reviews-grid">
+        <figure class="customer-review">
+          <blockquote><p>CHIVV Flooring did an amazing job installing our hardwood floors for our 3 bedrooms and hallway! Very professional and completed the job in 1 day. I am so pleased with the workmanship and the quality of my new floors! They were so easy to work with and communicated with us throughout the entire process. I will definitely contact them again with any further flooring that we do!</p></blockquote>
+          <figcaption>Connie Sanders</figcaption>
+        </figure>
+        <figure class="customer-review">
+          <blockquote><p>We utilized Chivv Flooring to replace our engineered hardwood floors. We found them cost competitive and the quality of their work is outstanding. They completed the job quickly and efficiently and their attention to detail was exceptional. We highly recommend them.</p></blockquote>
+          <figcaption>Dan Piper</figcaption>
+        </figure>
+        <figure class="customer-review">
+          <blockquote><p>We are extremely happy with the work that Charles and his team did on our floors. He was thorough and professional and explained everything every step of the way. The finished product was even better than expected.  100% recommend Charles and the CHIVV team.  Well done guys.</p></blockquote>
+          <figcaption>Bobby DeAgostino</figcaption>
+        </figure>
+        <figure class="customer-review">
+          <blockquote><p>They did a GREAT job tearing out our old floors, installing new hardwoods and refinishing our stairs and railing!  Will use them again in the future.</p></blockquote>
+          <figcaption>Jeff Robinson</figcaption>
+        </figure>
+        <figure class="customer-review">
+          <blockquote><p>Very professional and prompt. We had over 800 sq.ft. and completed the job in 2 days.</p></blockquote>
+          <figcaption>Patricia Haynes</figcaption>
+        </figure>
+        <figure class="customer-review">
+          <blockquote><p>I had hardwood flooring Installed in 2 bedrooms and tile in a bathroom. They did the job quickly and it looks very professional. Also, they did a good job of cleaning up after the work was complete. Very happy with how the project went. I will use them again on future projects.</p></blockquote>
+          <figcaption>Gabe Dolfi</figcaption>
+        </figure>
+      </div>
+      <div class="customer-reviews-actions">
+        <a class="btn-primary" href="https://www.google.com/maps/place/Bento%E2%80%99s+Group+Construction/data=!4m2!3m1!1s0x0:0xc712d699554a97b6" target="_blank" rel="noopener noreferrer">View Our Google Profile <span class="review-new-tab">(opens new tab)</span></a>
+        <a class="btn-dark" href="/free-quote?source=home">Discuss Your Project</a>
+      </div>
+    </section>
+
     <div class="section-grid page-margin light-padding">
       <section class="served-areas-section" id="served-areas-section" aria-labelledby="location-heading">
         <div class="section-header ali-left">
@@ -1726,6 +1765,7 @@
         <ul>
           <li><a href="./about-us">About Us</a></li>
           <li><a href="./gallery.html">Gallery</a></li>
+          <li><a href="#customer-reviews">Customer Reviews</a></li>
           <li><a href="./contact.html">Contact</a></li>
         </ul>
       </div>
@@ -1771,7 +1811,6 @@
 
   <script src="./js/navigation.js" defer></script>
   <script src="./js/carousel.js" defer></script>
-  <script src="./js/testimonials.js" defer></script>
   <script>
     if (window.netlifyIdentity) {
       window.netlifyIdentity.on("init", user => {
