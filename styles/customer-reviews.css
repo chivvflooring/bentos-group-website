@@ -1,0 +1,11 @@
+#customer-reviews { scroll-margin-top: 8rem; }
+.customer-reviews-intro { max-width: 48rem; margin: 0 auto 2rem; text-align: center; }
+.customer-reviews-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+.customer-review { margin: 0; padding: 1.5rem; background: #f8f6f1; color: #333; border: 1px solid #c5cbbd; border-radius: 8px; overflow-wrap: anywhere; }
+.customer-review blockquote { margin: 0; line-height: 1.7; }
+.customer-review figcaption { margin-top: 1rem; font-weight: 600; color: #2c5531; }
+.customer-reviews-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 2rem; }
+.customer-reviews-actions a { text-align: center; flex-wrap: wrap; justify-content: center; }
+.review-new-tab { font-size: .75rem; text-transform: none; }
+@media (max-width: 1000px) { .customer-reviews-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .customer-reviews-grid { grid-template-columns: minmax(0, 1fr); } }
