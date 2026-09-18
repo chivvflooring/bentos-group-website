@@ -92,6 +92,18 @@
                 <div class="input-group"><label for="financing-interest" class="tech-label">Financing Interest</label><select id="financing-interest" name="Financing Interest" class="form-control"><option value="" selected>Choose if applicable...</option><option>Yes</option><option>Maybe</option><option>No</option></select><small>Interest only—not a financing application. Bento’s Group is not a lender, and no financing provider is currently enabled.</small></div>
                 <div class="input-group"><label for="timeline" class="tech-label">Ideal Timeline</label><select id="timeline" name="Timeline" class="form-control"><option value="" selected>Select your timeline...</option><option>Immediate / Urgent</option><option>Within 1 month</option><option>Planning phase (3+ months)</option></select></div>
             </div></fieldset>
+            <details id="custom-home-options" class="optional-section"><summary>Custom home planning details (optional)</summary>
+                <fieldset><legend>Your Custom Home</legend>
+                    <p>Share what you know now. Use Project Location, Estimated Budget and Ideal Timeline above for your location, overall investment range and timing. These details help us prepare for a consultation; they are not a construction quote or commitment.</p>
+                    <div class="form-grid">
+                        <div class="input-group"><label for="lot-status" class="tech-label">Do you have a lot?</label><select id="lot-status" name="Custom Home Lot Status" class="form-control"><option value="">Select if known...</option><option>I own a lot</option><option>Lot under contract</option><option>Considering a specific lot</option><option>Still looking for land</option></select></div>
+                        <div class="input-group"><label for="plans-status" class="tech-label">Plans and design stage</label><select id="plans-status" name="Custom Home Plans Status" class="form-control"><option value="">Select if known...</option><option>Early ideas / No plans yet</option><option>Working with a designer or architect</option><option>Preliminary drawings available</option><option>Completed plans available</option></select></div>
+                        <div class="input-group"><label for="home-size" class="tech-label">Desired finished home size (sq ft)</label><input id="home-size" name="Custom Home Size Sq Ft" type="number" min="1" step="1" class="form-control" placeholder="For example: 3500"></div>
+                        <div class="input-group"><label for="budget-scope" class="tech-label">Does your budget include land?</label><select id="budget-scope" name="Custom Home Budget Scope" class="form-control"><option value="">Select if known...</option><option>Includes land purchase</option><option>Excludes land purchase</option><option>Not sure yet</option></select></div>
+                    </div>
+                    <p>Describe your preferred start timing and any existing project team in Project Description above. Builder, design, permitting and construction responsibilities will be confirmed for the specific project before an agreement.</p>
+                </fieldset>
+            </details>
             <details id="showroom-options" class="optional-section"><summary>Explore flooring &amp; request a showroom visit (optional)</summary><fieldset id="showroom-appointment"><legend>Flooring Estimate &amp; Showroom Visit</legend>
                 <p style="margin-bottom: 1rem;">Request a flooring estimate and a time to explore materials at our supplier's showroom, DDCC FLOOR INC, 2865 N Berkeley Lake Rd NW #8, Duluth, GA 30096. Bento's Group / CHIVV Flooring will coordinate your visit with the supplier.</p>
                 <div class="form-grid">
@@ -141,6 +153,12 @@
         }
         const location = document.getElementById('location');
         if (city && !location.value) { location.value = city; location.defaultValue = city; }
+        const constructionBox = Array.from(form.querySelectorAll('input[name="Service"]')).find(item => item.value === 'New Construction');
+        const homeOptions = document.getElementById('custom-home-options');
+        if (constructionBox) {
+          homeOptions.open = constructionBox.checked;
+          constructionBox.addEventListener('change', () => { homeOptions.open = constructionBox.checked; });
+        }
         if (service === 'Flooring') document.getElementById('showroom-options').open = true;
         if (service === 'Flooring' && params.get('appointment') === 'showroom') {
           const request = document.getElementById('showroom-request');
