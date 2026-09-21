@@ -75,3 +75,9 @@ Parsed HTML for duplicate IDs and required form fields; checked inline JavaScrip
 - Priority inquiries: flooring, custom new construction and painting. Added dedicated homepage entry points with service preselection and relevant project-description prompts. Existing kitchen/bathroom choices remain.
 - Johns Creek and Cumming construction estimate buttons now carry service/city context. These are inquiries, not confirmed appointments or construction commitments.
 - Prepared locally; GitHub publication/deployment remains blocked by automatic approval review pending explicit approval of the public repository destination chivvflooring/bentos-group-website. No release or live improvement is claimed.
+
+## September 21 service-area funnel
+- Added a single service-area directory for Metro and North Atlanta instead of publishing many near-duplicate city pages. It covers the owner-priority areas: Sandy Springs, Dunwoody, Buckhead, Atlanta, Marietta, Alpharetta, Woodstock and Acworth, plus the established Johns Creek, Roswell, Milton and Cumming coverage.
+- Each city offers contextual flooring, painting and construction estimate links. The quote form now recognizes each city, prefills the location and records `/service-areas` as the source without retaining URL query strings.
+- Updated the homepage service-area section and sitemap to make the directory crawlable through normal internal links.
+- This release expands legitimate search and conversion paths but does not guarantee rankings. Distinct city pages should be added only when real local projects, photos, scope details and useful city-specific information are available.

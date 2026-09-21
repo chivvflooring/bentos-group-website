@@ -114,7 +114,7 @@
         const form = document.getElementById('reformaForm');
         const params = new URLSearchParams(window.location.search);
         const services = {flooring: 'Flooring', kitchen: 'Kitchen Remodeling', bathroom: 'Bathroom Remodeling', 'new-construction': 'New Construction', painting: 'painting'};
-        const cities = {roswell: 'Roswell, GA', alpharetta: 'Alpharetta, GA', 'johns-creek': 'Johns Creek, GA', cumming: 'Cumming, GA'};
+        const cities = {roswell: 'Roswell, GA', alpharetta: 'Alpharetta, GA', 'johns-creek': 'Johns Creek, GA', cumming: 'Cumming, GA', 'sandy-springs': 'Sandy Springs, GA', dunwoody: 'Dunwoody, GA', buckhead: 'Buckhead, Atlanta, GA', atlanta: 'Atlanta, GA', marietta: 'Marietta, GA', woodstock: 'Woodstock, GA', acworth: 'Acworth, GA', milton: 'Milton, GA'};
         const pages = {gallery: "/gallery",flooring: '/flooring', painting: '/painting', 'custom-homes': '/custom-homes', home: '/', contact: '/contact', 'roswell-bathroom': '/bathroom-remodeling-roswell-ga', 'alpharetta-kitchen': '/kitchen-remodeling-alpharetta-ga', 'supplier-showroom': '/contact#supplier-showroom', 'johns-creek-flooring': '/flooring-solutions-johns-creek-ga', 'cumming-flooring': '/flooring-solutions-cumming-ga', 'johns-creek-construction': '/new-construction-johns-creek-ga', 'cumming-construction': '/new-construction-cumming-ga'};
         const key = params.get('service');
         const service = Object.prototype.hasOwnProperty.call(services, key) ? services[key] : '';
@@ -122,6 +122,7 @@
         const city = Object.prototype.hasOwnProperty.call(cities, cityKey) ? cities[cityKey] : '';
         const sourceKey = params.get('source');
         let source = Object.prototype.hasOwnProperty.call(pages, sourceKey) ? pages[sourceKey] : '';
+        if (!source && /^service-areas(?:-[a-z]+)*$/.test(sourceKey || '')) source = '/service-areas';
         if (!source && document.referrer) {
           try {
             const ref = new URL(document.referrer);
