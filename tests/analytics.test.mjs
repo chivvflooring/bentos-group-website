@@ -22,3 +22,16 @@ test('preview domains do not send analytics',()=>{
  assert.equal(dom.window.document.querySelectorAll('script').length,0);
  dom.window.close();
 });
+
+test('content pages receive a service-aware mobile lead path',()=>{
+ const dom=new JSDOM('<head></head><body></body>',{url:'https://bentos-group.com/bathroom-remodeling-alpharetta-ga',runScripts:'outside-only'});
+ dom.window.eval(fs.readFileSync('js/lead-events.js','utf8'));
+ dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
+ const bar=dom.window.document.querySelector('.mobile-lead-actions');
+ const quote=new URL(bar.querySelector('.mobile-estimate').href);
+ assert.equal(quote.pathname,'/free-quote');
+ assert.equal(quote.searchParams.get('service'),'bathroom');
+ assert.equal(quote.searchParams.get('source'),'bathroom-remodeling-alpharetta-ga');
+ assert.equal(bar.querySelector('a[href^="tel:"]').getAttribute('href'),'tel:+16785717028');
+ dom.window.close();
+});
