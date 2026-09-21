@@ -81,3 +81,8 @@ Parsed HTML for duplicate IDs and required form fields; checked inline JavaScrip
 - Each city offers contextual flooring, painting and construction estimate links. The quote form now recognizes each city, prefills the location and records `/service-areas` as the source without retaining URL query strings.
 - Updated the homepage service-area section and sitemap to make the directory crawlable through normal internal links.
 - This release expands legitimate search and conversion paths but does not guarantee rankings. Distinct city pages should be added only when real local projects, photos, scope details and useful city-specific information are available.
+
+## September 21 Norcross construction proof
+- Added a privacy-safe “Project in Progress” section to the custom-home page using owner-supplied photos from an active Norcross residential construction project.
+- The gallery documents exterior framing, roof trusses, interior stair framing, sheathing, house wrap and roofing without publishing the client name or exact address.
+- Images were resized, stripped of metadata and converted to WebP. The section is structured so later construction and completion photos can be added without replacing the project page.
