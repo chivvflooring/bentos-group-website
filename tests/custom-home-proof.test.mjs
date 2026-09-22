@@ -10,10 +10,11 @@ test('custom-home page publishes privacy-safe Norcross project proof', () => {
   assert.ok(section);
   assert.match(section.textContent, /Project in progress/i);
   assert.match(section.textContent, /Norcross, Georgia/i);
-  assert.ok(section.querySelectorAll('figure').length >= 1);
+  assert.ok(section.querySelectorAll('figure').length >= 5);
   for (const image of section.querySelectorAll('img')) {
     assert.ok(image.getAttribute('alt').length > 20);
     assert.equal(image.getAttribute('loading'), 'lazy');
+    assert.equal(image.getAttribute('decoding'), 'async');
     const file = image.getAttribute('src').replace(/^\//, '');
     assert.ok(fs.existsSync(file));
     assert.equal(fs.readFileSync(file).subarray(0, 4).toString('ascii'), 'RIFF');
