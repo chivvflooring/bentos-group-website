@@ -31,6 +31,11 @@ document.addEventListener("DOMContentLoaded", function () {
     btnSubmit.focus();
   }
 
+  function markQuoteSuccess() {
+    const successUrl = `${window.location.origin}${window.location.pathname}?success=1`;
+    window.history.pushState({ quoteSubmitted: true }, "", successUrl);
+  }
+
   function handleBackNavigation(event) {
     const referrer = document.referrer;
     if (referrer && referrer.startsWith(window.location.origin)) {
@@ -108,6 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
       window.bentosTrack?.("estimate_form_attempt");
       await sendFormSubmit(form.action, new FormData(form));
       window.bentosTrack?.("generate_lead");
+      markQuoteSuccess();
       formStatus.textContent = "";
       successModal.style.display = "flex";
       successModal.setAttribute("role", "dialog");
