@@ -30,7 +30,9 @@ import fs from 'node:fs'; import assert from 'node:assert/strict';
   assert.equal((w.dataLayer||[]).filter(x=>x.event==='generate_lead').length,accepted?1:0);
   assert.ok(!JSON.stringify(w.dataLayer).includes('Test Homeowner'));
   if(accepted){
+   assert.equal(w.location.search,'?success=1');
    assert.equal(d.activeElement.id,'success-title');d.querySelector('.btn-reset').click();
+   assert.equal(w.location.search,'');
    assert.equal(d.querySelector('.btn-submit').disabled,false);
   } else { assert.equal(d.querySelector('#client-name').value,'Test Homeowner'); assert.equal(d.querySelector('.btn-submit').disabled,false); }
   dom.window.close();
