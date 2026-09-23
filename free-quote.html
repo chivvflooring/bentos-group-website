@@ -185,6 +185,10 @@
         const status = document.getElementById('formStatus');
         const modal = document.getElementById('successModal');
         if (!form || !submitButton || !status || !modal) return;
+        function markQuoteSuccess() {
+          const successUrl = `${window.location.origin}${window.location.pathname}?success=1`;
+          window.history.pushState({ quoteSubmitted: true }, '', successUrl);
+        }
         modal.addEventListener('keydown', function (event) {
           if (event.key === 'Escape') { event.preventDefault(); document.querySelector('.btn-reset').click(); }
           if (event.key !== 'Tab') return;
@@ -197,7 +201,10 @@
 
         document.querySelector('.btn-reset').addEventListener('click', function () {
           if (form.dataset.submitHandler === 'module') return;
-          modal.style.display = 'none'; submitButton.disabled = false; submitButton.textContent = 'Submit Request'; submitButton.focus();
+          modal.style.display = 'none';
+          const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+          window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+          submitButton.disabled = false; submitButton.textContent = 'Submit Request'; submitButton.focus();
         });
         form.addEventListener('submit', async function (event) {
           if (event.defaultPrevented || form.dataset.submitHandler === 'module') return;
@@ -225,6 +232,7 @@
             const result = await response.json();
             if (result.success !== true && result.success !== 'true') throw new Error('Request not accepted');
             window.bentosTrack?.('generate_lead');
+            markQuoteSuccess();
             status.textContent = '';
             modal.style.display = 'flex';
             modal.setAttribute('role', 'dialog');
