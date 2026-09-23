@@ -28,3 +28,17 @@ test('roofing inquiry preserves service selection and source', () => {
  JSON.parse(page.window.document.querySelector('script[type="application/ld+json"]').textContent);
  form.window.close();page.window.close();
 });
+
+test('flooring campaign source is preserved without accepting arbitrary labels', () => {
+ const tracked=new JSDOM(fs.readFileSync('free-quote.html','utf8'),{url:'https://bentos-group.com/free-quote?service=flooring&source=google-business-flooring',runScripts:'outside-only'});
+ for(const script of tracked.window.document.querySelectorAll('script:not([src])')) tracked.window.eval(script.textContent);
+ assert.equal(tracked.window.document.querySelector('input[name="Inquiry Source Page"]').value,'/flooring');
+ assert.equal(tracked.window.document.querySelector('input[name="Campaign Source"]').value,'Google Business Profile – Flooring');
+ tracked.window.close();
+
+ const untrusted=new JSDOM(fs.readFileSync('free-quote.html','utf8'),{url:'https://bentos-group.com/free-quote?service=flooring&source=made-up-campaign',runScripts:'outside-only'});
+ for(const script of untrusted.window.document.querySelectorAll('script:not([src])')) untrusted.window.eval(script.textContent);
+ assert.equal(untrusted.window.document.querySelector('input[name="Inquiry Source Page"]').value,'Direct or unreported');
+ assert.equal(untrusted.window.document.querySelector('input[name="Campaign Source"]'),null);
+ untrusted.window.close();
+});
