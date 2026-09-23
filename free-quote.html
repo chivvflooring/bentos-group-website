@@ -56,6 +56,9 @@
         .btn-reset { margin-top:30px; background:transparent; border:1px solid white; color:white; padding:10px 30px; cursor:pointer; font-family:'JetBrains Mono',monospace; }
         .btn-reset:hover { background:white; color:var(--blueprint-green); }
         #formStatus { margin-top:12px; min-height:1.2em; font-size:.8rem; }
+        .service-specific[hidden] { display:none; }
+        .focus-note { margin:0 0 1rem; padding:12px; border-left:4px solid var(--blueprint-green); background:#eef6ef; }
+        .text-photos { display:inline-block; margin-top:14px; padding:10px 14px; border:1px solid currentColor; font-weight:600; }
         @media (max-width:640px) { .form-grid{grid-template-columns:1fr}.full-row{grid-column:span 1}.blueprint-canvas{padding:40px 20px}.header-section{flex-direction:column;align-items:flex-start;gap:10px}.status-badge{text-align:left} }
     </style>
     <link rel="icon" type="image/png" href="./assets/favicons/favicon-96x96.png" sizes="96x96" />
@@ -84,6 +87,16 @@
             </div></fieldset>
             </details><fieldset><legend>Project Details (Optional)</legend><div class="form-grid">
                 <div class="input-group"><label for="floor-area" class="tech-label">Approx. Area (sq ft)</label><input type="number" id="floor-area" name="Square Footage" class="form-control" placeholder="Ex: 2500" min="1"></div>
+                <div id="flooring-details" class="full-row service-specific" hidden>
+                    <p class="focus-note"><strong>Flooring estimate:</strong> approximate information is enough to begin. We will confirm measurements and existing conditions before finalizing the scope.</p>
+                    <div class="form-grid">
+                        <div class="input-group"><label for="flooring-project-type" class="tech-label">Flooring Project</label><select id="flooring-project-type" name="Flooring Project Type" class="form-control"><option value="">Select the closest match...</option><option>New flooring installation</option><option>Replace existing flooring</option><option>Hardwood refinishing</option><option>Stairs and railings</option><option>Floor repair</option><option>Not sure / Need guidance</option></select></div>
+                        <div class="input-group"><label for="existing-floor" class="tech-label">Existing Floor</label><select id="existing-floor" name="Existing Flooring" class="form-control"><option value="">Select if known...</option><option>Carpet</option><option>Hardwood</option><option>Engineered hardwood</option><option>Luxury vinyl / Laminate</option><option>Tile</option><option>Concrete / Subfloor</option><option>Mixed surfaces</option><option>Not sure</option></select></div>
+                        <div class="input-group"><label for="flooring-rooms" class="tech-label">Rooms or Areas</label><input id="flooring-rooms" name="Flooring Rooms or Areas" class="form-control" placeholder="Example: main floor, 3 bedrooms and stairs"></div>
+                        <div class="input-group"><label for="flooring-stairs" class="tech-label">Are Stairs Included?</label><select id="flooring-stairs" name="Flooring Stairs Included" class="form-control"><option value="">Select...</option><option>No</option><option>Yes</option><option>Not sure</option></select></div>
+                        <div class="input-group full-row"><label for="material-status" class="tech-label">Material Status</label><select id="material-status" name="Flooring Material Status" class="form-control"><option value="">Select...</option><option>I already selected or purchased material</option><option>I need help choosing material</option><option>I want to compare options</option><option>Not sure yet</option></select></div>
+                    </div>
+                </div>
                 <div class="input-group full-row"><label class="tech-label">Services Needed</label><div class="services-grid">
                     <label class="checkbox-item"><input type="checkbox" name="Service" value="New Construction">New Construction</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Home Addition">Home Addition</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Roofing">Roofing</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Full Renovation">Full Renovation</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Kitchen Remodeling">Kitchen Remodeling</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Bathroom Remodeling">Bathroom Remodeling</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Flooring">Flooring Solutions</label><label class="checkbox-item"><input type="checkbox" name="Service" value="outdoor">Pavers &amp; Hardscaping</label><label class="checkbox-item"><input type="checkbox" name="Service" value="painting">Painting</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Handyman / Repair">Handyman / Repairs</label>
                 </div></div>
@@ -96,7 +109,7 @@
                 <p style="margin-bottom: 1rem;">Request a flooring estimate and a time to explore materials at our supplier's showroom, DDCC FLOOR INC, 2865 N Berkeley Lake Rd NW #8, Duluth, GA 30096. Bento's Group / CHIVV Flooring will coordinate your visit with the supplier.</p>
                 <div class="form-grid">
                     <div class="input-group"><label for="showroom-request" class="tech-label">Would you like a showroom appointment?</label><select id="showroom-request" name="Showroom Appointment Request" class="form-control"><option value="No appointment requested">Estimate only / No appointment requested</option><option value="Please arrange a DDCC showroom visit">Yes, please arrange a showroom visit</option></select></div>
-                    <div class="input-group"><label for="flooring-type" class="tech-label">Flooring Interest</label><select id="flooring-type" name="Flooring Interest" class="form-control"><option value="">Select if applicable...</option><option>Engineered hardwood</option><option>Luxury vinyl</option><option>Laminate</option><option>Need help choosing</option></select></div>
+                    <div class="input-group"><label for="flooring-type" class="tech-label">Flooring Interest</label><select id="flooring-type" name="Flooring Interest" class="form-control"><option value="">Select if applicable...</option><option>Solid hardwood</option><option>Engineered hardwood</option><option>Hardwood refinishing</option><option>Luxury vinyl plank (LVP)</option><option>Laminate</option><option>Tile</option><option>Stairs</option><option>Need help choosing</option></select></div>
                     <div class="input-group"><label for="showroom-date" class="tech-label">Preferred Visit Date</label><input type="date" id="showroom-date" name="Preferred Showroom Date" class="form-control" aria-describedby="appointment-confirmation"></div>
                     <div class="input-group"><label for="showroom-time" class="tech-label">Preferred Visit Time (Georgia time)</label><input type="time" id="showroom-time" name="Preferred Showroom Time (America/New_York)" class="form-control" aria-describedby="appointment-confirmation"></div>
                     <div class="input-group full-row"><label for="showroom-alternative" class="tech-label">Alternative Times or Visit Notes</label><input type="text" id="showroom-alternative" name="Showroom Alternative Times and Notes" class="form-control" placeholder="For example: weekday afternoons, or please call to discuss"></div>
@@ -107,7 +120,7 @@
             <div class="stamp-area"><div class="stamp-box"><span class="tech-label">Request Estimate</span><p class="stamp-signature">Your details help us respond to your project request</p><p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. The form is processed by FormSubmit.</p><button type="submit" class="btn-submit">Submit Request</button><p id="formStatus" role="status" aria-live="polite"></p></div></div>
         </form>
     </div></div>
-    <div id="successModal" class="modal-success"><div class="modal-content"><h2 id="success-title" tabindex="-1">Request Sent</h2><p>Your request has been sent. If you requested a showroom visit, our team will contact you to confirm availability and the appointment time. Please wait for confirmation before visiting.</p><p style="margin-top:20px">Have another detail to share? <a href="tel:+16785717028">Call (678) 571-7028</a> or <a href="sms:+16785717028">text us</a>.</p><button type="button" class="btn-reset">Close confirmation</button></div></div>
+    <div id="successModal" class="modal-success"><div class="modal-content"><h2 id="success-title" tabindex="-1">Request Sent</h2><p>Your request has been sent. If you requested a showroom visit, our team will contact you to confirm availability and the appointment time. Please wait for confirmation before visiting.</p><p style="margin-top:20px">Have another detail to share? <a href="tel:+16785717028">Call (678) 571-7028</a> or <a href="sms:+16785717028">text us</a>.</p><a id="success-text-link" class="text-photos" href="sms:+16785717028">Text project photos or details</a><button type="button" class="btn-reset">Close confirmation</button></div></div>
     <script>
       // Carry only known campaign labels and page paths into the inquiry.
       (function prepareQuoteContext() {
@@ -115,7 +128,8 @@
         const params = new URLSearchParams(window.location.search);
         const services = {flooring: 'Flooring', kitchen: 'Kitchen Remodeling', bathroom: 'Bathroom Remodeling', 'new-construction': 'New Construction', 'home-addition': 'Home Addition', roofing: 'Roofing', painting: 'painting'};
         const cities = {roswell: 'Roswell, GA', alpharetta: 'Alpharetta, GA', 'johns-creek': 'Johns Creek, GA', cumming: 'Cumming, GA', 'sandy-springs': 'Sandy Springs, GA', dunwoody: 'Dunwoody, GA', buckhead: 'Buckhead, Atlanta, GA', atlanta: 'Atlanta, GA', marietta: 'Marietta, GA', woodstock: 'Woodstock, GA', acworth: 'Acworth, GA', milton: 'Milton, GA'};
-        const pages = {gallery: "/gallery",flooring: '/flooring', roofing: '/roofing', painting: '/painting', 'custom-homes': '/custom-homes', home: '/', contact: '/contact', 'roswell-bathroom': '/bathroom-remodeling-roswell-ga', 'alpharetta-kitchen': '/kitchen-remodeling-alpharetta-ga', 'supplier-showroom': '/contact#supplier-showroom', 'johns-creek-flooring': '/flooring-solutions-johns-creek-ga', 'cumming-flooring': '/flooring-solutions-cumming-ga', 'johns-creek-construction': '/new-construction-johns-creek-ga', 'cumming-construction': '/new-construction-cumming-ga'};
+        const pages = {gallery: "/gallery",flooring: '/flooring', roofing: '/roofing', painting: '/painting', 'custom-homes': '/custom-homes', home: '/', contact: '/contact', 'roswell-bathroom': '/bathroom-remodeling-roswell-ga', 'alpharetta-kitchen': '/kitchen-remodeling-alpharetta-ga', 'supplier-showroom': '/contact#supplier-showroom', 'johns-creek-flooring': '/flooring-solutions-johns-creek-ga', 'cumming-flooring': '/flooring-solutions-cumming-ga', 'johns-creek-construction': '/new-construction-johns-creek-ga', 'cumming-construction': '/new-construction-cumming-ga', 'google-business-flooring': '/flooring', 'facebook-flooring': '/flooring', 'instagram-flooring': '/flooring', 'nextdoor-flooring': '/flooring'};
+        const campaigns = {'google-business-flooring': 'Google Business Profile – Flooring', 'facebook-flooring': 'Facebook – Flooring', 'instagram-flooring': 'Instagram – Flooring', 'nextdoor-flooring': 'Nextdoor – Flooring'};
         const key = params.get('service');
         const service = Object.prototype.hasOwnProperty.call(services, key) ? services[key] : '';
         const cityKey = params.get('city');
@@ -132,6 +146,11 @@
         const input = document.createElement('input');
         input.type = 'hidden'; input.name = 'Inquiry Source Page'; input.value = source || 'Direct or unreported';
         form.appendChild(input);
+        if (Object.prototype.hasOwnProperty.call(campaigns, sourceKey)) {
+          const campaignInput = document.createElement('input');
+          campaignInput.type = 'hidden'; campaignInput.name = 'Campaign Source'; campaignInput.value = campaigns[sourceKey];
+          form.appendChild(campaignInput);
+        }
         if (service) {
           const checkbox = Array.from(form.querySelectorAll('input[name="Service"]')).find(item => item.value === service);
           if (checkbox) { checkbox.checked = true; checkbox.defaultChecked = true; }
@@ -139,6 +158,12 @@
           const notes = document.getElementById('notes');
           if (key === 'new-construction') notes.placeholder = 'Tell us about your lot or location, plans, approximate home size, and project stage. We will discuss scope and next steps.';
           if (key === 'painting') notes.placeholder = 'Interior, exterior, or both? Tell us about rooms or surfaces, preparation and repairs, and your preferred timing.';
+          if (key === 'flooring') {
+            document.getElementById('flooring-details').hidden = false;
+            document.querySelector('input[name="_subject"]').value = 'New Flooring Estimate Request';
+            notes.placeholder = 'Tell us about damaged areas, subfloor concerns, preferred material, transitions, furniture moving, or other details.';
+            document.getElementById('success-text-link').href = 'sms:+16785717028?body=Hello%20Bento%27s%20Group%2C%20I%20just%20submitted%20a%20flooring%20estimate%20request.%20Here%20are%20my%20project%20photos%20or%20additional%20details%3A';
+          }
         }
         const location = document.getElementById('location');
         if (city && !location.value) { location.value = city; location.defaultValue = city; }
