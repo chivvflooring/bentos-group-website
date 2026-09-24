@@ -9,6 +9,9 @@ import fs from 'node:fs'; import assert from 'node:assert/strict';
   w.fetch=async()=>{requests++;return {ok:true,status:200,json:async()=>({success:accepted?'true':'false'})}};
   w.console.error=()=>{};
   w.HTMLElement.prototype.scrollIntoView=()=>{};
+  const ga4Events=[];
+  w.bentosAnalyticsReady=true;
+  w.gtag=(...args)=>ga4Events.push(args);
   w.eval(fs.readFileSync('js/lead-events.js','utf8'));
   for(const s of w.document.querySelectorAll('script:not([src])')) w.eval(s.textContent);
   if(moduleEnabled){
@@ -28,7 +31,10 @@ import fs from 'node:fs'; import assert from 'node:assert/strict';
   await new Promise(r=>setTimeout(r,20));
   assert.equal(requests,1,`one request: module=${moduleEnabled}`);
   assert.equal((w.dataLayer||[]).filter(x=>x.event==='generate_lead').length,accepted?1:0);
+  assert.equal(ga4Events.filter(x=>x[0]==='event'&&x[1]==='ads_conversion_Request_quote_1').length,accepted?1:0);
   assert.ok(!JSON.stringify(w.dataLayer).includes('Test Homeowner'));
+  assert.ok(!JSON.stringify(ga4Events).includes('Test Homeowner'));
+  assert.ok(!JSON.stringify(ga4Events).includes('6785551234'));
   if(accepted){
    assert.equal(w.location.search,'?success=1');
    assert.equal(d.activeElement.id,'success-title');d.querySelector('.btn-reset').click();

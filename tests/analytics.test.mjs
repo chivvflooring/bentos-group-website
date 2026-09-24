@@ -12,7 +12,9 @@ test('production GA4 initializes once and forwards approved events without URL q
  const commands=w.dataLayer.filter(x=>x[0]);
  assert.equal(commands.filter(x=>x[0]==='config').length,1);
  assert.equal(commands.find(x=>x[0]==='config')[1],'G-XRBMTBNP58');
- assert.equal(commands.filter(x=>x[0]==='event').length,1);
+ assert.deepEqual(Array.from(commands.filter(x=>x[0]==='event'),x=>x[1]),[
+  'generate_lead','ads_conversion_Request_quote_1'
+ ]);
  assert.ok(!JSON.stringify(w.dataLayer).includes('private@example.com'));
  dom.window.close();
 });
