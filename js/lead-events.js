@@ -10,6 +10,13 @@
     window.dataLayer.push({ event, page_path: page });
     if (window.bentosAnalyticsReady && typeof window.gtag === 'function') {
       window.gtag('event', event, { send_to: 'G-XRBMTBNP58', page_path: page });
+      // The Ads conversion imports this GA4 event. The quote form uses AJAX and
+      // history.pushState, so its success URL does not trigger a page-load event.
+      if (event === 'generate_lead') {
+        window.gtag('event', 'ads_conversion_Request_quote_1', {
+          send_to: 'G-XRBMTBNP58', page_path: page
+        });
+      }
     }
   };
   document.addEventListener('click', function (event) {
