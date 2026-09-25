@@ -21,7 +21,7 @@
   <meta name="author" content="Bento's Group - Home Remodeling Experts" />
   <link rel="canonical" href="https://bentos-group.com/" />
 
-  <link rel="preload" fetchpriority="high" as="image" href="/assets/images/projects/white-kitchen-wide-cleaned.png" type="image/png">
+  <link rel="preload" fetchpriority="high" as="image" href="/assets/images/projects/white-kitchen-vent-cover-visualization.webp" type="image/webp">
   <link rel="stylesheet" href="/styles/lead-actions.css">
 
   <link rel="preload" href="./assets/fonts/Inter-VariableFont_opsz,wght.woff2" as="font" type="font/woff2" crossorigin>
@@ -1097,6 +1097,15 @@
   </header>
 
   <style>
+    .hero-image-note{margin:.8rem 0 0;font-size:.75rem;color:#243c2b;font-weight:700}
+    .client-feedback{padding:clamp(2.5rem,5vw,5rem) 1.25rem;background:#f8f6f1;color:#203b2a}
+    .client-feedback__inner{max-width:1120px;margin:auto}
+    .client-feedback h2{font-size:clamp(2rem,4vw,3rem);line-height:1.15;margin:.4rem 0 1rem}
+    .client-feedback__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin:1.5rem 0}
+    .client-feedback article{background:#fff;padding:1.5rem;border-radius:14px;border:1px solid #ddd9cd}
+    .client-feedback article h3{font-size:1.3rem;margin:.3rem 0 .7rem}
+    .client-feedback a{font-weight:800;color:#225739;text-underline-offset:3px}
+    .client-feedback__eyebrow{text-transform:uppercase;letter-spacing:.1em;color:#965b2b;font-weight:800}
     .care-discovery{background:#f1f5ef;padding:clamp(2rem,5vw,5rem) 1.25rem;color:#243c2b}
     .care-discovery__inner{max-width:1120px;margin:auto}
     .care-discovery__eyebrow,.care-discovery__number{color:#a45322;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
@@ -1130,8 +1139,8 @@
     <!-- Hero -->
     <section class="hero">
       <div class="hero-img-wrap">
-        <img alt="Bright remodeled kitchen with white cabinetry, two islands and wood flooring" class="hero-img" width="1456" height="1088"
-          src="/assets/images/projects/white-kitchen-wide-cleaned.png"
+        <img alt="Bright remodeled kitchen with white cabinetry, two islands, wood flooring and digitally visualized white vent covers" class="hero-img" width="1456" height="1088"
+          src="/assets/images/projects/white-kitchen-vent-cover-visualization.webp"
           fetchpriority="high" loading="eager">
         <div class="sua-classe"></div>
       </div>
@@ -1146,13 +1155,14 @@
           </a>
           <a href="#project-story-title" class="btn-dark">See Our Work</a>
         </div>
+        <p class="hero-image-note">Kitchen project photo · island vent covers digitally visualized</p>
       </div>
     </section>
 
     <section class="project-story" aria-labelledby="project-story-title">
       <div class="project-story__intro"><p class="project-story__eyebrow">A closer look at our work</p><h2 id="project-story-title">The details make a home.</h2><p>Explore real project photos, from finished rooms to the work behind them.</p></div>
       <div class="project-story__stage" data-project-story>
-        <div class="project-story__slide" data-story-slide><img src="/assets/images/projects/white-kitchen-wide-cleaned.png" alt="Bright finished kitchen with white cabinets, two islands and wood flooring" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>01 / 05 · Kitchen remodeling</span><h3>A kitchen made for gathering.</h3><a href="/kitchen-remodeling-service">Explore kitchen remodeling →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
+        <div class="project-story__slide" data-story-slide><img src="/assets/images/projects/white-kitchen-vent-cover-visualization.webp" alt="Bright finished kitchen with white cabinets, two islands and wood flooring" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>01 / 05 · Kitchen remodeling</span><h3>A kitchen made for gathering.</h3><p>Island vent cover finish digitally visualized.</p><a href="/kitchen-remodeling-service">Explore kitchen remodeling →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
         <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/blue-kitchen-cleaned.png" alt="Deep blue kitchen cabinets, white counters and patterned tile flooring" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>02 / 05 · Cabinetry and flooring</span><h3>A bold finish. A room all your own.</h3><a href="/kitchen-remodeling-service">Explore kitchen projects →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
         <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/black-tile-bathroom-cleaned.png" alt="Bathroom with black stone tile, glass shower and freestanding tub" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>03 / 05 · Bathroom remodeling</span><h3>Every detail changes how a room feels.</h3><a href="/bathroom-remodeling-alpharetta-ga">Explore bathroom remodeling →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
         <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/gray-tile-shower-cleaned.png" alt="Completed gray mosaic tile shower with brushed brass fixtures and white vanity" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>04 / 05 · Custom tile</span><h3>Thoughtful tile work, down to the niche.</h3><a href="/bathroom-remodeling-alpharetta-ga">Explore bathroom projects →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
@@ -1186,6 +1196,18 @@
         document.addEventListener('visibilitychange', () => { if (document.hidden) { clearInterval(timer); timer = undefined; } else if (!reduced.matches && pause.textContent === 'Pause') play(); });
       })();
     </script>
+    <section class="client-feedback" aria-labelledby="client-feedback-title">
+      <div class="client-feedback__inner">
+        <p class="client-feedback__eyebrow">Word of mouth matters</p>
+        <h2 id="client-feedback-title">Hear from homeowners in our community.</h2>
+        <p>See independently posted recommendations, then explore the spaces behind our work. Customer comments about specific homes and outdoor projects will be added here when we have permission and a verifiable source.</p>
+        <div class="client-feedback__grid">
+          <article><h3>Neighbor recommendations</h3><p>Read what neighbors have shared about Bento’s Group and CHIVV Flooring on Nextdoor.</p><a href="https://nextdoor.com/pages/chivv-flooring-llc-alpharetta-ga/" target="_blank" rel="noopener noreferrer">Read recommendations on Nextdoor ↗</a></article>
+          <article><h3>Explore completed spaces</h3><p>Browse kitchens, bathrooms, flooring and other projects photographed by our team.</p><a href="/gallery">View the project gallery →</a></article>
+          <article><h3>Worked with our team?</h3><p>We would love to hear about your experience, including a custom home or pool project. Share feedback that we may request permission to feature.</p><a href="/contact?source=client-feedback">Tell us about your project →</a></article>
+        </div>
+      </div>
+    </section>
     <section class="care-discovery" aria-labelledby="care-discovery-title">
       <div class="care-discovery__inner">
         <p class="care-discovery__eyebrow">The home beyond the project</p>
