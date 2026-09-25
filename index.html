@@ -1108,6 +1108,24 @@
     .care-discovery__note{font-size:.9rem}
     .care-discovery a:focus-visible{outline:3px solid #d27528;outline-offset:4px}
   </style>
+  <style>
+    .project-story{background:#203b2a;color:#fff;padding:clamp(2rem,5vw,4.5rem) 1.25rem}
+    .project-story__intro,.project-story__stage,.project-story__more{max-width:1120px;margin:0 auto}
+    .project-story__eyebrow{color:#f0ad6c;text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+    .project-story h2{font-size:clamp(2rem,4vw,3.2rem);line-height:1.16;margin:.4rem 0}
+    .project-story__stage{position:relative;overflow:hidden;border-radius:16px;background:#182b20;min-height:390px}
+    .project-story__slide{position:relative;min-height:390px}
+    .project-story__slide[hidden]{display:none}
+    .project-story__slide img{display:block;width:100%;height:clamp(390px,48vw,580px);object-fit:cover}
+    .project-story__caption{position:absolute;bottom:0;left:0;right:0;padding:4rem 1.4rem 4.2rem;background:linear-gradient(transparent,rgba(11,26,17,.94));color:#fff}
+    .project-story__caption span{font-weight:800;color:#f3bc82}.project-story__caption h3{font-size:clamp(1.35rem,3vw,2.2rem);margin:.5rem 0}
+    .project-story__caption a,.project-story__more a{color:#fff;font-weight:800;text-underline-offset:4px}
+    .project-story__controls{position:absolute;bottom:0;right:0;display:flex;align-items:center;gap:.65rem;padding:.6rem 1rem;background:#173021eb;color:#fff;font-size:.88rem}
+    .project-story__controls button{color:#fff;background:#315e3b;border:1px solid #acd3ae;border-radius:6px;min-width:38px;min-height:36px;cursor:pointer}
+    .project-story__controls button:focus-visible,.project-story a:focus-visible{outline:3px solid #f0ad6c;outline-offset:3px}
+    .project-story__more{padding-top:1rem}
+    @media(max-width:560px){.project-story__caption{padding-bottom:5.8rem}.project-story__controls{left:0;justify-content:center}.project-story__slide img{height:440px}}
+  </style>
   <main id="main-content">
     <!-- Hero -->
     <section class="hero">
@@ -1131,6 +1149,41 @@
       </div>
     </section>
 
+    <section class="project-story" aria-labelledby="project-story-title">
+      <div class="project-story__intro"><p class="project-story__eyebrow">A closer look at our work</p><h2 id="project-story-title">The details make a home.</h2><p>Explore real project photos, from finished rooms to the work behind them.</p></div>
+      <div class="project-story__stage" data-project-story>
+        <div class="project-story__slide" data-story-slide><img src="/assets/images/projects/kitchen-island.jpg" alt="Finished kitchen with a large island, light cabinetry and wood floors" width="1290" height="1254" loading="lazy"><div class="project-story__caption"><span>01 / 03 · Kitchen remodeling</span><h3>Space to gather, cook and live.</h3><a href="/kitchen-remodeling-service">Explore kitchen projects →</a></div></div>
+        <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/wood-stairs.jpg" alt="Wood staircase and adjoining hardwood flooring in a completed interior" width="1200" height="1600" loading="lazy"><div class="project-story__caption"><span>02 / 03 · Flooring and stairs</span><h3>Craftsmanship you live with every day.</h3><a href="/flooring">Explore flooring →</a></div></div>
+        <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/norcross-construction-framing-exterior.webp" alt="Residential construction framing in progress" width="1050" height="1400" loading="lazy"><div class="project-story__caption"><span>03 / 03 · Construction progress</span><h3>Every finished home starts with a plan.</h3><a href="/custom-homes">Explore construction →</a></div></div>
+        <div class="project-story__controls"><button type="button" data-story-prev aria-label="Previous project photo">←</button><span data-story-status aria-live="polite">Project photo 1 of 3</span><button type="button" data-story-next aria-label="Next project photo">→</button><button type="button" data-story-pause hidden aria-label="Pause rotating project photos">Pause</button></div>
+      </div>
+      <p class="project-story__more"><a href="/gallery">See more Bento's Group projects →</a></p>
+    </section>
+    <script>
+      (() => {
+        const root = document.querySelector('[data-project-story]');
+        if (!root) return;
+        const slides = [...root.querySelectorAll('[data-story-slide]')];
+        const status = root.querySelector('[data-story-status]');
+        const pause = root.querySelector('[data-story-pause]');
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+        let active = 0, timer;
+        function show(next) {
+          active = (next + slides.length) % slides.length;
+          slides.forEach((slide, i) => { slide.hidden = i !== active; });
+          status.textContent = 'Project photo ' + (active + 1) + ' of ' + slides.length;
+        }
+        function stop() { clearInterval(timer); timer = undefined; pause.textContent = 'Play'; pause.setAttribute('aria-label', 'Play rotating project photos'); }
+        function play() { clearInterval(timer); timer = setInterval(() => show(active + 1), 6500); pause.textContent = 'Pause'; pause.setAttribute('aria-label', 'Pause rotating project photos'); }
+        root.querySelector('[data-story-prev]').addEventListener('click', () => show(active - 1));
+        root.querySelector('[data-story-next]').addEventListener('click', () => show(active + 1));
+        pause.hidden = false;
+        pause.addEventListener('click', () => timer ? stop() : play());
+        reduced.addEventListener('change', () => reduced.matches ? stop() : play());
+        if (reduced.matches) stop(); else play();
+        document.addEventListener('visibilitychange', () => { if (document.hidden) { clearInterval(timer); timer = undefined; } else if (!reduced.matches && pause.textContent === 'Pause') play(); });
+      })();
+    </script>
     <section class="care-discovery" aria-labelledby="care-discovery-title">
       <div class="care-discovery__inner">
         <p class="care-discovery__eyebrow">The home beyond the project</p>
