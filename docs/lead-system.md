@@ -2,6 +2,8 @@
 
 Website inquiries continue through the existing FormSubmit destination. Project cards preserve service and source context. Phone and text clicks measure intent, not completed calls or sales. No CRM or automated follow-up has been activated.
 
+The desktop project-planner button gives visitors a visible, optional path to the estimate form from every public content page. It never blocks navigation and does not identify someone merely because they browse. Contact details are requested only on the estimate form; the planner explicitly says that browsing does not enroll a visitor in marketing. The existing mobile call, text and estimate bar serves the same purpose on smaller screens.
+
 ## Lead tracking
 Copy lead-tracker-template.csv into a private spreadsheet before entering customer information. Never commit completed lead records to this public repository. Assign one owner per inquiry. Record website inquiries and incoming calls/texts. Statuses: New, Contacted, Qualified, Appointment booked, Estimate sent, Won, Lost. Every open lead needs a next follow-up date.
 
