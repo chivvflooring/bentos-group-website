@@ -36,6 +36,22 @@ export default async function subscribe(request) {
   }
 
   try {
+    // An earlier unsubscribe is authoritative. Never reactivate it from a
+    // repeat form submission, even when the browser sends consent again.
+    const existing = await fetch(`https://api.resend.com/contacts/${encodeURIComponent(email)}`, {
+      headers: { Authorization: `Bearer ${key}` }
+    });
+    if (existing.ok) {
+      const contact = await existing.json();
+      if (contact.unsubscribed !== false) return json({ error: 'This address cannot be subscribed through this form' }, 409);
+      const updated = await fetch(`https://api.resend.com/contacts/${encodeURIComponent(email)}/topics`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify([{ id: topicId, subscription: 'opt_in' }])
+      });
+      return updated.ok ? json({ ok: true }) : json({ error: 'Email signup was not confirmed' }, 502);
+    }
+    if (existing.status !== 404) return json({ error: 'Email signup was not confirmed' }, 502);
     const response = await fetch('https://api.resend.com/contacts', {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
