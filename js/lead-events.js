@@ -81,6 +81,54 @@
     }
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addMobileLeadActions, { once: true });
-  else addMobileLeadActions();
+  // Offer an easy next step without blocking content or collecting personal data.
+  // The estimate page handles contact details, consent and provider validation.
+  function addProjectPlanner() {
+    if (document.querySelector('.project-planner') || document.body?.dataset.disableLeadBar === 'true') return;
+    const path = window.location.pathname.toLowerCase().replace(/\.html$/, '');
+    if (/^\/(free-quote|404|admin)(\/|$)/.test(path)) return;
+
+    const planner = document.createElement('aside');
+    planner.className = 'project-planner';
+    planner.setAttribute('aria-label', 'Project planning help');
+    planner.innerHTML = '<button class="project-planner__toggle" type="button" aria-expanded="false" aria-controls="project-planner-panel"><span aria-hidden="true">✦</span> Plan your project</button>' +
+      '<div class="project-planner__panel" id="project-planner-panel" hidden>' +
+      '<button class="project-planner__close" type="button" aria-label="Close project planner">×</button>' +
+      '<p class="project-planner__eyebrow">Not sure where to start?</p>' +
+      '<strong>Tell us what you are planning.</strong>' +
+      '<p>Share your project details when you are ready. Browsing the site does not add you to a marketing list.</p>' +
+      '<a href="/free-quote?source=project-planner">Start my project request</a>' +
+      '<small>Prefer a conversation? <a href="tel:+16785717028">Call Bento’s Group</a></small>' +
+      '</div>';
+    document.body.appendChild(planner);
+
+    const toggle = planner.querySelector('.project-planner__toggle');
+    const panel = planner.querySelector('.project-planner__panel');
+    const close = planner.querySelector('.project-planner__close');
+    function setOpen(open) {
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) close.focus();
+      else toggle.focus();
+    }
+    toggle.addEventListener('click', () => setOpen(panel.hidden));
+    close.addEventListener('click', () => setOpen(false));
+    planner.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !panel.hidden) setOpen(false);
+    });
+
+    if (!document.getElementById('project-planner-style')) {
+      const style = document.createElement('style');
+      style.id = 'project-planner-style';
+      style.textContent = '.project-planner{position:fixed;right:1.25rem;bottom:1.25rem;z-index:105;font-family:Arial,sans-serif}.project-planner__toggle{display:flex;gap:.55rem;align-items:center;padding:.85rem 1.1rem;border:0;border-radius:999px;background:#2c5531;color:#fff;box-shadow:0 6px 24px rgb(0 0 0 / 24%);font-weight:700;cursor:pointer}.project-planner__toggle span{color:#e8c86b}.project-planner__panel{position:absolute;right:0;bottom:calc(100% + .75rem);width:min(22rem,calc(100vw - 2rem));padding:1.35rem;border:1px solid #d8dfd4;border-radius:1rem;background:#fff;color:#1d2a20;box-shadow:0 12px 38px rgb(0 0 0 / 22%)}.project-planner__panel[hidden]{display:none}.project-planner__panel strong{display:block;padding-right:1.5rem;font:700 1.25rem/1.25 Georgia,serif}.project-planner__panel p{margin:.7rem 0 1rem;line-height:1.5}.project-planner__panel>a{display:block;padding:.8rem;border-radius:.35rem;background:#2c5531;color:#fff;font-weight:700;text-align:center;text-decoration:none}.project-planner__panel small{display:block;margin-top:.8rem;text-align:center}.project-planner__panel small a{color:#214126;font-weight:700}.project-planner__eyebrow{margin:0 0 .35rem!important;color:#55715b;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.project-planner__close{position:absolute;top:.55rem;right:.65rem;border:0;background:transparent;color:#344c39;font-size:1.5rem;cursor:pointer}@media(max-width:700px){.project-planner{display:none}}';
+      document.head.appendChild(style);
+    }
+  }
+
+  function addLeadTools() {
+    addMobileLeadActions();
+    addProjectPlanner();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addLeadTools, { once: true });
+  else addLeadTools();
 })();

@@ -37,3 +37,31 @@ test('content pages receive a service-aware mobile lead path',()=>{
  assert.equal(bar.querySelector('a[href^="tel:"]').getAttribute('href'),'tel:+16785717028');
  dom.window.close();
 });
+
+test('content pages receive an optional, accessible desktop project planner',()=>{
+ const dom=new JSDOM('<head></head><body></body>',{url:'https://bentos-group.com/services?email=private@example.com',runScripts:'outside-only'});
+ dom.window.eval(fs.readFileSync('js/lead-events.js','utf8'));
+ dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
+ const planner=dom.window.document.querySelector('.project-planner');
+ const toggle=planner.querySelector('.project-planner__toggle');
+ const panel=planner.querySelector('.project-planner__panel');
+ assert.equal(panel.hidden,true);
+ toggle.click();
+ assert.equal(panel.hidden,false);
+ assert.equal(toggle.getAttribute('aria-expanded'),'true');
+ const quote=new URL(panel.querySelector('a[href^="/free-quote"]').href);
+ assert.equal(quote.searchParams.get('source'),'project-planner');
+ assert.ok(!planner.textContent.includes('private@example.com'));
+ planner.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ assert.equal(panel.hidden,true);
+ dom.window.close();
+});
+
+test('quote page does not add competing lead tools',()=>{
+ const dom=new JSDOM('<head></head><body></body>',{url:'https://bentos-group.com/free-quote',runScripts:'outside-only'});
+ dom.window.eval(fs.readFileSync('js/lead-events.js','utf8'));
+ dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
+ assert.equal(dom.window.document.querySelector('.project-planner'),null);
+ assert.equal(dom.window.document.querySelector('.mobile-lead-actions'),null);
+ dom.window.close();
+});
