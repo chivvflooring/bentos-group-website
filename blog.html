@@ -1195,6 +1195,7 @@
   }
 }
     </script>
+  <link rel="stylesheet" href="/css/interest-signup.css">
 </head>
 
 <body>
@@ -1302,6 +1303,26 @@
       <h2>Need advice for your flooring project?</h2>
       <p>Explore our <a href="./flooring">flooring installation and replacement services</a>, or <a href="./free-quote?service=flooring&amp;source=blog">ask us about your floor</a>.</p>
     </section>
+<section class="interest-signup" aria-labelledby="interest-signup-title">
+  <p class="interest-signup__eyebrow">Ideas for your next project</p>
+  <h2 id="interest-signup-title">Get useful home and floor-care ideas by email.</h2>
+  <p>Choose one topic. We will send occasional care guidance and project ideas from Bento's Group. A project estimate is always available separately.</p>
+  <form action="https://formsubmit.co/charlesbgroup@gmail.com" method="POST" data-interest-signup>
+    <input type="hidden" name="_subject" value="Bento's Group: homeowner email signup">
+    <input type="hidden" name="Source page" value="">
+    <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px" value="">
+    <input type="hidden" name="Consent statement" value="I agree to receive occasional marketing emails from Bento's Group about my selected topic. I can unsubscribe at any time.">
+    <label for="interest-email">Email address<input id="interest-email" name="email" type="email" autocomplete="email" required></label>
+    <fieldset><legend>What interests you most?</legend>
+      <label><input name="Interest" type="radio" value="flooring" required> Flooring</label>
+      <label><input name="Interest" type="radio" value="bathrooms"> Bathrooms</label>
+      <label><input name="Interest" type="radio" value="kitchens"> Kitchens</label>
+      <label><input name="Interest" type="radio" value="home-care"> Home care</label>
+    </fieldset>
+    <label class="interest-signup__consent"><input type="checkbox" name="Email marketing consent" value="Yes" required> I agree to receive occasional marketing emails from Bento's Group about the topic I selected. I can unsubscribe at any time. This is optional and is not required to request an estimate. FormSubmit processes this request.</label>
+    <button type="submit">Send me ideas</button><p role="status" aria-live="polite"></p>
+  </form>
+</section>
   </main>
 
   <button class="chat-fab" aria-label="Open chat">
@@ -1408,6 +1429,7 @@
   <script src="./js/navigation.js"></script>
   <script src="./js/chat.js" type="module"></script>
 <script src="/js/lead-events.js"></script>
+  <script type="module" src="/js/interest-signup.js"></script>
 </body>
 
 </html>

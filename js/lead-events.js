@@ -1,15 +1,20 @@
 // Lead events: send to the configured GA4 property on the production domain.
 (function () {
-  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'generate_lead', 'phone_click', 'text_click']);
-  window.bentosTrack = function (event) {
+  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'generate_lead', 'phone_click', 'text_click', 'interest_signup', 'project_video_play']);
+  const topics = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
+  const leadCategories = new Set(['new-construction', 'site-development', 'renovations', 'kitchens', 'bathrooms', 'flooring', 'other']);
+  window.bentosTrack = function (event, details = {}) {
     if (!allowed.has(event)) return;
     const pathname = window.location.pathname;
     const page = /^\/[a-z0-9/_.-]*$/i.test(pathname) ? pathname : '/';
     window.dataLayer = window.dataLayer || [];
     // Never include names, contact details, project text, query strings or link destinations.
-    window.dataLayer.push({ event, page_path: page });
+    const params = { page_path: page };
+    if (topics.has(details.interest_topic)) params.interest_topic = details.interest_topic;
+    if (event === 'generate_lead' && leadCategories.has(details.lead_category)) params.lead_category = details.lead_category;
+    window.dataLayer.push({ event, ...params });
     if (window.bentosAnalyticsReady && typeof window.gtag === 'function') {
-      window.gtag('event', event, { send_to: 'G-XRBMTBNP58', page_path: page });
+      window.gtag('event', event, { send_to: 'G-XRBMTBNP58', ...params });
       // The Ads conversion imports this GA4 event. The quote form uses AJAX and
       // history.pushState, so its success URL does not trigger a page-load event.
       if (event === 'generate_lead') {
@@ -34,6 +39,11 @@
       } catch (_) { /* Invalid links must not interfere with navigation. */ }
     }
   });
+  document.addEventListener('play', function (event) {
+    if (event.target?.matches?.('video[data-video-topic]')) {
+      window.bentosTrack('project_video_play', { interest_topic: event.target.dataset.videoTopic });
+    }
+  }, true);
 
   // Give every public content page a direct mobile path to call, text, or request an estimate.
   // Pages with a purpose-built action bar keep their existing, more specific version.

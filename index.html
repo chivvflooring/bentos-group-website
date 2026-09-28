@@ -1035,6 +1035,7 @@
   }
 }
 </script>
+  <link rel="stylesheet" href="/css/interest-signup.css">
 </head>
 
 <body>
@@ -1118,6 +1119,10 @@
     .care-discovery a:focus-visible{outline:3px solid #d27528;outline-offset:4px}
   </style>
   <style>
+    .big-projects{padding:clamp(2.5rem,5vw,5rem) 1.25rem;background:#f7f2e9;color:#203b2a}
+    .big-projects__inner{max-width:1120px;margin:auto}.big-projects h2{font-size:clamp(2rem,4vw,3.1rem);line-height:1.15;margin:.4rem 0}.big-projects__inner>p{max-width:75ch;line-height:1.55}
+    .big-projects__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-top:1.6rem}
+    .big-projects article{background:#fff;border:1px solid #e2d5c3;border-radius:14px;padding:1.4rem;box-shadow:0 10px 25px #203b2a0d}.big-projects article span{color:#9b592b;font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em}.big-projects h3{font-size:1.4rem;margin:.6rem 0}.big-projects article p{line-height:1.5}.big-projects a{color:#205a30;font-weight:800;text-underline-offset:3px}
     .project-story{background:#203b2a;color:#fff;padding:clamp(2rem,5vw,4.5rem) 1.25rem}
     .project-story__intro,.project-story__stage,.project-story__more{max-width:1120px;margin:0 auto}
     .project-story__eyebrow{color:#f0ad6c;text-transform:uppercase;letter-spacing:.08em;font-weight:800}
@@ -1133,6 +1138,13 @@
     .project-story__controls button{color:#fff;background:#315e3b;border:1px solid #acd3ae;border-radius:6px;min-width:38px;min-height:36px;cursor:pointer}
     .project-story__controls button:focus-visible,.project-story a:focus-visible{outline:3px solid #f0ad6c;outline-offset:3px}
     .project-story__more{padding-top:1rem}
+    .project-videos{background:#faf8f4;padding:clamp(2rem,5vw,4rem) 1.25rem;color:#203e29}
+    .project-videos__inner{max-width:1120px;margin:auto}.project-videos h2{font-size:clamp(1.7rem,3vw,2.7rem);margin:.35rem 0}
+    .project-videos__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1rem;margin-top:1.4rem}
+    .project-videos article{overflow:hidden;border:1px solid #d6dfd2;border-radius:14px;background:#fff;box-shadow:0 8px 24px #16332112}
+    .project-videos video{display:block;width:100%;aspect-ratio:16/9;background:#18311f;object-fit:cover}
+    .project-videos article div{padding:1rem}.project-videos h3{font-size:1.25rem;margin:0 0 .35rem}.project-videos p{line-height:1.5}
+    .project-videos a{color:#245a31;font-weight:800;text-underline-offset:3px}
     @media(max-width:560px){.project-story__caption{padding-bottom:5.8rem}.project-story__controls{left:0;justify-content:center}.project-story__slide img{height:440px}}
   </style>
   <main id="main-content">
@@ -1146,28 +1158,42 @@
       </div>
       <div class="hero-card">
         <span class="badge">Bento's Group Construction</span>
-        <h1>Beautiful spaces, built for living. <span>Remodeling and construction in North Atlanta.</span></h1>
-        <p class="hero-paragraph">From specialty flooring and remodeling to major renovations and residential construction projects, <strong>Bento’s Group</strong> coordinates planning, materials, skilled trades, project execution, and construction management. Permitting and licensed professional participation are structured according to each project’s scope and applicable requirements.</p>
+        <h1>Build the home you imagine. <span>Custom homes and major renovations in North Atlanta.</span></h1>
+        <p class="hero-paragraph">From land and site planning to a ground-up home or transformative whole-home renovation, <strong>Bento’s Group</strong> helps shape the vision and coordinate planning, materials, skilled trades, project execution, and construction management. Explore site preparation, foundations, framing, kitchens, bathrooms, and the details that make a whole home feel like yours. Permitting and licensed professional participation depend on each project’s scope and applicable requirements.</p>
         <div class="btn-group">
-          <a href="./free-quote.html" class="btn-primary">
+          <a href="/free-quote?service=new-construction&amp;source=home" class="btn-primary">
             <img src="./assets/svgs/request_quote.svg" width="24" height="24" style="width: 24px; height: 24px;" alt="">
-            Get Your Free Quote
+            Discuss Your Project
           </a>
+          <a href="/free-quote?service=full-renovation&amp;source=home" class="btn-dark">Plan a Major Renovation</a>
           <a href="#project-story-title" class="btn-dark">See Our Work</a>
         </div>
         <p class="hero-image-note">Kitchen project photo · island vent covers digitally visualized</p>
       </div>
     </section>
 
+    <section class="big-projects" aria-labelledby="big-projects-title">
+      <div class="big-projects__inner">
+        <p class="project-story__eyebrow">Plan the whole project</p>
+        <h2 id="big-projects-title">The vision starts long before the finishes.</h2>
+        <p>Buying land, preparing a site, developing a residential concept, or reimagining an existing home? Tell us where you are in the process. We can discuss the project scope and the design, civil, permit and trade professionals it will require.</p>
+        <div class="big-projects__grid">
+          <article><span>01 · Ground up</span><h3>Custom homes</h3><p>From lot and plans through site preparation, foundation, structure, systems and interiors.</p><a href="/custom-homes">See our build process →</a></article>
+          <article><span>02 · Transform</span><h3>Major renovations</h3><p>Rework layouts and connected rooms as one cohesive home, including kitchens and baths.</p><a href="/free-quote?service=full-renovation&amp;source=home">Discuss a major renovation →</a></article>
+          <article><span>03 · Develop</span><h3>Land and site infrastructure</h3><p>Planning a townhouse or subdivision project? Share the land, plans and site requirements, including grading, utilities and stormwater. Scope and qualified civil participation are determined from the documents.</p><a href="/free-quote?service=site-development&amp;source=home">Discuss your site →</a></article>
+        </div>
+      </div>
+    </section>
     <section class="project-story" aria-labelledby="project-story-title">
-      <div class="project-story__intro"><p class="project-story__eyebrow">A closer look at our work</p><h2 id="project-story-title">The details make a home.</h2><p>Explore real project photos, from finished rooms to the work behind them.</p></div>
+      <div class="project-story__intro"><p class="project-story__eyebrow">A closer look at our work</p><h2 id="project-story-title">From first framing to the finishing details.</h2><p>See ground-up construction in progress and the finished spaces our team has worked on. Construction photos show work in progress.</p></div>
       <div class="project-story__stage" data-project-story>
-        <div class="project-story__slide" data-story-slide><img src="/assets/images/projects/white-kitchen-vent-cover-visualization.webp" alt="Bright finished kitchen with white cabinets, two islands and wood flooring" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>01 / 05 · Kitchen remodeling</span><h3>A kitchen made for gathering.</h3><p>Island vent cover finish digitally visualized.</p><a href="/kitchen-remodeling-service">Explore kitchen remodeling →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
-        <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/blue-kitchen-cleaned.png" alt="Deep blue kitchen cabinets, white counters and patterned tile flooring" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>02 / 05 · Cabinetry and flooring</span><h3>A bold finish. A room all your own.</h3><a href="/kitchen-remodeling-service">Explore kitchen projects →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
-        <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/black-tile-bathroom-cleaned.png" alt="Bathroom with black stone tile, glass shower and freestanding tub" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>03 / 05 · Bathroom remodeling</span><h3>Every detail changes how a room feels.</h3><a href="/bathroom-remodeling-alpharetta-ga">Explore bathroom remodeling →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
-        <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/gray-tile-shower-cleaned.png" alt="Completed gray mosaic tile shower with brushed brass fixtures and white vanity" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>04 / 05 · Custom tile</span><h3>Thoughtful tile work, down to the niche.</h3><a href="/bathroom-remodeling-alpharetta-ga">Explore bathroom projects →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
-        <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/fireplace-new-cleaned.png" alt="Tall dark stone fireplace wall with modern ring lights and white tile floor" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>05 / 05 · Interior features</span><h3>Make a striking first impression.</h3><a href="/services">Explore remodeling →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
-        <div class="project-story__controls"><button type="button" data-story-prev aria-label="Previous project photo">←</button><span data-story-status aria-live="polite">Project photo 1 of 5</span><button type="button" data-story-next aria-label="Next project photo">→</button><button type="button" data-story-pause hidden aria-label="Pause rotating project photos">Pause</button></div>
+        <div class="project-story__slide" data-story-slide><img src="/assets/images/projects/norcross-two-story-framing.webp" alt="Two-story residential structure in framing, construction in progress" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>01 / 06 · Ground-up construction in progress</span><h3>Imagine the home from the ground up.</h3><a href="/custom-homes">Explore custom homes →</a> · <a href="/free-quote?service=new-construction&amp;source=project-story">Start a conversation →</a></div></div>
+        <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/white-kitchen-vent-cover-visualization.webp" alt="Bright finished kitchen with white cabinets, two islands and wood flooring" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>02 / 06 · Kitchen remodeling</span><h3>A kitchen made for gathering.</h3><p>Island vent cover finish digitally visualized.</p><a href="/kitchen-remodeling-service">Explore kitchen remodeling →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
+        <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/blue-kitchen-staged-room-concept.webp" alt="Visualization of deep blue cabinetry with warmer walls, decor, white counters and patterned tile flooring" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>03 / 06 · Custom cabinetry</span><h3>Bold cabinetry, a warmer vision.</h3><p>Proposed wall paint, tile grout, outlet finishes and adjoining-room furniture are digitally visualized; original project cabinetry and layout retained.</p><a href="/kitchen-remodeling-service">Explore kitchen projects →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
+        <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/black-tile-bathroom-cleaned.png" alt="Bathroom with black stone tile, glass shower and freestanding tub" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>04 / 06 · Bathroom remodeling</span><h3>Every detail changes how a room feels.</h3><a href="/bathroom-remodeling-alpharetta-ga">Explore bathroom remodeling →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
+        <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/gray-tile-shower-cleaned.png" alt="Completed gray mosaic tile shower with brushed brass fixtures and white vanity" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>05 / 06 · Custom tile</span><h3>Thoughtful tile work, down to the niche.</h3><a href="/bathroom-remodeling-alpharetta-ga">Explore bathroom projects →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
+        <div class="project-story__slide" data-story-slide hidden><img src="/assets/images/projects/fireplace-new-cleaned.png" alt="Tall dark stone fireplace wall with modern ring lights and white tile floor" width="1456" height="1088" loading="lazy" decoding="async"><div class="project-story__caption"><span>06 / 06 · Interior features</span><h3>Make a striking first impression.</h3><a href="/services">Explore remodeling →</a> · <a href="/free-quote?source=project-story">Discuss your project →</a></div></div>
+        <div class="project-story__controls"><button type="button" data-story-prev aria-label="Previous project photo">←</button><span data-story-status aria-live="polite">Project photo 1 of 6</span><button type="button" data-story-next aria-label="Next project photo">→</button><button type="button" data-story-pause hidden aria-label="Pause rotating project photos">Pause</button></div>
       </div>
       <p class="project-story__more"><a href="/gallery">See more Bento's Group projects →</a></p>
     </section>
@@ -1196,6 +1222,19 @@
         document.addEventListener('visibilitychange', () => { if (document.hidden) { clearInterval(timer); timer = undefined; } else if (!reduced.matches && pause.textContent === 'Pause') play(); });
       })();
     </script>
+    <section class="project-videos" aria-labelledby="project-videos-title">
+      <div class="project-videos__inner">
+        <p class="project-story__eyebrow">Real work, in a few seconds</p>
+        <h2 id="project-videos-title">A home takes shape, one decision at a time.</h2>
+        <p>These short photo stories bring together pictures from different Bento's Group projects. Tap play to explore a topic, then choose what you would like to learn about.</p>
+        <div class="project-videos__grid">
+          <article><video controls playsinline preload="none" poster="/assets/images/projects/norcross-two-story-framing.webp" data-video-topic="new-construction" aria-label="Ground-up construction project photo story"><source src="/assets/videos/new-construction-projects.mp4" type="video/mp4">Your browser does not support this video.</video><div><h3>Ground-up construction</h3><p>Real framing and build progress from a residential project.</p><a href="/custom-homes">Explore custom homes →</a></div></article>
+          <article><video controls playsinline preload="none" poster="/assets/images/projects/herringbone-floor-progress-cleaned.png" data-video-topic="flooring" aria-label="Flooring project photo story"><source src="/assets/videos/flooring-projects.mp4" type="video/mp4">Your browser does not support this video.</video><div><h3>Flooring details</h3><p>Patterns, tile work, and finished wood floors.</p><a href="/flooring">Explore flooring →</a></div></article>
+          <article><video controls playsinline preload="none" poster="/assets/images/projects/gray-tile-shower-cleaned.png" data-video-topic="bathrooms" aria-label="Bathroom project photo story"><source src="/assets/videos/bathroom-projects.mp4" type="video/mp4">Your browser does not support this video.</video><div><h3>Bathroom details</h3><p>Tile craftsmanship and completed bathrooms.</p><a href="/bathroom-remodeling-alpharetta-ga">Explore bathrooms →</a></div></article>
+          <article><video controls playsinline preload="none" poster="/assets/images/projects/white-kitchen-island-cleaned.png" data-video-topic="kitchens" aria-label="Kitchen project photo story"><source src="/assets/videos/kitchen-projects.mp4" type="video/mp4">Your browser does not support this video.</video><div><h3>Kitchen details</h3><p>Cabinetry, counters, and inviting finished spaces.</p><a href="/kitchen-remodeling-service">Explore kitchens →</a></div></article>
+        </div>
+      </div>
+    </section>
     <section class="client-feedback" aria-labelledby="client-feedback-title">
       <div class="client-feedback__inner">
         <p class="client-feedback__eyebrow">Word of mouth matters</p>
@@ -1208,6 +1247,29 @@
         </div>
       </div>
     </section>
+<section class="interest-signup" aria-labelledby="interest-signup-title">
+  <p class="interest-signup__eyebrow">Ideas for your next project</p>
+  <h2 id="interest-signup-title">Explore the possibilities for your next home project.</h2>
+  <p>Choose what you are planning. We will send occasional project ideas and guidance from Bento's Group. Requesting an estimate is a separate step.</p>
+  <form action="https://formsubmit.co/charlesbgroup@gmail.com" method="POST" data-interest-signup>
+    <input type="hidden" name="_subject" value="Bento's Group: homeowner email signup">
+    <input type="hidden" name="Source page" value="">
+    <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px" value="">
+    <input type="hidden" name="Consent statement" value="I agree to receive occasional marketing emails from Bento's Group about my selected topic. I can unsubscribe at any time.">
+    <label for="interest-email">Email address<input id="interest-email" name="email" type="email" autocomplete="email" required></label>
+    <fieldset><legend>What interests you most?</legend>
+      <label><input name="Interest" type="radio" value="new-construction" required> New construction</label>
+      <label><input name="Interest" type="radio" value="renovations"> Whole-home renovation</label>
+      <label><input name="Interest" type="radio" value="site-development"> Land and site development</label>
+      <label><input name="Interest" type="radio" value="flooring"> Flooring</label>
+      <label><input name="Interest" type="radio" value="bathrooms"> Bathrooms</label>
+      <label><input name="Interest" type="radio" value="kitchens"> Kitchens</label>
+      <label><input name="Interest" type="radio" value="home-care"> Home care</label>
+    </fieldset>
+    <label class="interest-signup__consent"><input type="checkbox" name="Email marketing consent" value="Yes" required> I agree to receive occasional marketing emails from Bento's Group about the topic I selected. I can unsubscribe at any time. This is optional and is not required to request an estimate. FormSubmit processes this request.</label>
+    <button type="submit">Send me ideas</button><p role="status" aria-live="polite"></p>
+  </form>
+</section>
     <section class="care-discovery" aria-labelledby="care-discovery-title">
       <div class="care-discovery__inner">
         <p class="care-discovery__eyebrow">The home beyond the project</p>
@@ -1888,6 +1950,7 @@
     }
   </script>
 <script src="/js/lead-events.js"></script>
+  <script type="module" src="/js/interest-signup.js"></script>
 </body>
 
 </html>
