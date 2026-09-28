@@ -98,10 +98,11 @@
                     </div>
                 </div>
                 <div class="input-group full-row"><label class="tech-label">Services Needed</label><div class="services-grid">
-                    <label class="checkbox-item"><input type="checkbox" name="Service" value="New Construction">New Construction</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Home Addition">Home Addition</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Roofing">Roofing</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Full Renovation">Full Renovation</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Kitchen Remodeling">Kitchen Remodeling</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Bathroom Remodeling">Bathroom Remodeling</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Flooring">Flooring Solutions</label><label class="checkbox-item"><input type="checkbox" name="Service" value="outdoor">Pavers &amp; Hardscaping</label><label class="checkbox-item"><input type="checkbox" name="Service" value="painting">Painting</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Handyman / Repair">Handyman / Repairs</label>
+                    <label class="checkbox-item"><input type="checkbox" name="Service" value="New Construction">New Construction</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Site Development">Land / Site Development</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Home Addition">Home Addition</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Roofing">Roofing</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Full Renovation">Full Renovation</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Kitchen Remodeling">Kitchen Remodeling</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Bathroom Remodeling">Bathroom Remodeling</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Flooring">Flooring Solutions</label><label class="checkbox-item"><input type="checkbox" name="Service" value="outdoor">Pavers &amp; Hardscaping</label><label class="checkbox-item"><input type="checkbox" name="Service" value="painting">Painting</label><label class="checkbox-item"><input type="checkbox" name="Service" value="Handyman / Repair">Handyman / Repairs</label>
                 </div></div>
                 <div class="input-group full-row"><label for="notes" class="tech-label">Project Description</label><textarea id="notes" name="Project Description" class="form-control" placeholder="Tell us about your vision, specific changes, or any concerns..."></textarea></div>
                 <div class="input-group"><label for="budget" class="tech-label">Estimated Budget</label><select id="budget" name="Estimated Budget" class="form-control"><option value="" selected disabled>Select range...</option><option>Under $5,000</option><option>$5,000–$20,000</option><option>$20,000–$50,000</option><option>$50,000–$150,000</option><option>$150,000–$300,000</option><option>$300,000–$700,000</option><option>$700,000–$2,000,000</option><option>$2,000,000+</option><option>Not sure / Need an estimate</option></select></div>
+                <div class="input-group"><label for="project-stage" class="tech-label">Project Stage</label><select id="project-stage" name="Project Stage" class="form-control"><option value="">Select if known...</option><option>Searching for land</option><option>Own land, exploring a concept</option><option>Survey or plans underway</option><option>Plans ready, permits or bids next</option><option>Ready to begin construction</option><option>Existing home renovation</option></select></div>
                 <div class="input-group"><label for="financing-interest" class="tech-label">Financing Interest</label><select id="financing-interest" name="Financing Interest" class="form-control"><option value="" selected>Choose if applicable...</option><option>Yes</option><option>Maybe</option><option>No</option></select><small>Interest only—not a financing application. Bento’s Group is not a lender, and no financing provider is currently enabled.</small></div>
                 <div class="input-group"><label for="timeline" class="tech-label">Ideal Timeline</label><select id="timeline" name="Timeline" class="form-control"><option value="" selected>Select your timeline...</option><option>Immediate / Urgent</option><option>Within 1 month</option><option>Planning phase (3+ months)</option></select></div>
             </div></fieldset>
@@ -126,7 +127,7 @@
       (function prepareQuoteContext() {
         const form = document.getElementById('reformaForm');
         const params = new URLSearchParams(window.location.search);
-        const services = {flooring: 'Flooring', kitchen: 'Kitchen Remodeling', bathroom: 'Bathroom Remodeling', 'new-construction': 'New Construction', 'home-addition': 'Home Addition', roofing: 'Roofing', painting: 'painting'};
+        const services = {flooring: 'Flooring', kitchen: 'Kitchen Remodeling', bathroom: 'Bathroom Remodeling', 'new-construction': 'New Construction', 'site-development': 'Site Development', 'full-renovation': 'Full Renovation', 'home-addition': 'Home Addition', roofing: 'Roofing', painting: 'painting'};
         const cities = {roswell: 'Roswell, GA', alpharetta: 'Alpharetta, GA', 'johns-creek': 'Johns Creek, GA', cumming: 'Cumming, GA', 'sandy-springs': 'Sandy Springs, GA', dunwoody: 'Dunwoody, GA', buckhead: 'Buckhead, Atlanta, GA', atlanta: 'Atlanta, GA', marietta: 'Marietta, GA', woodstock: 'Woodstock, GA', acworth: 'Acworth, GA', milton: 'Milton, GA'};
         const pages = {gallery: "/gallery",flooring: '/flooring', roofing: '/roofing', painting: '/painting', 'custom-homes': '/custom-homes', home: '/', contact: '/contact', 'roswell-bathroom': '/bathroom-remodeling-roswell-ga', 'alpharetta-kitchen': '/kitchen-remodeling-alpharetta-ga', 'supplier-showroom': '/contact#supplier-showroom', 'johns-creek-flooring': '/flooring-solutions-johns-creek-ga', 'cumming-flooring': '/flooring-solutions-cumming-ga', 'johns-creek-construction': '/new-construction-johns-creek-ga', 'cumming-construction': '/new-construction-cumming-ga', 'google-business-flooring': '/flooring', 'facebook-flooring': '/flooring', 'instagram-flooring': '/flooring', 'nextdoor-flooring': '/flooring'};
         const campaigns = {'google-business-flooring': 'Google Business Profile – Flooring', 'facebook-flooring': 'Facebook – Flooring', 'instagram-flooring': 'Instagram – Flooring', 'nextdoor-flooring': 'Nextdoor – Flooring'};
@@ -154,8 +155,10 @@
         if (service) {
           const checkbox = Array.from(form.querySelectorAll('input[name="Service"]')).find(item => item.value === service);
           if (checkbox) { checkbox.checked = true; checkbox.defaultChecked = true; }
-          document.querySelector('h1').textContent = key === 'new-construction' ? 'Custom Home Project Inquiry' : key === 'painting' ? 'Painting Estimate' : service + ' Estimate';
+          document.querySelector('h1').textContent = key === 'new-construction' ? 'Custom Home Project Inquiry' : key === 'site-development' ? 'Land and Site Project Inquiry' : key === 'full-renovation' ? 'Major Renovation Project Inquiry' : key === 'painting' ? 'Painting Estimate' : service + ' Estimate';
           const notes = document.getElementById('notes');
+          if (key === 'site-development') notes.placeholder = 'Tell us about the property, lot count or concept, survey/civil plans, grading, utilities, stormwater and entitlement stage. We will discuss the role and scope.';
+          if (key === 'full-renovation') notes.placeholder = 'Tell us which areas of the home you would like to transform, your project timeline, and whether you have plans or a design team.';
           if (key === 'new-construction') notes.placeholder = 'Tell us about your lot or location, plans, approximate home size, and project stage. We will discuss scope and next steps.';
           if (key === 'painting') notes.placeholder = 'Interior, exterior, or both? Tell us about rooms or surfaces, preparation and repairs, and your preferred timing.';
           if (key === 'flooring') {
@@ -231,7 +234,7 @@
             if (!response.ok) throw new Error('HTTP ' + response.status);
             const result = await response.json();
             if (result.success !== true && result.success !== 'true') throw new Error('Request not accepted');
-            window.bentosTrack?.('generate_lead');
+            window.bentosTrack?.('generate_lead', { lead_category: window.bentosLeadCategory?.(form) || 'other' });
             markQuoteSuccess();
             status.textContent = '';
             modal.style.display = 'flex';
@@ -249,6 +252,15 @@
         });
       });
     </script>
+<script>
+window.bentosLeadCategory = function (form) {
+  const values = new Set(Array.from(form.querySelectorAll('input[name="Service"]:checked'), input => input.value));
+  for (const [value, category] of [['Site Development', 'site-development'], ['New Construction', 'new-construction'], ['Full Renovation', 'renovations'], ['Kitchen Remodeling', 'kitchens'], ['Bathroom Remodeling', 'bathrooms'], ['Flooring', 'flooring']]) {
+    if (values.has(value)) return category;
+  }
+  return 'other';
+};
+</script>
 <script src="/js/lead-events.js"></script>
 </body>
 </html>

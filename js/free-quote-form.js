@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
       formStatus.dataset.state = "processing";
       window.bentosTrack?.("estimate_form_attempt");
       await sendFormSubmit(form.action, new FormData(form));
-      window.bentosTrack?.("generate_lead");
+      window.bentosTrack?.("generate_lead", { lead_category: window.bentosLeadCategory?.(form) || "other" });
       markQuoteSuccess();
       formStatus.textContent = "";
       successModal.style.display = "flex";
