@@ -42,3 +42,21 @@ test('flooring campaign source is preserved without accepting arbitrary labels',
  assert.equal(untrusted.window.document.querySelector('input[name="Campaign Source"]'),null);
  untrusted.window.close();
 });
+
+
+test('homepage and planning estimate links retain their actual source page', () => {
+ for (const [page, selector, source] of [
+  ['index.html', 'a[href*="source=project-story"]', '/'],
+  ['index.html', 'a[href*="source=home-new-construction"]', '/'],
+  ['index.html', 'a[href*="source=home-care"]', '/'],
+  ['services.html', 'a[href*="source=services-planning"]', '/services'],
+ ]) {
+  const landing = new JSDOM(fs.readFileSync(page, 'utf8'), {url: `https://bentos-group.com/${page}`});
+  const href = landing.window.document.querySelector(selector)?.href;
+  assert.ok(href, `${page} has a matching quote link`);
+  const quote = new JSDOM(fs.readFileSync('free-quote.html', 'utf8'), {url: href, runScripts: 'outside-only'});
+  for (const script of quote.window.document.querySelectorAll('script:not([src])')) quote.window.eval(script.textContent);
+  assert.equal(quote.window.document.querySelector('input[name="Inquiry Source Page"]').value, source);
+  quote.window.close(); landing.window.close();
+ }
+});
