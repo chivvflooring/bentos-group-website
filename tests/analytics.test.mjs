@@ -25,6 +25,41 @@ test('preview domains do not send analytics',()=>{
  dom.window.close();
 });
 
+test('cookie choice defaults to denied and can be changed later',()=>{
+ const dom=new JSDOM('<head></head><body></body>',{url:'https://bentos-group.com/',runScripts:'outside-only'});
+ const w=dom.window;
+ const script=fs.readFileSync('js/analytics.js','utf8');
+ w.eval(script);
+ w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
+ const commands=w.dataLayer.filter(x=>x[0]);
+ assert.equal(commands[0][0],'consent');
+ assert.equal(commands[0][1],'default');
+ assert.equal(commands[0][2].analytics_storage,'denied');
+ assert.equal(commands[0][2].ad_storage,'denied');
+ assert.equal(w.document.querySelectorAll('.bentos-cookie-banner').length,1);
+ w.document.querySelector('[data-choice="accept"]').click();
+ assert.equal(w.localStorage.getItem('bentos_cookie_choice'),'accept');
+ assert.equal(w.dataLayer.at(-1)[1],'update');
+ assert.equal(w.dataLayer.at(-1)[2].analytics_storage,'granted');
+ assert.equal(w.dataLayer.at(-1)[2].ad_personalization,'denied');
+ w.document.querySelector('.bentos-cookie-settings').click();
+ w.document.querySelector('[data-choice="reject"]').click();
+ assert.equal(w.localStorage.getItem('bentos_cookie_choice'),'reject');
+ assert.equal(w.dataLayer.at(-1)[2].analytics_storage,'denied');
+ dom.window.close();
+});
+
+test('stored cookie rejection remains denied on return',()=>{
+ const dom=new JSDOM('<head></head><body></body>',{url:'https://bentos-group.com/',runScripts:'outside-only'});
+ dom.window.localStorage.setItem('bentos_cookie_choice','reject');
+ dom.window.eval(fs.readFileSync('js/analytics.js','utf8'));
+ dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
+ assert.equal(dom.window.dataLayer[0][2].analytics_storage,'denied');
+ assert.equal(dom.window.document.querySelector('.bentos-cookie-banner'),null);
+ assert.ok(dom.window.document.querySelector('.bentos-cookie-settings'));
+ dom.window.close();
+});
+
 test('content pages receive a service-aware mobile lead path',()=>{
  const dom=new JSDOM('<head></head><body></body>',{url:'https://bentos-group.com/bathroom-remodeling-alpharetta-ga',runScripts:'outside-only'});
  dom.window.eval(fs.readFileSync('js/lead-events.js','utf8'));
