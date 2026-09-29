@@ -2,6 +2,22 @@ import { JSDOM } from 'jsdom';
 import fs from 'node:fs'; import assert from 'node:assert/strict';
 (async()=>{
  const helper=await import(process.cwd()+'/js/form-submit.js');
+ {
+  const dom=new JSDOM(fs.readFileSync('free-quote.html','utf8'),{url:'http://localhost/free-quote.html',runScripts:'outside-only'});
+  const w=dom.window; await new Promise(r=>w.addEventListener('load',r));
+  w.HTMLElement.prototype.scrollIntoView=()=>{};
+  w.createSubmissionGuard=helper.createSubmissionGuard;
+  w.sendFormSubmit=()=>{throw new Error('invalid form must not submit')};
+  w.eval(fs.readFileSync('js/free-quote-form.js','utf8').replace(/^import .*;\n/,''));
+  w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
+  w.document.querySelector('#reformaForm').dispatchEvent(new w.Event('submit',{cancelable:true,bubbles:true}));
+  const first=w.document.querySelector('#client-name');
+  assert.equal(w.document.activeElement,first);
+  assert.equal(first.getAttribute('aria-invalid'),'true');
+  assert.equal(first.getAttribute('aria-describedby'),'client-name-error');
+  assert.equal(w.document.querySelector('#client-name-error').className,'error-message');
+  dom.window.close();
+ }
  for(const moduleEnabled of [true,false]) for(const accepted of [true,false]) {
   const dom=new JSDOM(fs.readFileSync('free-quote.html','utf8'),{url:'http://localhost/free-quote.html?service=flooring&city=johns-creek&appointment=showroom&source=johns-creek-flooring',runScripts:'outside-only'});
   const w=dom.window; await new Promise(r=>w.addEventListener('load',r));
@@ -43,5 +59,5 @@ import fs from 'node:fs'; import assert from 'node:assert/strict';
   } else { assert.equal(d.querySelector('#client-name').value,'Test Homeowner'); assert.equal(d.querySelector('.btn-submit').disabled,false); }
   dom.window.close();
  }
- console.log('PASS: main + fallback, one request, accepted/rejected responses, preserved failure entries, context, modal reset, privacy.');
+ console.log('PASS: accessible validation, main + fallback, one request, accepted/rejected responses, preserved failure entries, context, modal reset, privacy.');
 })();
