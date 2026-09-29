@@ -16,6 +16,8 @@ Count actual inquiries excluding tests, qualified leads, appointments, estimates
 ## Measurement
 GA4: G-XRBMTBNP58. Confirm generate_lead is marked as a key event in the account. Keep estimate_cta_click and estimate_form_attempt separate. Existing tests guard successful-response-only lead recording and duplicate submission prevention. Verify phone/text links on a phone without sending messages. Clearly label any authorized test form submissions.
 
+The production site now shows a choice for optional analytics and advertising cookies. Google Consent Mode defaults storage to denied before the Google tag loads; accepted choices grant analytics and ad storage, while rejection keeps them denied. Ad personalization and user-data consent stay denied. The choice is saved locally and can be reopened through Cookie settings. This choice is separate from the email marketing checkbox and does not reveal visitors' contact details. Check both accept and reject paths with Google Tag Assistant after deployment; GA4 reports may contain limited cookieless measurement when storage is denied.
+
 ## Acquisition
 Priority pages: Alpharetta kitchen and Roswell bathroom, based on the September 16 Search Console export. Share relevant service/gallery links with existing contacts. Captions describe visible features without assigning cities or claiming a full-remodel scope. Photo-to-city mapping for Buckhead, Sandy Springs and Alpharetta remains pending.
 
