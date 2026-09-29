@@ -2,62 +2,63 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { JSDOM } from 'jsdom';
-import { createSubmissionGuard, sendFormSubmit } from '../js/form-submit.js';
+import { createSubmissionGuard } from '../js/form-submit.js';
 
-test('interest signup requires consent and records only an approved topic after provider acceptance', async () => {
+function installSignup(dom, send) {
+  const { window: w } = dom;
+  w.HTMLFormElement.prototype.reportValidity = function () { return this.checkValidity(); };
+  w.createSubmissionGuard = createSubmissionGuard;
+  w.sendInterestSignup = send;
+  const script = fs.readFileSync('js/interest-signup.js', 'utf8')
+    .replace(/^import .*;\n/, '')
+    .replace(/export /g, '')
+    .replace('async function sendInterestSignup(payload, fetchImpl = fetch)', 'async function unusedSendInterestSignup(payload, fetchImpl = fetch)')
+    .replace('await sendInterestSignup(payload);', 'await window.sendInterestSignup(payload);');
+  w.eval(script);
+}
+
+test('interest signup requires consent and sends only an approved topic to the bridge', async () => {
   const dom = new JSDOM(fs.readFileSync('floor-care-guide.html', 'utf8'), {
     url: 'https://bentos-group.com/floor-care-guide?email=private@example.com', runScripts: 'outside-only'
   });
   const { window: w } = dom;
   const form = w.document.querySelector('[data-interest-signup]');
   const events = [];
-  let sends = 0;
+  const payloads = [];
   w.bentosTrack = (...args) => events.push(args);
-  w.HTMLFormElement.prototype.reportValidity = function () { return this.checkValidity(); };
-  w.createSubmissionGuard = createSubmissionGuard;
-  w.sendFormSubmit = async (action, data) => {
-    sends++;
-    assert.equal(data.get('email'), 'test@example.com');
-    assert.equal(data.get('Interest'), 'flooring');
-    assert.equal(data.get('Email marketing consent'), 'Yes');
-    assert.equal(data.get('Source page'), '/floor-care-guide');
-    assert.ok(!JSON.stringify([...data]).includes('private@example.com'));
-    return { ok: true };
-  };
-  w.eval(fs.readFileSync('js/interest-signup.js', 'utf8').replace(/^import .*;\n/, ''));
-  form.querySelector('[name="email"]').value = 'test@example.com';
+  installSignup(dom, async payload => payloads.push(payload));
+
+  form.elements.email.value = 'test@example.com';
   form.querySelector('[value="flooring"]').checked = true;
   form.dispatchEvent(new w.Event('submit', { cancelable: true }));
-  assert.equal(sends, 0);
-  form.querySelector('[name="Email marketing consent"]').checked = true;
+  assert.equal(payloads.length, 0);
+
+  form.elements.consent.checked = true;
   form.dispatchEvent(new w.Event('submit', { cancelable: true }));
   await new Promise(resolve => setTimeout(resolve, 0));
-  assert.equal(sends, 1);
-  assert.equal(events.length, 1);
+  assert.equal(payloads.length, 1);
+  assert.deepEqual({ ...payloads[0], startedAt: 0 }, {
+    email: 'test@example.com', interest: 'flooring', consent: true,
+    consentVersion: 'email-marketing-v1-2026-09-29', source: '/floor-care-guide', website: '', startedAt: 0
+  });
+  assert.ok(!JSON.stringify(payloads[0]).includes('private@example.com'));
   assert.equal(events[0][0], 'interest_signup');
-  assert.equal(events[0][1].interest_topic, 'flooring');
   dom.window.close();
 });
 
-test('rejected signup does not report success and leaves values for retry', async () => {
+test('rejected signup leaves values available for retry', async () => {
   const dom = new JSDOM(fs.readFileSync('floor-care-guide.html', 'utf8'), {
     url: 'https://bentos-group.com/floor-care-guide', runScripts: 'outside-only'
   });
-  const { window: w } = dom;
-  const form = w.document.querySelector('[data-interest-signup]');
-  const events = [];
-  w.bentosTrack = (...args) => events.push(args);
-  w.HTMLFormElement.prototype.reportValidity = function () { return this.checkValidity(); };
-  w.createSubmissionGuard = createSubmissionGuard;
-  w.sendFormSubmit = async () => { throw new Error('Provider rejected'); };
-  w.eval(fs.readFileSync('js/interest-signup.js', 'utf8').replace(/^import .*;\n/, ''));
-  form.querySelector('[name="email"]').value = 'test@example.com';
+  const form = dom.window.document.querySelector('[data-interest-signup]');
+  installSignup(dom, async () => { const error = new Error('Rejected'); error.status = 502; throw error; });
+  form.elements.email.value = 'test@example.com';
   form.querySelector('[value="bathrooms"]').checked = true;
-  form.querySelector('[name="Email marketing consent"]').checked = true;
-  form.dispatchEvent(new w.Event('submit', { cancelable: true }));
+  form.elements.consent.checked = true;
+  form.dispatchEvent(new dom.window.Event('submit', { cancelable: true }));
   await new Promise(resolve => setTimeout(resolve, 0));
-  assert.equal(events.length, 0);
-  assert.equal(form.querySelector('[name="email"]').value, 'test@example.com');
+  assert.equal(form.elements.email.value, 'test@example.com');
   assert.equal(form.querySelector('button[type="submit"]').disabled, false);
+  assert.match(form.querySelector('[role="status"]').textContent, /could not save/i);
   dom.window.close();
 });

@@ -1,29 +1,57 @@
-import { createSubmissionGuard, sendFormSubmit } from './form-submit.js';
+import { createSubmissionGuard } from './form-submit.js';
 
-const topics = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
+export const INTEREST_TOPICS = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
+
+export async function sendInterestSignup(payload, fetchImpl = fetch) {
+  const response = await fetchImpl('/.netlify/functions/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  let result = {};
+  try { result = await response.json(); } catch { /* The status still determines the user-facing result. */ }
+  if (!response.ok) {
+    const error = new Error(result.error || 'Signup request was not accepted.');
+    error.status = response.status;
+    throw error;
+  }
+  return result;
+}
 
 document.querySelectorAll('[data-interest-signup]').forEach(form => {
   const guard = createSubmissionGuard();
   const status = form.querySelector('[role="status"]');
   const button = form.querySelector('button[type="submit"]');
-  const source = form.querySelector('[name="Source page"]');
-  source.value = location.pathname;
+  const startedAt = Date.now();
 
   form.addEventListener('submit', async event => {
     event.preventDefault();
-    if (form.elements._honey?.value) return;
     if (!form.reportValidity() || !guard.begin()) return;
-    const topic = form.querySelector('[name="Interest"]:checked')?.value;
-    if (!topics.has(topic)) { guard.finish(); return; }
+    const topic = form.querySelector('[name="interest"]:checked')?.value;
+    if (!INTEREST_TOPICS.has(topic)) { guard.finish(); return; }
+
+    const payload = {
+      email: form.elements.email.value.trim(),
+      interest: topic,
+      consent: form.elements.consent.checked,
+      consentVersion: form.elements.consent_version.value,
+      source: location.pathname,
+      website: form.elements.website.value,
+      startedAt
+    };
+
     button.disabled = true;
-    status.textContent = 'Sending your request…';
+    status.textContent = 'Saving your signup…';
     try {
-      await sendFormSubmit(form.action, new FormData(form));
+      await sendInterestSignup(payload);
       form.reset();
-      status.textContent = 'Thank you. We received your request to hear about ' + topic.replace('-', ' ') + '. You can unsubscribe from future emails at any time.';
+      status.textContent = 'Thank you. Your email signup was saved. You can unsubscribe from every email.';
       window.bentosTrack?.('interest_signup', { interest_topic: topic });
-    } catch (_) {
-      status.textContent = 'We could not save your request. Please try again, or email charlesbgroup@gmail.com.';
+    } catch (error) {
+      status.textContent = error.status === 429
+        ? 'Please wait a moment before trying again.'
+        : 'We could not save your signup. Your entries are still here; please try again later.';
     } finally {
       button.disabled = false;
       guard.finish();

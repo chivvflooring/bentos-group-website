@@ -1307,19 +1307,17 @@
   <p class="interest-signup__eyebrow">Ideas for your next project</p>
   <h2 id="interest-signup-title">Get useful home and floor-care ideas by email.</h2>
   <p>Choose one topic. We will send occasional care guidance and project ideas from Bento's Group. A project estimate is always available separately.</p>
-  <form action="https://formsubmit.co/charlesbgroup@gmail.com" method="POST" data-interest-signup>
-    <input type="hidden" name="_subject" value="Bento's Group: homeowner email signup">
-    <input type="hidden" name="Source page" value="">
-    <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px" value="">
-    <input type="hidden" name="Consent statement" value="I agree to receive occasional marketing emails from Bento's Group about my selected topic. I can unsubscribe at any time.">
+  <form action="/.netlify/functions/subscribe" method="POST" data-interest-signup>
+    <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px" value="">
+    <input type="hidden" name="consent_version" value="email-marketing-v1-2026-09-29">
     <label for="interest-email">Email address<input id="interest-email" name="email" type="email" autocomplete="email" required></label>
     <fieldset><legend>What interests you most?</legend>
-      <label><input name="Interest" type="radio" value="flooring" required> Flooring</label>
-      <label><input name="Interest" type="radio" value="bathrooms"> Bathrooms</label>
-      <label><input name="Interest" type="radio" value="kitchens"> Kitchens</label>
-      <label><input name="Interest" type="radio" value="home-care"> Home care</label>
+      <label><input name="interest" type="radio" value="flooring" required> Flooring</label>
+      <label><input name="interest" type="radio" value="bathrooms"> Bathrooms</label>
+      <label><input name="interest" type="radio" value="kitchens"> Kitchens</label>
+      <label><input name="interest" type="radio" value="home-care"> Home care</label>
     </fieldset>
-    <label class="interest-signup__consent"><input type="checkbox" name="Email marketing consent" value="Yes" required> I agree to receive occasional marketing emails from Bento's Group about the topic I selected. I can unsubscribe at any time. This is optional and is not required to request an estimate. FormSubmit processes this request.</label>
+    <label class="interest-signup__consent"><input type="checkbox" name="consent" value="true" required> I agree to receive occasional marketing emails from Bento's Group about the topic I selected. I can unsubscribe at any time. This is optional and is not required to request an estimate. Resend processes and stores your email subscription.</label>
     <button type="submit">Send me ideas</button><p role="status" aria-live="polite"></p>
   </form>
 </section>
