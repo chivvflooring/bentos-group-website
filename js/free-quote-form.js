@@ -49,20 +49,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function setError(input, message) {
     if (!input) return;
+    const errorId = `${input.id}-error`;
     let errorElem = input.nextElementSibling;
     if (errorElem && errorElem.classList.contains("error-message")) {
       errorElem.textContent = message;
     } else {
       const span = document.createElement("span");
+      span.id = errorId;
       span.className = "error-message";
       span.style.cssText = "color: #b91c1c; font-family: 'JetBrains Mono'; font-size: 0.75rem; margin-top: 4px; display: block; font-weight: bold;";
       span.textContent = `> ERR: ${message}`;
       input.insertAdjacentElement("afterend", span);
     }
+    input.setAttribute("aria-invalid", "true");
+    input.setAttribute("aria-describedby", errorId);
   }
 
   function clearErrors() {
     document.querySelectorAll(".error-message").forEach((elem) => elem.remove());
+    form.querySelectorAll('[aria-invalid="true"]').forEach((input) => {
+      input.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-describedby");
+    });
   }
 
   function validateForm(data) {
@@ -98,7 +106,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const errors = validateForm(data);
     if (errors.length > 0) {
       errors.forEach(({ field, message }) => setError(document.getElementById(field), message));
-      document.querySelector(".error-message").scrollIntoView({ behavior: "smooth", block: "center" });
+      const firstInvalid = document.getElementById(errors[0].field);
+      firstInvalid.focus();
+      firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 

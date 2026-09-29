@@ -100,3 +100,19 @@ test('quote page does not add competing lead tools',()=>{
  assert.equal(dom.window.document.querySelector('.mobile-lead-actions'),null);
  dom.window.close();
 });
+
+test('every top-level phone and text link is instrumented and keeps the approved number',()=>{
+ const pages=fs.readdirSync('.').filter(name=>name.endsWith('.html'));
+ let actionCount=0;
+ for(const page of pages){
+  const html=fs.readFileSync(page,'utf8');
+  const actions=[...html.matchAll(/href="(tel|sms):([^"]+)"/g)];
+  if(!actions.length) continue;
+  assert.match(html,/js\/lead-events\.js/,`${page} loads lead event instrumentation`);
+  for(const action of actions){
+   assert.match(action[2],/^\+16785717028(?:\?|$)/,`${page} keeps the approved business number`);
+  }
+  actionCount+=actions.length;
+ }
+ assert.ok(actionCount>0);
+});

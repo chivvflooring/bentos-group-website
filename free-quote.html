@@ -121,7 +121,7 @@
             <div class="stamp-area"><div class="stamp-box"><span class="tech-label">Request Estimate</span><p class="stamp-signature">Your details help us respond to your project request</p><p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. The form is processed by FormSubmit.</p><button type="submit" class="btn-submit">Submit Request</button><p id="formStatus" role="status" aria-live="polite"></p></div></div>
         </form>
     </div></div>
-    <div id="successModal" class="modal-success"><div class="modal-content"><h2 id="success-title" tabindex="-1">Request Sent</h2><p>Your request has been sent. If you requested a showroom visit, our team will contact you to confirm availability and the appointment time. Please wait for confirmation before visiting.</p><p style="margin-top:20px">Have another detail to share? <a href="tel:+16785717028">Call (678) 571-7028</a> or <a href="sms:+16785717028">text us</a>.</p><a id="success-text-link" class="text-photos" href="sms:+16785717028">Text project photos or details</a><button type="button" class="btn-reset">Close confirmation</button></div></div>
+    <div id="successModal" class="modal-success"><div class="modal-content"><h2 id="success-title" tabindex="-1">Request Accepted</h2><p>The form service accepted your request for delivery. If you requested a showroom visit, our team will contact you to confirm availability and the appointment time. Please wait for confirmation before visiting.</p><p style="margin-top:20px">Have another detail to share? <a href="tel:+16785717028">Call (678) 571-7028</a> or <a href="sms:+16785717028">text us</a>.</p><a id="success-text-link" class="text-photos" href="sms:+16785717028">Text project photos or details</a><button type="button" class="btn-reset">Close confirmation</button></div></div>
     <script>
       // Carry only known campaign labels and page paths into the inquiry.
       (function prepareQuoteContext() {
@@ -213,6 +213,7 @@
           if (event.defaultPrevented || form.dataset.submitHandler === 'module') return;
           event.preventDefault();
           if (submitButton.disabled || form.elements._honey.value) return;
+          if (!form.reportValidity()) return;
           const email = document.getElementById('client-email');
           if (document.getElementById('contact-preference').value === 'Email' && !email.value.trim()) {
             status.textContent = 'Please enter an email address or choose phone/text contact.'; email.focus(); return;
