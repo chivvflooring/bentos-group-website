@@ -60,3 +60,19 @@ test('homepage and planning estimate links retain their actual source page', () 
   quote.window.close(); landing.window.close();
  }
 });
+
+test('kitchen service inquiry buttons select kitchen and preserve the source', () => {
+ const page = new JSDOM(fs.readFileSync('kitchen-remodeling-service.html','utf8'), {url:'https://bentos-group.com/kitchen-remodeling-service'});
+ const links = [...page.window.document.querySelectorAll('.cta-buttons a')];
+ assert.ok(links.length >= 4);
+ assert.ok(links.every(a => a.getAttribute('href') !== '#'));
+ for (const a of links.filter(a => new URL(a.href).pathname === '/free-quote')) {
+  const form = new JSDOM(fs.readFileSync('free-quote.html','utf8'), {url:a.href,runScripts:'outside-only'});
+  for(const script of form.window.document.querySelectorAll('script:not([src])')) form.window.eval(script.textContent);
+  assert.equal(form.window.document.querySelector('input[name="Service"]:checked').value,'Kitchen Remodeling');
+  assert.equal(form.window.document.querySelector('input[name="Inquiry Source Page"]').value,'/kitchen-remodeling-service');
+  form.window.close();
+ }
+ assert.ok(links.some(a => new URL(a.href).pathname === '/services'));
+ page.window.close();
+});
