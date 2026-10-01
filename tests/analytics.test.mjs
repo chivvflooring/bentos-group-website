@@ -25,6 +25,36 @@ test('preview domains do not send analytics',()=>{
  dom.window.close();
 });
 
+test('paid attribution survives while contact queries and fragments are excluded',()=>{
+ const dom=new JSDOM('<head></head><body></body>',{url:'https://bentos-group.com/flooring?gclid=Test_click-123&gbraid=Test_braid&wbraid=Web_braid&dclid=Display_click&gclsrc=aw.ds&utm_source=google&utm_medium=cpc&utm_campaign=flooring-north-atlanta&utm_id=123&email=private@example.com&phone=1234567890&name=Private&utm_term=private@example.com&utm_content=private@example.com#private-details',runScripts:'outside-only'});
+ const w=dom.window;
+ w.eval(fs.readFileSync('js/analytics.js','utf8'));
+ const config=w.dataLayer.find(x=>x[0]==='config')[2];
+ const page=new URL(config.page_location);
+ assert.equal(page.searchParams.get('gclid'),'Test_click-123');
+ assert.equal(page.searchParams.get('gbraid'),'Test_braid');
+ assert.equal(page.searchParams.get('wbraid'),'Web_braid');
+ assert.equal(page.searchParams.get('dclid'),'Display_click');
+ assert.equal(page.searchParams.get('gclsrc'),'aw.ds');
+ assert.equal(page.searchParams.get('utm_source'),'google');
+ assert.equal(page.searchParams.get('utm_medium'),'cpc');
+ assert.equal(page.searchParams.get('utm_campaign'),'flooring-north-atlanta');
+ assert.equal(page.searchParams.get('utm_id'),'123');
+ assert.equal([...page.searchParams].length,9);
+ assert.equal(page.hash,'');
+ assert.ok(!JSON.stringify(w.dataLayer).includes('private'));
+ assert.equal(w.dataLayer[0][2].analytics_storage,'denied');
+ assert.equal(w.dataLayer[0][2].ad_user_data,'denied');
+ dom.window.close();
+});
+
+test('ambiguous, malformed and oversized attribution values are discarded',()=>{
+ const dom=new JSDOM('<head></head><body></body>',{url:'https://bentos-group.com/flooring?gclid=one&gclid=two&gbraid=private%40example.com&wbraid='+ 'a'.repeat(257)+'&utm_source=&utm_campaign=private%20name',runScripts:'outside-only'});
+ dom.window.eval(fs.readFileSync('js/analytics.js','utf8'));
+ assert.equal(dom.window.dataLayer.find(x=>x[0]==='config')[2].page_location,'https://bentos-group.com/flooring');
+ dom.window.close();
+});
+
 test('cookie choice defaults to denied and can be changed later',()=>{
  const dom=new JSDOM('<head></head><body></body>',{url:'https://bentos-group.com/',runScripts:'outside-only'});
  const w=dom.window;
