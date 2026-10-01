@@ -20,7 +20,18 @@
     ad_personalization: 'denied',
     wait_for_update: 500
   });
-  const page = location.origin + location.pathname;
+  // Attribution needs campaign/click parameters in document location. Keep a
+  // bounded allowlist instead of forwarding quote details or arbitrary queries.
+  const attribution = new URLSearchParams();
+  const incoming = new URLSearchParams(location.search);
+  ['gclid', 'gbraid', 'wbraid', 'dclid', 'gclsrc', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_id'].forEach(key => {
+    const values = incoming.getAll(key);
+    if (values.length === 1 && /^[A-Za-z0-9_.-]{1,256}$/.test(values[0])) {
+      attribution.set(key, values[0]);
+    }
+  });
+  const query = attribution.toString();
+  const page = location.origin + location.pathname + (query ? '?' + query : '');
   let referrer = '';
   try { referrer = document.referrer ? new URL(document.referrer).origin : ''; } catch (_) {}
   window.gtag('js', new Date());
