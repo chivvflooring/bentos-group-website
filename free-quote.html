@@ -72,7 +72,7 @@
     <div class="scroll-container"><div class="blueprint-canvas"><div class="blueprint-border"></div>
         <div class="ruler"><span>0</span><span>|</span><span>|</span><span>|</span><span>|</span><span>5</span><span>|</span><span>|</span><span>|</span><span>|</span><span>10</span></div>
         <header class="header-section"><div class="header-title"><span class="tech-label">Tell us about your project</span><h1>Request Your Estimate</h1></div><div class="status-badge"><span class="tech-label">Current Status</span><span class="status-text">Quote Request</span></div></header>
-        <p style="margin-bottom: 1.5rem;">Start with your contact details and project location. Share any other details you know; our team will follow up to discuss the scope and next steps. Prefer to speak with us? <a href="tel:+16785717028">Call (678) 571-7028</a>.</p>
+        <p style="margin-bottom: 1.5rem;">Only your name, phone number and project city or ZIP are required. Measurements, budget and project details are optional. Share any other details you know; our team will follow up to discuss the scope and next steps. Prefer to speak with us? <a href="tel:+16785717028">Call (678) 571-7028</a>.</p>
         <form id="reformaForm" action="https://formsubmit.co/charlesbgroup@gmail.com" method="POST">
             <input type="hidden" name="_captcha" value="false"><input type="hidden" name="_next" id="nextField"><input type="hidden" name="_template" value="table"><input type="hidden" name="_subject" value="New Quote Request"><input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
             <fieldset><legend>Quick Contact</legend><div class="form-grid">
@@ -85,7 +85,7 @@
                 <div class="input-group"><label for="contact-preference" class="tech-label">Preferred Contact Method</label><select id="contact-preference" name="Preferred Contact Method" class="form-control"><option>No preference</option><option>Phone call</option><option>Text message</option><option>Email</option></select></div>
                 <div class="input-group"><label for="contact-time" class="tech-label">Best Time to Reach You</label><input id="contact-time" name="Best Contact Time" class="form-control" placeholder="For example: weekday afternoons"></div>
             </div></fieldset>
-            </details><fieldset><legend>Project Details (Optional)</legend><div class="form-grid">
+            </details><details id="project-details" class="optional-section"><summary>Add project details (optional)</summary><fieldset><legend>Project Details (Optional)</legend><div class="form-grid">
                 <div class="input-group"><label for="floor-area" class="tech-label">Approx. Area (sq ft)</label><input type="number" id="floor-area" name="Square Footage" class="form-control" placeholder="Ex: 2500" min="1"></div>
                 <div id="flooring-details" class="full-row service-specific" hidden>
                     <p class="focus-note"><strong>Flooring estimate:</strong> approximate information is enough to begin. We will confirm measurements and existing conditions before finalizing the scope.</p>
@@ -106,7 +106,7 @@
                 <div class="input-group"><label for="financing-interest" class="tech-label">Financing Interest</label><select id="financing-interest" name="Financing Interest" class="form-control"><option value="" selected>Choose if applicable...</option><option>Yes</option><option>Maybe</option><option>No</option></select><small>Interest only—not a financing application. Bento’s Group is not a lender, and no financing provider is currently enabled.</small></div>
                 <div class="input-group"><label for="timeline" class="tech-label">Ideal Timeline</label><select id="timeline" name="Timeline" class="form-control"><option value="" selected>Select your timeline...</option><option>Immediate / Urgent</option><option>Within 1 month</option><option>Planning phase (3+ months)</option></select></div>
             </div></fieldset>
-            <details id="showroom-options" class="optional-section"><summary>Explore flooring &amp; request a showroom visit (optional)</summary><fieldset id="showroom-appointment"><legend>Flooring Estimate &amp; Showroom Visit</legend>
+            </details><details id="showroom-options" class="optional-section"><summary>Explore flooring &amp; request a showroom visit (optional)</summary><fieldset id="showroom-appointment"><legend>Flooring Estimate &amp; Showroom Visit</legend>
                 <p style="margin-bottom: 1rem;">Request a flooring estimate and a time to explore materials at our supplier's showroom, DDCC FLOOR INC, 2865 N Berkeley Lake Rd NW #8, Duluth, GA 30096. Bento's Group / CHIVV Flooring will coordinate your visit with the supplier.</p>
                 <div class="form-grid">
                     <div class="input-group"><label for="showroom-request" class="tech-label">Would you like a showroom appointment?</label><select id="showroom-request" name="Showroom Appointment Request" class="form-control"><option value="No appointment requested">Estimate only / No appointment requested</option><option value="Please arrange a DDCC showroom visit">Yes, please arrange a showroom visit</option></select></div>
@@ -216,6 +216,7 @@
           if (!form.reportValidity()) return;
           const email = document.getElementById('client-email');
           if (document.getElementById('contact-preference').value === 'Email' && !email.value.trim()) {
+            window.bentosTrack?.('estimate_form_error', { error_type: 'validation' });
             status.textContent = 'Please enter an email address or choose phone/text contact.'; email.focus(); return;
           }
           window.bentosTrack?.('estimate_form_attempt');
@@ -245,6 +246,7 @@
             document.getElementById('success-title').focus();
             form.reset();
           } catch (error) {
+            window.bentosTrack?.('estimate_form_error', { error_type: 'delivery' });
             console.error('Submission failed:', error);
             status.textContent = 'We could not send your request. Please try again or call (678) 571-7028.';
             submitButton.disabled = false;

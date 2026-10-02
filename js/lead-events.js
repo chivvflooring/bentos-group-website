@@ -1,6 +1,6 @@
 // Lead events: send to the configured GA4 property on the production domain.
 (function () {
-  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'generate_lead', 'phone_click', 'text_click', 'interest_signup', 'project_video_play']);
+  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'phone_click', 'text_click', 'interest_signup', 'project_video_play']);
   const topics = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
   const leadCategories = new Set(['new-construction', 'site-development', 'renovations', 'kitchens', 'bathrooms', 'flooring', 'other']);
   window.bentosTrack = function (event, details = {}) {
@@ -12,6 +12,7 @@
     const params = { page_path: page };
     if (topics.has(details.interest_topic)) params.interest_topic = details.interest_topic;
     if (event === 'generate_lead' && leadCategories.has(details.lead_category)) params.lead_category = details.lead_category;
+    if (event === 'estimate_form_error' && ['validation', 'delivery'].includes(details.error_type)) params.error_type = details.error_type;
     window.dataLayer.push({ event, ...params });
     if (window.bentosAnalyticsReady && typeof window.gtag === 'function') {
       window.gtag('event', event, { send_to: 'G-XRBMTBNP58', ...params });
@@ -125,7 +126,32 @@
     }
   }
 
+  function addQuoteDiagnostics() {
+    const form = document.getElementById('reformaForm');
+    if (!form || form.dataset.diagnosticsBound) return;
+    form.dataset.diagnosticsBound = 'true';
+    let started = false;
+    function recordStart(event) {
+      if (started || !event.target.matches('input:not([type=hidden]):not([name=_honey]), select, textarea')) return;
+      started = true;
+      window.bentosTrack('estimate_form_start');
+    }
+    form.addEventListener('input', recordStart);
+    form.addEventListener('change', recordStart);
+    // Native constraint validation can block submit before either submit handler runs.
+    let invalidInThisTurn = false;
+    form.addEventListener('invalid', event => {
+      const section = event.target.closest('details');
+      if (section) section.open = true;
+      if (invalidInThisTurn) return;
+      invalidInThisTurn = true;
+      window.bentosTrack('estimate_form_error', { error_type: 'validation' });
+      queueMicrotask(() => { invalidInThisTurn = false; });
+    }, true);
+  }
+
   function addLeadTools() {
+    addQuoteDiagnostics();
     addMobileLeadActions();
     addProjectPlanner();
   }
