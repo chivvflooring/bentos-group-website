@@ -105,6 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const errors = validateForm(data);
     if (errors.length > 0) {
+      window.bentosTrack?.("estimate_form_error", { error_type: "validation" });
       errors.forEach(({ field, message }) => setError(document.getElementById(field), message));
       const firstInvalid = document.getElementById(errors[0].field);
       firstInvalid.focus();
@@ -133,6 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
       form.reset();
 
     } catch (err) {
+      window.bentosTrack?.("estimate_form_error", { error_type: "delivery" });
       console.error("Submission failed:", err);
       btnSubmit.disabled = false;
       btnSubmit.textContent = originalText;
