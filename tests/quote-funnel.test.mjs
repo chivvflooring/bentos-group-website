@@ -3,7 +3,7 @@ import fs from 'node:fs'; import assert from 'node:assert/strict';
 (async()=>{
  const helper=await import(process.cwd()+'/js/form-submit.js');
  {
-  const dom=new JSDOM(fs.readFileSync('free-quote.html','utf8'),{url:'http://localhost/free-quote.html',runScripts:'outside-only'});
+  const dom=new JSDOM(fs.readFileSync('free-quote.html','utf8'),{url:'http://localhost/free-quote.html?service=flooring',runScripts:'outside-only'});
   const w=dom.window; await new Promise(r=>w.addEventListener('load',r));
   w.HTMLElement.prototype.scrollIntoView=()=>{};
   w.createSubmissionGuard=helper.createSubmissionGuard;
@@ -12,11 +12,14 @@ import fs from 'node:fs'; import assert from 'node:assert/strict';
   w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
   w.eval(fs.readFileSync('js/lead-events.js','utf8'));
   w.document.querySelector('#reformaForm').dispatchEvent(new w.Event('submit',{cancelable:true,bubbles:true}));
+  const contextScript=Array.from(w.document.querySelectorAll('script:not([src])')).find(s=>s.textContent.includes("params.get('appointment')"));
+  w.eval(contextScript.textContent);
   const first=w.document.querySelector('#client-name');
   assert.equal(w.document.activeElement,first);
   assert.equal(first.getAttribute('aria-invalid'),'true');
   assert.equal(w.dataLayer.filter(x=>x.event==='estimate_form_error' && x.error_type==='validation').length,1);
   assert.equal(w.document.querySelector('#project-details').open,false);
+    assert.equal(w.document.querySelector('#showroom-options').open,false);
   first.value='Private Customer';
   first.dispatchEvent(new w.Event('input',{bubbles:true}));
   first.dispatchEvent(new w.Event('change',{bubbles:true}));

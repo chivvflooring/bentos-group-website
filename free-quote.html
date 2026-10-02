@@ -170,7 +170,7 @@
         }
         const location = document.getElementById('location');
         if (city && !location.value) { location.value = city; location.defaultValue = city; }
-        if (service === 'Flooring') document.getElementById('showroom-options').open = true;
+        if (service === 'Flooring' && params.get('appointment') === 'showroom') document.getElementById('showroom-options').open = true;
         if (service === 'Flooring' && params.get('appointment') === 'showroom') {
           const request = document.getElementById('showroom-request');
           request.value = 'Please arrange a DDCC showroom visit';
