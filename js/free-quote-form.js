@@ -139,7 +139,9 @@ document.addEventListener("DOMContentLoaded", function () {
       btnSubmit.disabled = false;
       btnSubmit.textContent = originalText;
       formStatus.dataset.state = "error";
-      formStatus.textContent = err.cause === "http"
+      formStatus.textContent = err.cause === "timeout"
+        ? "We could not confirm your request. Your entries are saved here. Please call or text (678) 571-7028 before resubmitting."
+        : err.cause === "http"
         ? "We could not accept your request. Please try again or call (678) 571-7028."
         : "We could not connect. Check your connection and try again; your form entries are still here.";
       submissionGuard.finish();
