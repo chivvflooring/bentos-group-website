@@ -80,3 +80,15 @@ test("selected categories preserve every checked choice", () => {
   const form = { querySelectorAll: selector => selector.includes(":checked") ? inputs : [] };
   assert.deepEqual(selectedCategoryValues(form), ["Drywall", "Flooring", "Other"]);
 });
+
+ test("stalled provider or response body times out and aborts without acceptance", async () => {
+  for (const stalledBody of [false, true]) {
+    let signal;
+    await assert.rejects(sendFormSubmit("https://formsubmit.co/example@example.com", {}, async (_, options) => {
+      signal = options.signal;
+      if (stalledBody) return { ok: true, json: () => new Promise(() => {}) };
+      return new Promise(() => {});
+    }, 10), error => error.cause === "timeout");
+    assert.equal(signal.aborted, true);
+  }
+});
