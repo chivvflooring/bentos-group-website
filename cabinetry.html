@@ -31,7 +31,11 @@
                 </div>
             </section>
 
-            <form id="lead-form" class="lead-form" novalidate>
+            <form id="lead-form" class="lead-form" action="https://formsubmit.co/charlesbgroup@gmail.com" method="POST" novalidate>
+                <input type="hidden" name="_subject" value="New Cabinetry Estimate Request">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+                <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
                 <!-- Section 2: Measurements -->
                 <section class="step-section" aria-labelledby="step2-title">
                     <h2 id="step2-title" class="step-title"><span class="step-number">2</span> Project Size</h2>
@@ -70,6 +74,8 @@
 
                 <div class="form-actions">
                     <p id="form-error" class="error-message" role="alert" aria-live="polite"></p>
+                    <p>By submitting, you agree that Bento’s Group may contact you about this project request. FormSubmit processes the form.</p>
+                    <p>Prefer a conversation? <a href="tel:+16785717028">Call (678) 571-7028</a> or <a href="sms:+16785717028">text us</a>.</p>
                     <button type="submit" class="submit-btn">Request Estimate</button>
                 </div>
             </form>
@@ -84,16 +90,16 @@
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                 </svg>
-                <h2>Estimate Ready!</h2>
+                <h2 tabindex="-1">Request Submitted</h2>
                 <p class="estimate-text" id="estimate-result"></p>
-                <p class="follow-up-text">We've received your details and one of our Georgia remodeling experts will
-                    contact you shortly to schedule a precise measurement.</p>
+                <p class="follow-up-text">The form service accepted your project request. For help arranging measurements, <a href="tel:+16785717028">call (678) 571-7028</a> or <a href="sms:+16785717028">text us</a>.</p>
                 <button type="button" id="reset-btn" class="secondary-btn">Calculate Another Project</button>
             </div>
         </div>
     </main>
 
-    <script src="./js/cabinetry.js"></script>
+    <noscript><p>Please <a href="/free-quote?service=kitchen">request your cabinet estimate here</a>, or call (678) 571-7028. This calculator requires JavaScript.</p></noscript>
+    <script src="./js/cabinetry.js" type="module"></script>
 <script src="/js/lead-events.js"></script>
 </body>
 

@@ -1,15 +1,40 @@
-# Targeted legacy URL redirects. Netlify primary domain handles host canonicalization.
-/index.html /
-/about-us.html /about-us 301
-/services.html /services 301
-/gallery.html /gallery 301
-/blog.html /blog 301
-/contact.html /contact 301
-/free-quote.html /free-quote 301
-/financing.html /financing 301
-/roofing.html /roofing 301
-/home-remodeling-alpharetta-ga.html /home-remodeling-alpharetta-ga 301
-/kitchen-remodeling-service.html /kitchen-remodeling-service 301
-/cabinetry.html /cabinetry 301
-/homecare-membership.html /homecare-membership 301
-/home-remodeling-guide-2025.html /home-remodeling-guide-2025 301
+# Redirect legacy HTML URLs even when the source file exists.
+# Extensionless destinations match each page canonical; host redirects stay in Netlify.
+/about-us.html /about-us 301!
+/bathroom-remodeling-alpharetta-ga.html /bathroom-remodeling-alpharetta-ga 301!
+/bathroom-remodeling-cumming-ga.html /bathroom-remodeling-cumming-ga 301!
+/bathroom-remodeling-johns-creek-ga.html /bathroom-remodeling-johns-creek-ga 301!
+/bathroom-remodeling-roswell-ga.html /bathroom-remodeling-roswell-ga 301!
+/blog.html /blog 301!
+/cabinetry.html /cabinetry 301!
+/contact.html /contact 301!
+/custom-homes.html /custom-homes 301!
+/financing.html /financing 301!
+/floor-care-guide.html /floor-care-guide 301!
+/flooring-solutions-cumming-ga.html /flooring-solutions-cumming-ga 301!
+/flooring-solutions-johns-creek-ga.html /flooring-solutions-johns-creek-ga 301!
+/flooring.html /flooring 301!
+/free-quote.html /free-quote 301!
+/full-home-renovation-cumming-ga.html /full-home-renovation-cumming-ga 301!
+/full-home-renovation-johns-creek-ga.html /full-home-renovation-johns-creek-ga 301!
+/gallery.html /gallery 301!
+/home-additions-cumming-ga.html /home-additions-cumming-ga 301!
+/home-additions-johns-creek-ga.html /home-additions-johns-creek-ga 301!
+/home-remodeling-alpharetta-ga.html /home-remodeling-alpharetta-ga 301!
+/home-remodeling-guide-2025.html /home-remodeling-guide-2025 301!
+/homecare-membership.html /homecare-membership 301!
+/index.html / 301!
+/kitchen-remodeling-alpharetta-ga.html /kitchen-remodeling-alpharetta-ga 301!
+/kitchen-remodeling-cumming-ga.html /kitchen-remodeling-cumming-ga 301!
+/kitchen-remodeling-johns-creek-ga.html /kitchen-remodeling-johns-creek-ga 301!
+/kitchen-remodeling-roswell-ga.html /kitchen-remodeling-roswell-ga 301!
+/kitchen-remodeling-service.html /kitchen-remodeling-service 301!
+/linkhub.html /linkhub 301!
+/new-construction-cumming-ga.html /new-construction-cumming-ga 301!
+/new-construction-johns-creek-ga.html /new-construction-johns-creek-ga 301!
+/painting.html /painting 301!
+/pavers-hardscaping-cumming-ga.html /pavers-hardscaping-cumming-ga 301!
+/pavers-hardscaping-johns-creek-ga.html /pavers-hardscaping-johns-creek-ga 301!
+/roofing.html /roofing 301!
+/service-areas.html /service-areas 301!
+/services.html /services 301!

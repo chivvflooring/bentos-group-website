@@ -1,3 +1,6 @@
+import { createSubmissionGuard, sendFormSubmit } from './form-submit.js';
+const submissionGuard = createSubmissionGuard();
+
 /**
  * Cabinet Calculator & Lead Capture Logic
  * Vanilla JavaScript ES6+ implementation focused on performance.
@@ -188,7 +191,7 @@ function handlePhoneMask(e) {
     }
 }
 
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
     e.preventDefault();
     DOM.errorMsg.textContent = '';
 
@@ -218,7 +221,30 @@ function handleFormSubmit(e) {
         return;
     }
 
-    calculateAndShowEstimate(linearFeet);
+    const selectedModel = cabinetModels.find(m => m.id === state.selectedCabinetId);
+    if (!selectedModel || !submissionGuard.begin()) return;
+    const button = DOM.form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.textContent = 'Sending request…';
+    formData.set('Cabinet Style', selectedModel.name);
+    formData.set('Cabinet Series', selectedModel.series);
+    formData.set('Inquiry Source Page', '/cabinetry');
+    formData.set('Service', 'Cabinetry');
+    window.bentosTrack?.('estimate_form_attempt');
+    try {
+        await sendFormSubmit(DOM.form.action, formData);
+        calculateAndShowEstimate(linearFeet);
+        window.bentosTrack?.('generate_lead', { lead_category: 'kitchens' });
+    } catch (error) {
+        DOM.errorMsg.textContent = error.cause === 'timeout'
+            ? 'We could not confirm your request in time. Your details are still here. Please call or text (678) 571-7028 before submitting again.'
+            : 'Your request was not confirmed. Your details are still here. Please try again or call/text (678) 571-7028.';
+        window.bentosTrack?.('estimate_form_error', { error_type: 'delivery' });
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Request Estimate';
+        submissionGuard.finish();
+    }
 }
 
 // 8. LOGIC & CALCULATION
@@ -236,11 +262,13 @@ function calculateAndShowEstimate(linearFeet) {
         maximumFractionDigits: 0
     });
 
-    DOM.estimateResult.innerHTML = `Your estimated project layout is between <strong>${formatter.format(lowerBound)}</strong> and <strong>${formatter.format(upperBound)}</strong> including installation.`;
+    DOM.estimateResult.innerHTML = `Your preliminary cabinet budget range is <strong>${formatter.format(lowerBound)}</strong>–<strong>${formatter.format(upperBound)}</strong>. This calculator is a planning guide, not a quote. Measurements, cabinet specifications and installation scope must be reviewed before pricing is confirmed.`;
 
     DOM.appView.classList.add('hidden');
     DOM.appView.style.display = 'none';
     DOM.successView.classList.remove('hidden');
+    DOM.successView.setAttribute('aria-hidden', 'false');
+    DOM.successView.querySelector('h2').focus();
 }
 
 function resetApp() {
@@ -256,6 +284,7 @@ function resetApp() {
     DOM.form.querySelectorAll('input').forEach(input => input.classList.remove('invalid'));
 
     DOM.successView.classList.add('hidden');
+    DOM.successView.setAttribute('aria-hidden', 'true');
     DOM.appView.style.display = 'block';
     DOM.appView.classList.remove('hidden');
 
