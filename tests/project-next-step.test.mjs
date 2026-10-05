@@ -24,3 +24,22 @@ for (const [page,source] of [['index','home'],['gallery','gallery']]) {
     dom.window.close();
   });
 }
+
+test('homepage featured designs preserve visualization labels and service-specific inquiry paths', () => {
+  const dom = new JSDOM(fs.readFileSync('index.html','utf8'));
+  const section = dom.window.document.querySelector('[aria-labelledby="featured-designs-title"]');
+  assert.ok(section);
+  assert.match(section.textContent,/not completed-project photographs/);
+  assert.equal(section.querySelectorAll('article').length,2);
+  for (const [card, service] of [...section.querySelectorAll('article')].map((card,i)=>[card,i===0?'kitchen':'bathroom'])) {
+    const img = card.querySelector('img');
+    assert.ok(fs.existsSync(img.getAttribute('src').replace(/^\//,'')));
+    assert.match(img.alt,/design visualization/);
+    assert.match(card.textContent,/AI-assisted proposed finish/);
+    const href = new URL(card.querySelector('a[href*="free-quote"]').getAttribute('href'),'https://bentos-group.com');
+    assert.equal(href.searchParams.get('service'),service);
+    assert.equal(href.searchParams.get('source'),'home');
+  }
+  assert.ok(dom.window.document.querySelector('link[href="/styles/project-proof.css"]'));
+  dom.window.close();
+});
