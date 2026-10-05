@@ -1,6 +1,7 @@
 // Lead events: send to the configured GA4 property on the production domain.
 (function () {
-  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'phone_click', 'text_click', 'interest_signup', 'project_video_play']);
+  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'phone_click', 'text_click', 'email_click', 'interest_signup', 'project_video_play']);
+  const services = new Set(['new-construction', 'full-renovation', 'site-development', 'flooring', 'kitchen', 'bathroom', 'painting', 'roofing', 'home-addition']);
   const topics = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
   const leadCategories = new Set(['new-construction', 'site-development', 'renovations', 'kitchens', 'bathrooms', 'flooring', 'other']);
   window.bentosTrack = function (event, details = {}) {
@@ -10,6 +11,7 @@
     window.dataLayer = window.dataLayer || [];
     // Never include names, contact details, project text, query strings or link destinations.
     const params = { page_path: page };
+    if (services.has(details.project_service)) params.project_service = details.project_service;
     if (topics.has(details.interest_topic)) params.interest_topic = details.interest_topic;
     if (event === 'generate_lead' && leadCategories.has(details.lead_category)) params.lead_category = details.lead_category;
     if (event === 'estimate_form_error' && ['validation', 'delivery'].includes(details.error_type)) params.error_type = details.error_type;
@@ -31,11 +33,13 @@
     const href = link.getAttribute('href');
     if (href.startsWith('tel:')) window.bentosTrack('phone_click');
     else if (href.startsWith('sms:')) window.bentosTrack('text_click');
+    else if (href.startsWith('mailto:')) window.bentosTrack('email_click');
     else {
       try {
         const url = new URL(href, window.location.href);
         if (url.origin === window.location.origin && /^\/free-quote(?:\.html)?\/?$/.test(url.pathname)) {
-          window.bentosTrack('estimate_cta_click');
+          const values = url.searchParams.getAll('service');
+          window.bentosTrack('estimate_cta_click', { project_service: values.length === 1 ? values[0] : undefined });
         }
       } catch (_) { /* Invalid links must not interfere with navigation. */ }
     }
