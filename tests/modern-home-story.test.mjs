@@ -7,9 +7,10 @@ test('modern-home galleries separate original foundation evidence from design co
     const doc = new JSDOM(readFileSync(page, 'utf8')).window.document;
     const section = doc.querySelector(page === 'custom-homes.html' ? '[aria-labelledby="modern-home-design"]' : '[aria-labelledby="modern-home-gallery"]');
     assert.ok(section);
-    assert.match(section.textContent, /Brazil/);
+    assert.doesNotMatch(section.textContent, /Brazil/);
+    assert.match(section.textContent, /same house/);
     assert.match(section.textContent, /not completed-project photographs or construction drawings/);
-    assert.equal(section.querySelectorAll('img').length, 4);
+    assert.equal(section.querySelectorAll('img').length, 5);
     for (const img of section.querySelectorAll('img')) {
       assert.ok(existsSync('.' + img.getAttribute('src')));
       assert.ok(img.getAttribute('alt'));
