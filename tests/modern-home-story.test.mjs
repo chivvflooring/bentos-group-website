@@ -17,9 +17,9 @@ test('modern-home galleries separate original foundation evidence from design co
       assert.equal(img.getAttribute('loading'), 'lazy');
       assert.ok(Number(img.getAttribute('width')) > 0);
     }
-    const foundation = section.querySelector('img[src$="foundation-progress.webp"]').closest('article');
-    assert.match(foundation.textContent, /original project photo/);
-    assert.match(foundation.textContent, /not the foundation plan/);
+    const foundation = section.querySelector('img[src$="foundation-progress-retouched.webp"]').closest('article');
+    assert.match(foundation.textContent, /background retouched/);
+    assert.match(foundation.textContent, /not a construction drawing/);
     const inquiry = section.querySelector('a[href^="/free-quote"]');
     assert.equal(new URL(inquiry.href, 'https://bentos-group.com').searchParams.get('service'), 'new-construction');
   }
