@@ -230,9 +230,18 @@
           const timer = setTimeout(() => controller.abort(), 15000);
           try {
             const ajaxUrl = form.action.replace('https://formsubmit.co/', 'https://formsubmit.co/ajax/');
+            // Match the module handler: FormSubmit needs repeated checkbox
+            // values combined into one field to retain every selected service.
+            const formData = new FormData(form);
+            for (const fieldName of new Set(formData.keys())) {
+              const values = formData.getAll(fieldName);
+              if (values.length > 1 && values.every(value => typeof value === 'string')) {
+                formData.set(fieldName, values.join('\n'));
+              }
+            }
             const response = await fetch(ajaxUrl, {
               method: 'POST',
-              body: new FormData(form),
+              body: formData,
               signal: controller.signal,
               headers: { Accept: 'application/json' }
             });
