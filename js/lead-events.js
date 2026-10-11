@@ -1,5 +1,46 @@
 // Lead events: send to the configured GA4 property on the production domain.
 (function () {
+  // Shared, public campaign labels, never visitor IDs. Carry only a known label
+  // along internal page links; no cookies, storage or cross-site identification.
+  // A label describes a link, not proof that a paid impression/click occurred.
+  const campaigns = new Map([
+    ['flooring-instagram-organic', 'Instagram organic — Flooring'],
+    ['flooring-facebook-organic', 'Facebook organic — Flooring'],
+    ['flooring-google-business', 'Google Business Profile — Flooring'],
+    ['flooring-nextdoor-organic', 'Nextdoor organic — Flooring'],
+    ['flooring-meta-retargeting', 'Meta retargeting link — Flooring'],
+    ['flooring-google-search', 'Google Search ad link — Flooring']
+  ]);
+  const campaignValues = new URLSearchParams(window.location.search).getAll('campaign');
+  const campaignId = campaignValues.length === 1 && campaigns.has(campaignValues[0]) ? campaignValues[0] : '';
+
+  function decorateCampaignLink(link) {
+    if (!campaignId || link.hasAttribute('download')) return;
+    const href = link.getAttribute('href');
+    if (!href || href.startsWith('#')) return;
+    try {
+      const url = new URL(href, window.location.href);
+      if (url.origin !== window.location.origin || !/^https?:$/.test(url.protocol)) return;
+      if (!/^\/(?:[a-z0-9/_-]+)?(?:\.html)?$/i.test(url.pathname) || /^\/admin(?:\/|$)/i.test(url.pathname)) return;
+      // An explicitly tagged destination takes precedence over the incoming link.
+      if (url.searchParams.has('campaign')) return;
+      url.searchParams.set('campaign', campaignId);
+      link.setAttribute('href', url.pathname + url.search + url.hash);
+    } catch (_) { /* Leave invalid or non-page links unchanged. */ }
+  }
+
+  function addCampaignContext() {
+    if (!campaignId) return;
+    document.querySelectorAll('a[href]').forEach(decorateCampaignLink);
+    const form = document.getElementById('reformaForm');
+    if (!form || form.querySelector('input[name="Campaign Tag"]')) return;
+    for (const [name, value] of [['Campaign Tag', campaignId], ['Campaign Label', campaigns.get(campaignId)]]) {
+      const input = document.createElement('input');
+      input.type = 'hidden'; input.name = name; input.value = value;
+      form.appendChild(input);
+    }
+  }
+
   const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'phone_click', 'text_click', 'email_click', 'interest_signup', 'project_video_play']);
   const services = new Set(['new-construction', 'full-renovation', 'site-development', 'flooring', 'kitchen', 'bathroom', 'painting', 'roofing', 'home-addition']);
   const topics = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
@@ -11,6 +52,7 @@
     window.dataLayer = window.dataLayer || [];
     // Never include names, contact details, project text, query strings or link destinations.
     const params = { page_path: page };
+    if (campaignId) params.bentos_campaign = campaignId;
     if (services.has(details.project_service)) params.project_service = details.project_service;
     if (topics.has(details.interest_topic)) params.interest_topic = details.interest_topic;
     if (event === 'generate_lead' && leadCategories.has(details.lead_category)) params.lead_category = details.lead_category;
@@ -30,6 +72,7 @@
   document.addEventListener('click', function (event) {
     const link = event.target.closest?.('a[href]');
     if (!link) return;
+    decorateCampaignLink(link);
     const href = link.getAttribute('href');
     if (href.startsWith('tel:')) window.bentosTrack('phone_click');
     else if (href.startsWith('sms:')) window.bentosTrack('text_click');
@@ -158,6 +201,7 @@
     addQuoteDiagnostics();
     addMobileLeadActions();
     addProjectPlanner();
+    addCampaignContext();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addLeadTools, { once: true });
   else addLeadTools();
