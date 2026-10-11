@@ -35,11 +35,12 @@ import fs from 'node:fs'; import assert from 'node:assert/strict';
   dom.window.close();
  }
  for(const moduleEnabled of [true,false]) for(const accepted of [true,false]) {
-  const dom=new JSDOM(fs.readFileSync('free-quote.html','utf8'),{url:'http://localhost/free-quote.html?service=flooring&city=johns-creek&appointment=showroom&source=johns-creek-flooring',runScripts:'outside-only'});
+  const dom=new JSDOM(fs.readFileSync('free-quote.html','utf8'),{url:'http://localhost/free-quote.html?service=flooring&city=johns-creek&appointment=showroom&source=johns-creek-flooring&campaign=flooring-instagram-organic',runScripts:'outside-only'});
   const w=dom.window; await new Promise(r=>w.addEventListener('load',r));
   let requests=0;
   let deliveredServices;
-  w.fetch=async(url, options)=>{requests++;deliveredServices=options.body.getAll('Service');return {ok:true,status:200,json:async()=>({success:accepted?'true':'false'})}};
+  let deliveredCampaign;
+  w.fetch=async(url, options)=>{requests++;deliveredServices=options.body.getAll('Service');deliveredCampaign=options.body.getAll('Campaign Tag');return {ok:true,status:200,json:async()=>({success:accepted?'true':'false'})}};
   w.console.error=()=>{};
   w.HTMLElement.prototype.scrollIntoView=()=>{};
   const ga4Events=[];
@@ -68,6 +69,7 @@ import fs from 'node:fs'; import assert from 'node:assert/strict';
   assert.equal(deliveredServices.length,1,`provider receives one combined Service field: module=${moduleEnabled}`);
   assert.ok(deliveredServices[0].includes('Flooring'));
   assert.ok(deliveredServices[0].includes('Bathroom Remodeling'));
+  assert.deepEqual(Array.from(deliveredCampaign),['flooring-instagram-organic'],`campaign survives submission: module=${moduleEnabled}`);
   assert.equal((w.dataLayer||[]).filter(x=>x.event==='generate_lead').length,accepted?1:0);
   assert.equal(ga4Events.filter(x=>x[0]==='event'&&x[1]==='ads_conversion_Request_quote_1').length,accepted?1:0);
   assert.ok(!JSON.stringify(w.dataLayer).includes('Test Homeowner'));
