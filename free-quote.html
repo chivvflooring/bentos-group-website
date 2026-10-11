@@ -56,6 +56,13 @@
         .btn-reset { margin-top:30px; background:transparent; border:1px solid white; color:white; padding:10px 30px; cursor:pointer; font-family:'JetBrains Mono',monospace; }
         .btn-reset:hover { background:white; color:var(--blueprint-green); }
         #formStatus { margin-top:12px; min-height:1.2em; font-size:.8rem; }
+        #formStatus[data-state="error"] { color:#9f251f; font-size:.95rem; line-height:1.5; }
+        .quote-contact-options { margin-top:20px; padding-top:20px; border-top:1px solid #cbd5e1; }
+        .quote-contact-options p { font-size:.95rem; line-height:1.5; margin-bottom:12px; }
+        .quote-contact-options nav { display:flex; flex-wrap:wrap; gap:10px; }
+        .quote-contact-options a { flex:1 1 200px; display:flex; align-items:center; justify-content:center; min-height:48px; padding:12px; border:2px solid var(--blueprint-green); color:var(--blueprint-green); background:#fff; font-weight:600; text-decoration:none; }
+        .quote-contact-options a:hover { background:#eef6ef; }
+        .quote-contact-options a:focus-visible { outline:3px solid #1e293b; outline-offset:3px; }
         .service-specific[hidden] { display:none; }
         .focus-note { margin:0 0 1rem; padding:12px; border-left:4px solid var(--blueprint-green); background:#eef6ef; }
         .text-photos { display:inline-block; margin-top:14px; padding:10px 14px; border:1px solid currentColor; font-weight:600; }
@@ -118,7 +125,15 @@
                 <p id="appointment-confirmation" style="margin-top: 1rem;"><strong>This is an appointment request.</strong> Please wait for our team to confirm the date and time before visiting. For your confirmed visit, tell the showroom team you are working with Bento's Group / CHIVV Flooring.</p>
             </fieldset>
             </details><p class="next-steps"><strong>What happens next?</strong> We review your request, contact you about the scope, and arrange a measurement or consultation if appropriate. Showroom visits are confirmed separately.</p>
-            <div class="stamp-area"><div class="stamp-box"><span class="tech-label">Request Estimate</span><p class="stamp-signature">Your details help us respond to your project request</p><p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. The form is processed by FormSubmit.</p><button type="submit" class="btn-submit">Submit Request</button><p id="formStatus" role="status" aria-live="polite"></p></div></div>
+            <div class="stamp-area"><div class="stamp-box"><span class="tech-label">Request Estimate</span><p class="stamp-signature">Your details help us respond to your project request</p><p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. The form is processed by FormSubmit.</p><button type="submit" class="btn-submit">Submit Request</button><p id="formStatus" role="status" aria-live="polite"></p>
+                <div class="quote-contact-options">
+                    <p><strong>Prefer a conversation?</strong><br>Call to discuss your project, or text photos and your city.</p>
+                    <nav aria-label="Contact Bento's Group directly">
+                        <a href="tel:+16785717028">Call (678) 571-7028</a>
+                        <a href="sms:+16785717028">Text project photos</a>
+                    </nav>
+                </div>
+            </div></div>
         </form>
     </div></div>
     <div id="successModal" class="modal-success"><div class="modal-content"><h2 id="success-title" tabindex="-1">Request Accepted</h2><p>The form service accepted your request for delivery. If you requested a showroom visit, our team will contact you to confirm availability and the appointment time. Please wait for confirmation before visiting.</p><p style="margin-top:20px">Have another detail to share? <a href="tel:+16785717028">Call (678) 571-7028</a> or <a href="sms:+16785717028">text us</a>.</p><a id="success-text-link" class="text-photos" href="sms:+16785717028">Text project photos or details</a><button type="button" class="btn-reset">Close confirmation</button></div></div>
@@ -208,6 +223,7 @@
           const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
           window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
           submitButton.disabled = false; submitButton.textContent = 'Submit Request'; submitButton.focus();
+          status.textContent = ''; delete status.dataset.state;
         });
         form.addEventListener('submit', async function (event) {
           if (event.defaultPrevented || form.dataset.submitHandler === 'module') return;
@@ -225,9 +241,16 @@
           submitButton.disabled = true;
           submitButton.textContent = 'Sending request…';
           status.textContent = 'Sending your request…';
+          status.dataset.state = 'processing';
 
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 15000);
+          let timer;
+          const deadline = new Promise((_, reject) => {
+            timer = setTimeout(() => {
+              reject(new Error('Request confirmation timed out'));
+              controller.abort();
+            }, 15000);
+          });
           try {
             const ajaxUrl = form.action.replace('https://formsubmit.co/', 'https://formsubmit.co/ajax/');
             // Match the module handler: FormSubmit needs repeated checkbox
@@ -239,18 +262,23 @@
                 formData.set(fieldName, values.join('\n'));
               }
             }
-            const response = await fetch(ajaxUrl, {
-              method: 'POST',
-              body: formData,
-              signal: controller.signal,
-              headers: { Accept: 'application/json' }
-            });
-            if (!response.ok) throw new Error('HTTP ' + response.status);
-            const result = await response.json();
-            if (result.success !== true && result.success !== 'true') throw new Error('Request not accepted');
+            // Keep a real deadline across both the request and response body.
+            // Late provider responses must not reset the form or count a lead.
+            await Promise.race([deadline, (async () => {
+              const response = await fetch(ajaxUrl, {
+                method: 'POST',
+                body: formData,
+                signal: controller.signal,
+                headers: { Accept: 'application/json' }
+              });
+              if (!response.ok) throw new Error('HTTP ' + response.status);
+              const result = await response.json();
+              if (result.success !== true && result.success !== 'true') throw new Error('Request not accepted');
+            })()]);
             window.bentosTrack?.('generate_lead', { lead_category: window.bentosLeadCategory?.(form) || 'other' });
             markQuoteSuccess();
             status.textContent = '';
+            delete status.dataset.state;
             modal.style.display = 'flex';
             modal.setAttribute('role', 'dialog');
             modal.setAttribute('aria-modal', 'true');
@@ -260,9 +288,10 @@
           } catch (error) {
             window.bentosTrack?.('estimate_form_error', { error_type: 'delivery' });
             console.error('Submission failed:', error);
+            status.dataset.state = 'error';
             status.textContent = controller.signal.aborted
-              ? 'We could not confirm your request. Your entries are saved here. Please call or text (678) 571-7028 before resubmitting.'
-              : 'We could not send your request. Please try again or call (678) 571-7028.';
+              ? 'We could not confirm your request. Your entries remain on this page. Please use the call or text buttons below before resubmitting.'
+              : 'We could not confirm your request. Your entries remain on this page. Please try again or use the call or text buttons below.';
             submitButton.disabled = false;
             submitButton.textContent = originalText;
           } finally {
