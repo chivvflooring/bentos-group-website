@@ -181,6 +181,27 @@
             document.querySelector('input[name="_subject"]').value = 'New Flooring Estimate Request';
             notes.placeholder = 'Tell us about damaged areas, subfloor concerns, preferred material, transitions, furniture moving, or other details.';
             document.getElementById('success-text-link').href = 'sms:+16785717028?body=Hello%20Bento%27s%20Group%2C%20I%20just%20submitted%20a%20flooring%20estimate%20request.%20Here%20are%20my%20project%20photos%20or%20additional%20details%3A';
+            // Only known, unambiguous project choices may prefill the form.
+            const flooringProjects = new Map([
+              ['refinishing', ['Hardwood refinishing', 'Hardwood Refinishing Estimate']],
+              ['replacement', ['Replace existing flooring', 'Flooring Replacement Estimate']],
+              ['stairs', ['Stairs and railings', 'Stairs & Railings Estimate']],
+              ['guidance', ['Not sure / Need guidance', 'Explore Your Flooring Options']]
+            ]);
+            const choices = params.getAll('flooring_project');
+            const chosen = choices.length === 1 && params.getAll('service').length === 1 ? flooringProjects.get(choices[0]) : null;
+            const projectType = document.getElementById('flooring-project-type');
+            if (chosen && !projectType.value) {
+              projectType.value = chosen[0];
+              Array.from(projectType.options).forEach(option => option.defaultSelected = option.selected);
+            }
+            function updateFlooringTitle() {
+              const current = Array.from(flooringProjects.values()).find(project => project[0] === projectType.value);
+              document.querySelector('h1').textContent = current ? current[1] : 'Flooring Estimate';
+            }
+            updateFlooringTitle();
+            projectType.addEventListener('change', updateFlooringTitle);
+            form.addEventListener('reset', () => { setTimeout(updateFlooringTitle, 0); });
           }
         }
         const location = document.getElementById('location');
