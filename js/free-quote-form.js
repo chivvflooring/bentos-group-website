@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
     btnSubmit.textContent = "Submit Request";
     submissionGuard.finish();
     formStatus.textContent = "";
+    delete formStatus.dataset.state;
     btnSubmit.focus();
   }
 
@@ -126,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
       window.bentosTrack?.("generate_lead", { lead_category: window.bentosLeadCategory?.(form) || "other" });
       markQuoteSuccess();
       formStatus.textContent = "";
+      delete formStatus.dataset.state;
       successModal.style.display = "flex";
       successModal.setAttribute("role", "dialog");
       successModal.setAttribute("aria-modal", "true");
@@ -140,10 +142,10 @@ document.addEventListener("DOMContentLoaded", function () {
       btnSubmit.textContent = originalText;
       formStatus.dataset.state = "error";
       formStatus.textContent = err.cause === "timeout"
-        ? "We could not confirm your request. Your entries are saved here. Please call or text (678) 571-7028 before resubmitting."
+        ? "We could not confirm your request. Your entries remain on this page. Please use the call or text buttons below before resubmitting."
         : err.cause === "http"
-        ? "We could not accept your request. Please try again or call (678) 571-7028."
-        : "We could not connect. Check your connection and try again; your form entries are still here.";
+        ? "We could not confirm your request. Your entries remain on this page. Please try again or use the call or text buttons below."
+        : "We could not connect. Your entries remain on this page. Check your connection and try again, or use the call or text buttons below.";
       submissionGuard.finish();
     }
   });
