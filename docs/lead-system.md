@@ -1,6 +1,21 @@
 # Bento’s Group lead workflow
 
-Website inquiries continue through the existing FormSubmit destination. Project cards preserve service and source context. Phone and text clicks measure intent, not completed calls or sales. No CRM or automated follow-up has been activated.
+Website inquiries continue through the existing FormSubmit destination. Project cards preserve service and source context. Phone and text clicks measure intent, not completed calls or sales. No CRM or sales follow-up automation has been activated. Google Calendar project-call booking was configured October 11, 2026, as described below.
+
+## Project-call booking — October 11, 2026
+
+The existing Google Calendar account now has one public Bento’s Group project consultation page for custom homes and flooring:
+https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0WzFNYeLnSrqZ7bTHH7KuuMQJz7Uwdghut5WXWOweOw7VPk9SiM-dgWpv6QFMz3T6HQTDRIA0L?gv=true
+
+- 15-minute phone call; Bento’s Group calls the number supplied by the visitor.
+- Initial availability: Monday–Friday, 10am–4pm America/New_York, with 24 hours' notice, a rolling 14-day window, 15-minute buffer and maximum three bookings per day. These are initial operating defaults selected during setup, not a historical owner-confirmed schedule. Keep the connected calendar's busy times current and adjust availability as needed.
+- Conflicts on the primary calendar are excluded. Calendar invitations/confirmation emails are enabled by Google; additional reminder emails require an upgrade and were not enabled.
+- Collects first/last name, email and phone; project type and city are optional. No payment required. Site visits, showroom visits, estimates and construction dates are agreed separately.
+- Visitor slots and the booking form were inspected without submitting a fake appointment. Actual confirmation delivery, customer bookings and attended calls have not been verified.
+- Website `booking_click` measures opening this specific booking page, never a confirmed appointment or lead. Count confirmed appointments from Calendar; exclude cancellations and tests. No customer data or booking URL is passed in the website event.
+- Priority: custom-home consultations first, with flooring installation, replacement, refinishing and stairs supporting near-term cash flow. The custom-home inquiry captures optional lot, plan, size and land-budget context and uses its own email subject.
+
+No new subscription, phone service or automated receptionist was purchased or activated. Booking does not enroll anyone in marketing.
 
 The desktop project-planner button gives visitors a visible, optional path to the estimate form from every public content page. It never blocks navigation and does not identify someone merely because they browse. Contact details are requested only on the estimate form; the planner explicitly says that browsing does not enroll a visitor in marketing. The existing mobile call, text and estimate bar serves the same purpose on smaller screens.
 

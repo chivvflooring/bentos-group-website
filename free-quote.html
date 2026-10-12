@@ -92,7 +92,18 @@
                 <div class="input-group"><label for="contact-preference" class="tech-label">Preferred Contact Method</label><select id="contact-preference" name="Preferred Contact Method" class="form-control"><option>No preference</option><option>Phone call</option><option>Text message</option><option>Email</option></select></div>
                 <div class="input-group"><label for="contact-time" class="tech-label">Best Time to Reach You</label><input id="contact-time" name="Best Contact Time" class="form-control" placeholder="For example: weekday afternoons"></div>
             </div></fieldset>
-            </details><details id="project-details" class="optional-section"><summary>Add project details (optional)</summary><fieldset><legend>Project Details (Optional)</legend><div class="form-grid">
+            </details>
+            <details id="custom-home-options" class="optional-section"><summary>Custom home planning details (optional)</summary><fieldset><legend>Your Custom Home</legend>
+                <p>Share what you know now. You can request a conversation before choosing a lot or finishing your plans.</p>
+                <div class="form-grid">
+                    <div class="input-group"><label for="lot-status" class="tech-label">Lot Status</label><select id="lot-status" name="Custom Home Lot Status" class="form-control"><option value="">Select if known...</option><option>I own a lot</option><option>Lot under contract</option><option>Considering a specific lot</option><option>Still looking for land</option></select></div>
+                    <div class="input-group"><label for="plans-status" class="tech-label">Plans Status</label><select id="plans-status" name="Custom Home Plans Status" class="form-control"><option value="">Select if known...</option><option>Early ideas / No plans yet</option><option>Working with a designer or architect</option><option>Preliminary drawings available</option><option>Completed plans available</option></select></div>
+                    <div class="input-group"><label for="home-size" class="tech-label">Desired Finished Home Size (sq ft)</label><input type="number" id="home-size" name="Custom Home Size Sq Ft" class="form-control" min="1" step="1" placeholder="Approximate is fine"></div>
+                    <div class="input-group"><label for="budget-scope" class="tech-label">Does Your Budget Include Land?</label><select id="budget-scope" name="Custom Home Budget Scope" class="form-control"><option value="">Select if known...</option><option>Includes land purchase</option><option>Excludes land purchase</option><option>Not sure yet</option></select></div>
+                </div>
+                <p>Budget, timing and any other details can go in the project section below. Scope and responsibilities are confirmed before a construction agreement.</p>
+            </fieldset></details>
+            <details id="project-details" class="optional-section"><summary>Add project details (optional)</summary><fieldset><legend>Project Details (Optional)</legend><div class="form-grid">
                 <div class="input-group"><label for="floor-area" class="tech-label">Approx. Area (sq ft)</label><input type="number" id="floor-area" name="Square Footage" class="form-control" placeholder="Ex: 2500" min="1"></div>
                 <div id="flooring-details" class="full-row service-specific" hidden>
                     <p class="focus-note"><strong>Flooring estimate:</strong> approximate information is enough to begin. We will confirm measurements and existing conditions before finalizing the scope.</p>
@@ -131,6 +142,7 @@
                     <nav aria-label="Contact Bento's Group directly">
                         <a href="tel:+16785717028">Call (678) 571-7028</a>
                         <a href="sms:+16785717028">Text project photos</a>
+                        <a href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0WzFNYeLnSrqZ7bTHH7KuuMQJz7Uwdghut5WXWOweOw7VPk9SiM-dgWpv6QFMz3T6HQTDRIA0L?gv=true" data-booking-service="">Book a 15-minute project call</a>
                     </nav>
                 </div>
             </div></div>
@@ -212,6 +224,24 @@
           request.value = 'Please arrange a DDCC showroom visit';
           Array.from(request.options).forEach(option => option.defaultSelected = option.selected);
         }
+        const constructionBox = form.querySelector('input[name="Service"][value="New Construction"]');
+        const homeOptions = document.getElementById('custom-home-options');
+        const subject = form.querySelector('input[name="_subject"]');
+        const standardSubject = subject.value;
+        function updateCustomHomeContext() {
+          const selected = constructionBox.checked;
+          homeOptions.open = selected;
+          homeOptions.hidden = !selected;
+          subject.value = selected ? 'New Custom Home Consultation Request' : standardSubject;
+          // Home size has its own field; avoid asking twice on this path.
+          const area = document.getElementById('floor-area');
+          area.parentElement.hidden = selected;
+          area.disabled = selected;
+          homeOptions.querySelectorAll('input, select').forEach(field => { field.disabled = !selected; });
+        }
+        constructionBox.addEventListener('change', updateCustomHomeContext);
+        form.addEventListener('reset', () => { setTimeout(updateCustomHomeContext, 0); });
+        updateCustomHomeContext();
       })();
     </script>
     <script src="./js/free-quote-form.js" type="module"></script>

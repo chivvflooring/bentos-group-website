@@ -58,7 +58,9 @@ for (const stalledBody of [false, true]) {
 test('direct contact recovery works without form submission and tracks clicks separately', async t => {
   const { w, d } = await fallbackForm(t);
   const links = Array.from(d.querySelectorAll('.quote-contact-options a'));
-  assert.deepEqual(links.map(link => link.getAttribute('href')), ['tel:+16785717028', 'sms:+16785717028']);
+  assert.deepEqual(links.slice(0, 2).map(link => link.getAttribute('href')), ['tel:+16785717028', 'sms:+16785717028']);
+  assert.equal(links.length, 3);
+  assert.equal(new URL(links[2].href).origin, 'https://calendar.google.com');
   w.fetch = () => { throw new Error('contact buttons must not submit the form'); };
   for (const link of links) {
     link.addEventListener('click', e => e.preventDefault());
@@ -66,6 +68,7 @@ test('direct contact recovery works without form submission and tracks clicks se
   }
   assert.equal(w.dataLayer.filter(e => e.event === 'phone_click').length, 1);
   assert.equal(w.dataLayer.filter(e => e.event === 'text_click').length, 1);
+  assert.equal(w.dataLayer.filter(e => e.event === 'booking_click').length, 1);
   assert.equal(w.dataLayer.filter(e => e.event === 'generate_lead').length, 0);
   assert.ok(!JSON.stringify(w.dataLayer).includes('Test Homeowner'));
   assert.ok(!JSON.stringify(w.dataLayer).includes('6785551234'));

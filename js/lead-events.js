@@ -41,7 +41,7 @@
     }
   }
 
-  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'phone_click', 'text_click', 'email_click', 'interest_signup', 'project_video_play']);
+  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'phone_click', 'text_click', 'email_click', 'interest_signup', 'project_video_play', 'booking_click']);
   const services = new Set(['new-construction', 'full-renovation', 'site-development', 'flooring', 'kitchen', 'bathroom', 'painting', 'roofing', 'home-addition']);
   const topics = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
   const leadCategories = new Set(['new-construction', 'site-development', 'renovations', 'kitchens', 'bathrooms', 'flooring', 'other']);
@@ -80,7 +80,9 @@
     else {
       try {
         const url = new URL(href, window.location.href);
-        if (url.origin === window.location.origin && /^\/free-quote(?:\.html)?\/?$/.test(url.pathname)) {
+        if (url.origin === 'https://calendar.google.com' && url.pathname === '/calendar/u/0/appointments/schedules/AcZssZ0WzFNYeLnSrqZ7bTHH7KuuMQJz7Uwdghut5WXWOweOw7VPk9SiM-dgWpv6QFMz3T6HQTDRIA0L' && link.hasAttribute('data-booking-service')) {
+          window.bentosTrack('booking_click', { project_service: link.dataset.bookingService });
+        } else if (url.origin === window.location.origin && /^\/free-quote(?:\.html)?\/?$/.test(url.pathname)) {
           const values = url.searchParams.getAll('service');
           window.bentosTrack('estimate_cta_click', { project_service: values.length === 1 ? values[0] : undefined });
         }
