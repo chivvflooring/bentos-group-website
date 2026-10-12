@@ -4,6 +4,7 @@
   // along internal page links; no cookies, storage or cross-site identification.
   // A label describes a link, not proof that a paid impression/click occurred.
   const campaigns = new Map([
+    ['instagram-profile-organic', 'Instagram organic — Profile'],
     ['flooring-instagram-organic', 'Instagram organic — Flooring'],
     ['flooring-facebook-organic', 'Facebook organic — Flooring'],
     ['flooring-google-business', 'Google Business Profile — Flooring'],
@@ -11,8 +12,17 @@
     ['flooring-meta-retargeting', 'Meta retargeting link — Flooring'],
     ['flooring-google-search', 'Google Search ad link — Flooring']
   ]);
-  const campaignValues = new URLSearchParams(window.location.search).getAll('campaign');
-  const campaignId = campaignValues.length === 1 && campaigns.has(campaignValues[0]) ? campaignValues[0] : '';
+  const landingParams = new URLSearchParams(window.location.search);
+  const campaignValues = landingParams.getAll('campaign');
+  // Recognize only the exact public profile link; never carry arbitrary UTM text.
+  const instagramProfile = [['utm_source', 'instagram'], ['utm_medium', 'organic_social'], ['utm_campaign', 'profile']]
+    .every(([key, value]) => {
+      const values = landingParams.getAll(key);
+      return values.length === 1 && values[0] === value;
+    });
+  const campaignId = campaignValues.length === 1 && campaigns.has(campaignValues[0])
+    ? campaignValues[0]
+    : campaignValues.length === 0 && instagramProfile ? 'instagram-profile-organic' : '';
 
   function decorateCampaignLink(link) {
     if (!campaignId || link.hasAttribute('download')) return;
