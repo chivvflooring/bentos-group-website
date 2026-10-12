@@ -63,3 +63,34 @@ test('unknown and ambiguous tags never enter inquiry fields or events', () => {
     dom.window.close();
   }
 });
+
+test('Instagram profile UTM link survives service navigation into quote payload', () => {
+  const landing = page('index.html', 'https://bentos-group.com/?utm_source=instagram&utm_medium=organic_social&utm_campaign=profile&email=private@example.com');
+  const serviceLink = landing.window.document.querySelector('a[href*="flooring"]');
+  assert.equal(new URL(serviceLink.href).searchParams.get('campaign'), 'instagram-profile-organic');
+  assert.ok(!serviceLink.href.includes('private'));
+  const service = page('flooring.html', serviceLink.href);
+  const quote = page('free-quote.html', service.window.document.querySelector('a[href*="free-quote"]').href);
+  const w = quote.window;
+  const data = new w.FormData(w.document.getElementById('reformaForm'));
+  assert.equal(data.get('Campaign Label'), 'Instagram organic — Profile');
+  assert.equal(data.getAll('Campaign Tag').length, 1);
+  w.bentosTrack('estimate_form_start');
+  assert.equal(w.dataLayer.at(-1).bentos_campaign, 'instagram-profile-organic');
+  assert.equal(w.sessionStorage.length, 0);
+  assert.equal(w.localStorage.length, 0);
+  for (const dom of [landing, service, quote]) dom.window.close();
+});
+
+test('partial, duplicate and unknown profile parameters are not attributed', () => {
+  for (const query of [
+    'utm_source=instagram&utm_medium=organic_social',
+    'utm_source=instagram&utm_source=google&utm_medium=organic_social&utm_campaign=profile',
+    'utm_source=instagram&utm_medium=organic_social&utm_campaign=private%40example.com',
+    'utm_source=instagram&utm_medium=organic_social&utm_campaign=profile&campaign=unknown'
+  ]) {
+    const dom = page('free-quote.html', 'https://bentos-group.com/free-quote?' + query);
+    assert.equal(dom.window.document.querySelector('[name="Campaign Tag"]'), null);
+    dom.window.close();
+  }
+});
