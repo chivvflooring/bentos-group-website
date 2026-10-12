@@ -14,48 +14,6 @@ if (chatFab && chatContainer && closeChatBtn && chatForm && messageList && messa
   chatContainer.setAttribute('data-nosnippet', '');
   chatContainer.dataset.initialized = 'true';
 
-  // Keep real contact paths available even before a visitor types a message.
-  const contactActions = document.createElement('nav');
-  contactActions.className = 'chat-contact-actions';
-  contactActions.setAttribute('aria-label', 'Contact the project team');
-  const requestLink = document.createElement('a');
-  requestLink.textContent = 'Send a project request';
-  const callLink = document.createElement('a');
-  callLink.href = 'tel:+16785717028';
-  callLink.textContent = 'Call the team';
-  const textLink = document.createElement('a');
-  textLink.href = 'sms:+16785717028';
-  textLink.textContent = 'Text photos';
-  contactActions.append(requestLink, callLink, textLink);
-  messageList.before(contactActions);
-
-  function serviceFor(value) {
-    if (/custom.home|new.construction|home.build|build.*house|lot|land|foundation/.test(value)) return 'new-construction';
-    if (/floor|hardwood|vinyl|laminate|tile|stair/.test(value)) return 'flooring';
-    if (/kitchen|cabinet/.test(value)) return 'kitchen';
-    if (/bath|shower/.test(value)) return 'bathroom';
-    return '';
-  }
-
-  let selectedService = serviceFor(window.location.pathname);
-  function updateRequestLink() {
-    const params = new URLSearchParams({source: 'project-helper'});
-    if (selectedService) params.set('service', selectedService);
-    requestLink.href = '/free-quote?' + params;
-  }
-  updateRequestLink();
-
-  function readHistory() {
-    try {
-      const history = JSON.parse(sessionStorage.getItem(HISTORY_KEY) || '[]');
-      return Array.isArray(history) ? history.filter(item => item &&
-        ['user', 'assistant'].includes(item.role) && typeof item.sender === 'string' &&
-        typeof item.content === 'string').slice(-12).map(item => ({
-          sender: item.sender.slice(0, 60), role: item.role, content: item.content.slice(0, 1000)
-        })) : [];
-    } catch (_) { return []; }
-  }
-
   function displayMessage(sender, role, content, save = true) {
     const wrapper = document.createElement('div');
     wrapper.className = `message-wrapper ${role === 'user' ? 'user' : 'bot'}`;
@@ -77,7 +35,7 @@ if (chatFab && chatContainer && closeChatBtn && chatForm && messageList && messa
     text.textContent = content;
     if (role !== 'user' && content.includes('Free Quote')) {
       const quoteLink = document.createElement('a');
-      quoteLink.href = requestLink.href;
+      quoteLink.href = './free-quote';
       quoteLink.textContent = ' Open the Free Quote form';
       quoteLink.className = 'chat-quote-link';
       text.append(document.createElement('br'), quoteLink);
@@ -87,9 +45,8 @@ if (chatFab && chatContainer && closeChatBtn && chatForm && messageList && messa
     messageList.appendChild(wrapper);
 
     if (save) {
-      try {
-        sessionStorage.setItem(HISTORY_KEY, JSON.stringify([...readHistory(), { sender, role, content }].slice(-12)));
-      } catch (_) { /* Contact options still work when browser storage is unavailable. */ }
+      const history = JSON.parse(sessionStorage.getItem(HISTORY_KEY) || '[]');
+      sessionStorage.setItem(HISTORY_KEY, JSON.stringify([...history, { sender, role, content }].slice(-12)));
     }
     scrollToChatBottom();
   }
@@ -108,16 +65,14 @@ if (chatFab && chatContainer && closeChatBtn && chatForm && messageList && messa
     return "I’m an automated project helper, not a live representative. I can direct you to Bento’s Group services; for a reliable answer about your project, please use the Free Quote form or call (678) 571-7028.";
   }
 
-  const history = readHistory();
+  const history = JSON.parse(sessionStorage.getItem(HISTORY_KEY) || '[]');
   if (history.length) history.forEach(message => displayMessage(message.sender, message.role, message.content, false));
   else displayMessage('Project helper', 'assistant', "Welcome! I can help route your Bento's Group remodeling or CHIVV Flooring inquiry. Messages in this helper stay in your browser and are not sent to the team.");
 
   function handleSendMessage() {
-    const value = messageInput.value.trim().slice(0, 1000);
+    const value = messageInput.value.trim();
     if (!value) return;
     messageInput.value = '';
-    selectedService = serviceFor(value.toLowerCase()) || selectedService;
-    updateRequestLink();
     displayMessage('You', 'user', value);
     displayMessage('Project helper', 'assistant', getReply(value));
   }
