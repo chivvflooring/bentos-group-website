@@ -1,0 +1,11 @@
+.interest-signup{max-width:1120px;margin:2rem auto;padding:clamp(1.5rem,4vw,3rem);border-radius:18px;background:#eaf2e8;color:#203e29;border:1px solid #cadcc8;font-family:system-ui,sans-serif}
+.interest-signup h2{margin:.35rem 0 .7rem;font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.2;color:#21492d}
+.interest-signup p{max-width:70ch;line-height:1.5}.interest-signup__eyebrow{font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#9a4e1b}
+.interest-signup form{display:grid;gap:1rem;max-width:760px}.interest-signup label,.interest-signup legend{font-weight:700}
+.interest-signup input[type=email]{display:block;width:100%;min-height:48px;padding:.7rem;border:1px solid #829884;border-radius:6px;background:#fff;font:inherit}
+.interest-signup fieldset{border:0;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.6rem}
+.interest-signup fieldset legend{margin-bottom:.5rem}.interest-signup fieldset label{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .65rem;border:1px solid #9ab39b;border-radius:7px;background:#fff;cursor:pointer}
+.interest-signup .interest-signup__consent{display:flex;align-items:flex-start;gap:.55rem;max-width:70ch;font-weight:500;line-height:1.5;font-size:.95rem}
+.interest-signup input[type=checkbox]{margin-top:.3rem;flex:none}.interest-signup button{justify-self:start;border:0;border-radius:6px;padding:.85rem 1.2rem;background:#285735;color:#fff;font:inherit;font-weight:800;cursor:pointer}
+.interest-signup button:disabled{opacity:.7;cursor:wait}.interest-signup [role=status]{min-height:1.5em;font-weight:700}
+.interest-signup :focus-visible{outline:3px solid #d27528;outline-offset:3px}

@@ -28,7 +28,13 @@ document.addEventListener("DOMContentLoaded", function () {
     btnSubmit.textContent = "Submit Request";
     submissionGuard.finish();
     formStatus.textContent = "";
+    delete formStatus.dataset.state;
     btnSubmit.focus();
+  }
+
+  function markQuoteSuccess() {
+    const successUrl = `${window.location.origin}${window.location.pathname}?success=1`;
+    window.history.pushState({ quoteSubmitted: true }, "", successUrl);
   }
 
   function handleBackNavigation(event) {
@@ -44,20 +50,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function setError(input, message) {
     if (!input) return;
+    const errorId = `${input.id}-error`;
     let errorElem = input.nextElementSibling;
     if (errorElem && errorElem.classList.contains("error-message")) {
       errorElem.textContent = message;
     } else {
       const span = document.createElement("span");
+      span.id = errorId;
       span.className = "error-message";
       span.style.cssText = "color: #b91c1c; font-family: 'JetBrains Mono'; font-size: 0.75rem; margin-top: 4px; display: block; font-weight: bold;";
       span.textContent = `> ERR: ${message}`;
       input.insertAdjacentElement("afterend", span);
     }
+    input.setAttribute("aria-invalid", "true");
+    input.setAttribute("aria-describedby", errorId);
   }
 
   function clearErrors() {
     document.querySelectorAll(".error-message").forEach((elem) => elem.remove());
+    form.querySelectorAll('[aria-invalid="true"]').forEach((input) => {
+      input.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-describedby");
+    });
   }
 
   function validateForm(data) {
@@ -92,8 +106,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const errors = validateForm(data);
     if (errors.length > 0) {
+      window.bentosTrack?.("estimate_form_error", { error_type: "validation" });
       errors.forEach(({ field, message }) => setError(document.getElementById(field), message));
-      document.querySelector(".error-message").scrollIntoView({ behavior: "smooth", block: "center" });
+      const firstInvalid = document.getElementById(errors[0].field);
+      firstInvalid.focus();
+      firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
@@ -107,8 +124,10 @@ document.addEventListener("DOMContentLoaded", function () {
       formStatus.dataset.state = "processing";
       window.bentosTrack?.("estimate_form_attempt");
       await sendFormSubmit(form.action, new FormData(form));
-      window.bentosTrack?.("generate_lead");
+      window.bentosTrack?.("generate_lead", { lead_category: window.bentosLeadCategory?.(form) || "other" });
+      markQuoteSuccess();
       formStatus.textContent = "";
+      delete formStatus.dataset.state;
       successModal.style.display = "flex";
       successModal.setAttribute("role", "dialog");
       successModal.setAttribute("aria-modal", "true");
@@ -117,13 +136,16 @@ document.addEventListener("DOMContentLoaded", function () {
       form.reset();
 
     } catch (err) {
+      window.bentosTrack?.("estimate_form_error", { error_type: "delivery" });
       console.error("Submission failed:", err);
       btnSubmit.disabled = false;
       btnSubmit.textContent = originalText;
       formStatus.dataset.state = "error";
-      formStatus.textContent = err.cause === "http"
-        ? "We could not accept your request. Please try again or call (678) 571-7028."
-        : "We could not connect. Check your connection and try again; your form entries are still here.";
+      formStatus.textContent = err.cause === "timeout"
+        ? "We could not confirm your request. Your entries remain on this page. Please use the call or text buttons below before resubmitting."
+        : err.cause === "http"
+        ? "We could not confirm your request. Your entries remain on this page. Please try again or use the call or text buttons below."
+        : "We could not connect. Your entries remain on this page. Check your connection and try again, or use the call or text buttons below.";
       submissionGuard.finish();
     }
   });
