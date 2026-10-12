@@ -95,13 +95,7 @@
     }
   }, true);
 
-  // Give every public content page a direct mobile path to call, text, or request an estimate.
-  // Pages with a purpose-built action bar keep their existing, more specific version.
-  function addMobileLeadActions() {
-    if (document.querySelector('.mobile-lead-actions') || document.body?.dataset.disableLeadBar === 'true') return;
-
-    const path = window.location.pathname.toLowerCase().replace(/\.html$/, '');
-    if (/^\/(free-quote|404|admin)(\/|$)/.test(path)) return;
+  function inferService(path) {
     const serviceRules = [
       [/roof/, 'roofing'],
       [/(custom-home|new-construction)/, 'new-construction'],
@@ -111,7 +105,17 @@
       [/floor/, 'flooring'],
       [/paint/, 'painting']
     ];
-    const service = serviceRules.find(([pattern]) => pattern.test(path))?.[1] || '';
+    return serviceRules.find(([pattern]) => pattern.test(path))?.[1] || '';
+  }
+
+  // Give every public content page a direct mobile path to call, text, or request an estimate.
+  // Pages with a purpose-built action bar keep their existing, more specific version.
+  function addMobileLeadActions() {
+    if (document.querySelector('.mobile-lead-actions') || document.body?.dataset.disableLeadBar === 'true') return;
+
+    const path = window.location.pathname.toLowerCase().replace(/\.html$/, '');
+    if (/^\/(free-quote|404|admin)(\/|$)/.test(path)) return;
+    const service = inferService(path);
     const source = path.replace(/^\/+|\/+$/g, '').replace(/[^a-z0-9-]/g, '') || 'home';
     const quote = new URL('/free-quote', window.location.origin);
     if (service) quote.searchParams.set('service', service);
@@ -147,10 +151,14 @@
       '<p class="project-planner__eyebrow">Not sure where to start?</p>' +
       '<strong>Tell us what you are planning.</strong>' +
       '<p>Share your project details when you are ready. Browsing the site does not add you to a marketing list.</p>' +
-      '<a href="/free-quote?source=project-planner">Start my project request</a>' +
-      '<small>Prefer a conversation? <a href="tel:+16785717028">Call Bento’s Group</a></small>' +
+      '<a href="/free-quote?source=project-helper">Start my project request</a>' +
+      '<small>Prefer a conversation? <a href="tel:+16785717028">Call Bento’s Group</a> · <a href="sms:+16785717028">Text photos</a></small>' +
       '</div>';
     document.body.appendChild(planner);
+
+    const service = inferService(path);
+    const requestLink = planner.querySelector('a[href^="/free-quote"]');
+    if (service) requestLink.setAttribute('href', requestLink.getAttribute('href') + '&service=' + encodeURIComponent(service));
 
     const toggle = planner.querySelector('.project-planner__toggle');
     const panel = planner.querySelector('.project-planner__panel');
@@ -200,6 +208,8 @@
   }
 
   function addLeadTools() {
+    // Mobile contact actions and the desktop planner replace browser-only chat.
+    document.querySelectorAll('.chat-fab, .chat-container').forEach(element => element.remove());
     addQuoteDiagnostics();
     addMobileLeadActions();
     addProjectPlanner();

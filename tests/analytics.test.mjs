@@ -115,7 +115,7 @@ test('content pages receive an optional, accessible desktop project planner',()=
  assert.equal(panel.hidden,false);
  assert.equal(toggle.getAttribute('aria-expanded'),'true');
  const quote=new URL(panel.querySelector('a[href^="/free-quote"]').href);
- assert.equal(quote.searchParams.get('source'),'project-planner');
+ assert.equal(quote.searchParams.get('source'),'project-helper');
  assert.ok(!planner.textContent.includes('private@example.com'));
  planner.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
  assert.equal(panel.hidden,true);
