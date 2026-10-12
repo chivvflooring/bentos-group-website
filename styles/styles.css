@@ -602,6 +602,30 @@ footer {
     background: #dfdcd3;
 }
 
+.chat-contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    background: #fff;
+    border-bottom: 1px solid #d8dfd4;
+}
+
+.chat-contact-actions a {
+    padding: 8px 10px;
+    border-radius: 4px;
+    background: #2c5531;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.chat-contact-actions a:focus-visible {
+    outline: 3px solid #b78628;
+    outline-offset: 2px;
+}
+
 /* Layout base da mensagem */
 .message-wrapper {
     display: flex;
