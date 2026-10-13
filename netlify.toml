@@ -38,3 +38,9 @@
 
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# Keep CMS administration out of public search results while allowing recrawling.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

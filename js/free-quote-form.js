@@ -123,7 +123,12 @@ document.addEventListener("DOMContentLoaded", function () {
       formStatus.textContent = "Sending your request…";
       formStatus.dataset.state = "processing";
       window.bentosTrack?.("estimate_form_attempt");
-      await sendFormSubmit(form.action, new FormData(form));
+      const formData = new FormData(form);
+      // FormSubmit uses _replyto for a verified customer reply address.
+      // Never send an empty or unvalidated reply header.
+      formData.delete('_replyto');
+      if (data.email) formData.set('_replyto', data.email);
+      await sendFormSubmit(form.action, formData);
       window.bentosTrack?.("generate_lead", { lead_category: window.bentosLeadCategory?.(form) || "other" });
       markQuoteSuccess();
       formStatus.textContent = "";

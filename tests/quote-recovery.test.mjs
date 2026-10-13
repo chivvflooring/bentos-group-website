@@ -73,3 +73,17 @@ test('direct contact recovery works without form submission and tracks clicks se
   assert.ok(!JSON.stringify(w.dataLayer).includes('Test Homeowner'));
   assert.ok(!JSON.stringify(w.dataLayer).includes('6785551234'));
 });
+
+for (const [field, value] of [['client-name', '   '], ['client-phone', 'abc'], ['location', '  ']]) {
+  test(`fallback rejects unusable ${field} without contacting provider`, async t => {
+    const { w, d, submit } = await fallbackForm(t);
+    let requests = 0;
+    w.fetch = async () => { requests++; throw new Error('must not send'); };
+    d.getElementById(field).value = value;
+    submit(); await tick();
+    assert.equal(requests, 0);
+    assert.equal(d.activeElement.id, field);
+    assert.equal(d.querySelector('.btn-submit').disabled, false);
+    assert.equal((w.dataLayer || []).filter(e => e.event === 'generate_lead').length, 0);
+  });
+}

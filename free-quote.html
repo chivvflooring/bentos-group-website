@@ -281,6 +281,20 @@
           event.preventDefault();
           if (submitButton.disabled || form.elements._honey.value) return;
           if (!form.reportValidity()) return;
+          const requiredDetails = [
+            ['client-name', value => value.trim().length >= 2, 'Please enter your name.'],
+            ['client-phone', value => value.replace(/\D/g, '').length >= 7, 'Please enter a usable phone number.'],
+            ['location', value => value.trim().length >= 2, 'Please enter your project city or ZIP.']
+          ];
+          for (const [id, valid, message] of requiredDetails) {
+            const input = document.getElementById(id);
+            if (!valid(input.value)) {
+              window.bentosTrack?.('estimate_form_error', { error_type: 'validation' });
+              status.textContent = message;
+              input.focus();
+              return;
+            }
+          }
           const email = document.getElementById('client-email');
           if (document.getElementById('contact-preference').value === 'Email' && !email.value.trim()) {
             window.bentosTrack?.('estimate_form_error', { error_type: 'validation' });
@@ -307,6 +321,8 @@
             // Match the module handler: FormSubmit needs repeated checkbox
             // values combined into one field to retain every selected service.
             const formData = new FormData(form);
+            formData.delete('_replyto');
+            if (email.value.trim()) formData.set('_replyto', email.value.trim());
             for (const fieldName of new Set(formData.keys())) {
               const values = formData.getAll(fieldName);
               if (values.length > 1 && values.every(value => typeof value === 'string')) {
