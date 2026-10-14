@@ -14,6 +14,37 @@ function quoteAt(url) {
   return dom;
 }
 
+for (const [slug, city] of [
+  ['flooring-solutions-johns-creek-ga', 'Johns Creek, GA'],
+  ['flooring-solutions-cumming-ga', 'Cumming, GA']
+]) {
+  test(`${slug} keeps city, project and attribution from mobile and project estimate links`, t => {
+    const page = new JSDOM(fs.readFileSync(`${slug}.html`, 'utf8'), {
+      url: `https://bentos-group.com/${slug}?campaign=flooring-instagram-organic`, runScripts: 'outside-only'
+    });
+    t.after(() => page.window.close());
+    page.window.eval(events);
+    page.window.document.dispatchEvent(new page.window.Event('DOMContentLoaded'));
+    const links = [...page.window.document.querySelectorAll('.project-proof a[href*="/free-quote"], .mobile-estimate')];
+    assert.equal(links.length, 3);
+    for (const link of links) {
+      const quote = quoteAt(link.href);
+      t.after(() => quote.window.close());
+      const d = quote.window.document;
+      const data = new quote.window.FormData(d.querySelector('form'));
+      assert.equal(data.get('Service'), 'Flooring');
+      assert.equal(d.querySelector('#location').value, city);
+      assert.equal(data.get('Inquiry Source Page'), `/${slug}`);
+      assert.equal(data.get('Campaign Tag'), 'flooring-instagram-organic');
+      const project = new URL(link.href).searchParams.get('flooring_project');
+      assert.equal(data.get('Flooring Project Type'), project === 'refinishing' ? 'Hardwood refinishing' : project === 'replacement' ? 'Replace existing flooring' : '');
+      assert.ok(!(quote.window.dataLayer || []).some(e => e.event === 'generate_lead'));
+    }
+    assert.equal(page.window.document.querySelector('.mobile-lead-actions a[href^="tel:"]').getAttribute('href'), 'tel:+16785717028');
+    assert.equal(page.window.document.querySelector('.mobile-lead-actions a[href^="sms:"]').getAttribute('href'), 'sms:+16785717028');
+  });
+}
+
 test('flooring project cards preserve the selected project and campaign in the submitted fields', t => {
   const page = new JSDOM(fs.readFileSync('flooring.html','utf8'), {url:'https://bentos-group.com/flooring?campaign=flooring-instagram-organic',runScripts:'outside-only'});
   t.after(() => page.window.close());
