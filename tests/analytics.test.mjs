@@ -2,6 +2,42 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { JSDOM } from 'jsdom';
+test('a success URL alone never records a quote or opens a confirmation', async t => {
+ const dom = new JSDOM(fs.readFileSync('free-quote.html', 'utf8'), {url:'https://bentos-group.com/free-quote?success=1',runScripts:'outside-only'});
+ t.after(() => dom.window.close());
+ const w = dom.window;
+ await new Promise(resolve => w.addEventListener('load', resolve));
+ const helper = await import('../js/form-submit.js');
+ w.createSubmissionGuard = helper.createSubmissionGuard;
+ w.sendFormSubmit = () => { throw new Error('page load cannot submit'); };
+ w.eval(fs.readFileSync('js/analytics.js', 'utf8'));
+ w.eval(fs.readFileSync('js/lead-events.js', 'utf8'));
+ w.eval(fs.readFileSync('js/free-quote-form.js','utf8').replace(/^import .*;\n/,''));
+ w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
+ assert.notEqual(w.document.querySelector('#successModal').style.display, 'flex');
+ assert.equal(w.dataLayer.filter(x=>x[0]==='event' && ['generate_lead','ads_conversion_Request_quote_1'].includes(x[1])).length,0);
+ assert.equal(w.dataLayer.find(x=>x[0]==='config')[2].page_location,'https://bentos-group.com/free-quote');
+});
+
+test('QA exclusion requires both the explicit test label and owner address', t => {
+ for (const [name, email, expected] of [
+  ['SYSTEM TEST NOT A CUSTOMER BENTO-QA-FRESH', ' CharlesBGroup@gmail.com ', 'quote_test_success'],
+  ['Charles Silva', 'charlesbgroup@gmail.com', 'generate_lead'],
+  ['SYSTEM TEST NOT A CUSTOMER BENTO-QA-FRESH', 'customer@example.com', 'generate_lead']
+ ]) {
+  const dom = new JSDOM('<form><input id="client-name"><input id="client-email"></form>',{url:'https://bentos-group.com/free-quote',runScripts:'outside-only'});
+  t.after(()=>dom.window.close());
+  const w=dom.window;
+  w.eval(fs.readFileSync('js/lead-events.js','utf8'));
+  w.document.querySelector('#client-name').value=name;
+  w.document.querySelector('#client-email').value=email;
+  w.bentosTrackQuote(w.document.querySelector('form'));
+  assert.equal(w.dataLayer.at(-1).event,expected);
+  assert.ok(!JSON.stringify(w.dataLayer).includes(email.trim()));
+  assert.ok(!JSON.stringify(w.dataLayer).includes(name));
+ }
+});
+
 test('production GA4 initializes once and forwards approved events without URL queries', () => {
  const dom = new JSDOM('<head></head><body></body>', {url:'https://bentos-group.com/free-quote?email=private@example.com',runScripts:'outside-only'});
  const w=dom.window;

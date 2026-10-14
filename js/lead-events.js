@@ -51,7 +51,7 @@
     }
   }
 
-  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'phone_click', 'text_click', 'email_click', 'interest_signup', 'project_video_play', 'booking_click']);
+  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'quote_test_success', 'phone_click', 'text_click', 'email_click', 'interest_signup', 'project_video_play', 'booking_click']);
   const services = new Set(['new-construction', 'full-renovation', 'site-development', 'flooring', 'kitchen', 'bathroom', 'painting', 'roofing', 'home-addition']);
   const topics = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
   const leadCategories = new Set(['new-construction', 'site-development', 'renovations', 'kitchens', 'bathrooms', 'flooring', 'other']);
@@ -70,14 +70,24 @@
     window.dataLayer.push({ event, ...params });
     if (window.bentosAnalyticsReady && typeof window.gtag === 'function') {
       window.gtag('event', event, { send_to: 'G-XRBMTBNP58', ...params });
-      // The Ads conversion imports this GA4 event. The quote form uses AJAX and
-      // history.pushState, so its success URL does not trigger a page-load event.
+      // The existing Ads conversion imports this event. Send it only after
+      // provider acceptance, never from a success URL or a contact-button click.
       if (event === 'generate_lead') {
         window.gtag('event', 'ads_conversion_Request_quote_1', {
           send_to: 'G-XRBMTBNP58', page_path: page
         });
       }
     }
+  };
+  window.bentosTrackQuote = function (form) {
+    // These explicitly labeled owner QA requests exercise delivery without
+    // becoming business leads. Inspect locally; never forward these fields.
+    const name = form.querySelector('#client-name')?.value.trim() || '';
+    const email = form.querySelector('#client-email')?.value.trim().toLowerCase() || '';
+    const ownerTest = name.startsWith('SYSTEM TEST NOT A CUSTOMER BENTO-QA') && email === 'charlesbgroup@gmail.com';
+    window.bentosTrack(ownerTest ? 'quote_test_success' : 'generate_lead', {
+      lead_category: window.bentosLeadCategory?.(form) || 'other'
+    });
   };
   document.addEventListener('click', function (event) {
     const link = event.target.closest?.('a[href]');
