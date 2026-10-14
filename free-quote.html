@@ -255,8 +255,8 @@
         const modal = document.getElementById('successModal');
         if (!form || !submitButton || !status || !modal) return;
         function markQuoteSuccess() {
-          const successUrl = `${window.location.origin}${window.location.pathname}?success=1`;
-          window.history.pushState({ quoteSubmitted: true }, '', successUrl);
+          // Count the accepted response, not a synthetic success page view.
+          window.history.replaceState({ quoteSubmitted: true }, '', window.location.pathname);
         }
         modal.addEventListener('keydown', function (event) {
           if (event.key === 'Escape') { event.preventDefault(); document.querySelector('.btn-reset').click(); }
@@ -342,7 +342,7 @@
               const result = await response.json();
               if (result.success !== true && result.success !== 'true') throw new Error('Request not accepted');
             })()]);
-            window.bentosTrack?.('generate_lead', { lead_category: window.bentosLeadCategory?.(form) || 'other' });
+            window.bentosTrackQuote?.(form);
             markQuoteSuccess();
             status.textContent = '';
             delete status.dataset.state;

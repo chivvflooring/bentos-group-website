@@ -10,11 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const submissionGuard = createSubmissionGuard();
   form.dataset.submitHandler = "module";
 
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('success') === '1') {
-    document.querySelector('.modal-success').style.display = 'flex';
-  }
-
   const origin = window.location.origin;
   const path = window.location.pathname;
   const directory = path.substring(0, path.lastIndexOf('/'));
@@ -33,8 +28,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function markQuoteSuccess() {
-    const successUrl = `${window.location.origin}${window.location.pathname}?success=1`;
-    window.history.pushState({ quoteSubmitted: true }, "", successUrl);
+    // The provider's accepted response is the conversion signal. A synthetic
+    // success URL can also match GA4 page-view rules and double-count the quote.
+    window.history.replaceState({ quoteSubmitted: true }, "", window.location.pathname);
   }
 
   function handleBackNavigation(event) {
@@ -129,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
       formData.delete('_replyto');
       if (data.email) formData.set('_replyto', data.email);
       await sendFormSubmit(form.action, formData);
-      window.bentosTrack?.("generate_lead", { lead_category: window.bentosLeadCategory?.(form) || "other" });
+      window.bentosTrackQuote?.(form);
       markQuoteSuccess();
       formStatus.textContent = "";
       delete formStatus.dataset.state;

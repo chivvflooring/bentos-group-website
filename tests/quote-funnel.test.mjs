@@ -34,7 +34,7 @@ import fs from 'node:fs'; import assert from 'node:assert/strict';
   assert.equal(w.document.querySelector('#client-name-error').className,'error-message');
   dom.window.close();
  }
- for(const moduleEnabled of [true,false]) for(const accepted of [true,false]) {
+ for(const moduleEnabled of [true,false]) for(const accepted of [true,false]) for(const ownerTest of [true,false]) {
   const dom=new JSDOM(fs.readFileSync('free-quote.html','utf8'),{url:'http://localhost/free-quote.html?service=flooring&city=johns-creek&appointment=showroom&source=johns-creek-flooring&campaign=flooring-instagram-organic',runScripts:'outside-only'});
   const w=dom.window; await new Promise(r=>w.addEventListener('load',r));
   let requests=0;
@@ -61,29 +61,32 @@ import fs from 'node:fs'; import assert from 'node:assert/strict';
   assert.equal(d.querySelector('#flooring-details').hidden,false);
   assert.equal(d.querySelector('input[name="_subject"]').value,'New Flooring Estimate Request');
   assert.match(d.querySelector('#success-text-link').href,/submitted%20a%20flooring%20estimate/);
-  d.querySelector('#client-email').value='test@example.com';
-  d.querySelector('#client-name').value='Test Homeowner';d.querySelector('#client-phone').value='6785551234';
+  d.querySelector('#client-email').value=ownerTest?'charlesbgroup@gmail.com':'test@example.com';
+  const submittedName=ownerTest?'SYSTEM TEST NOT A CUSTOMER BENTO-QA-REGRESSION':'Test Homeowner';
+  d.querySelector('#client-name').value=submittedName;d.querySelector('#client-phone').value='6785551234';
   d.querySelector('input[name="Service"][value="Bathroom Remodeling"]').checked=true;
   d.querySelector('#reformaForm').dispatchEvent(new w.Event('submit',{cancelable:true,bubbles:true}));
   await new Promise(r=>setTimeout(r,20));
   assert.equal((w.dataLayer||[]).filter(x=>x.event==='estimate_form_error' && x.error_type==='delivery').length,accepted?0:1);
-  assert.equal(deliveredReplyTo,'test@example.com');
+  assert.equal(deliveredReplyTo,ownerTest?'charlesbgroup@gmail.com':'test@example.com');
   assert.equal(requests,1,`one request: module=${moduleEnabled}`);
   assert.equal(deliveredServices.length,1,`provider receives one combined Service field: module=${moduleEnabled}`);
   assert.ok(deliveredServices[0].includes('Flooring'));
   assert.ok(deliveredServices[0].includes('Bathroom Remodeling'));
   assert.deepEqual(Array.from(deliveredCampaign),['flooring-instagram-organic'],`campaign survives submission: module=${moduleEnabled}`);
-  assert.equal((w.dataLayer||[]).filter(x=>x.event==='generate_lead').length,accepted?1:0);
-  assert.equal(ga4Events.filter(x=>x[0]==='event'&&x[1]==='ads_conversion_Request_quote_1').length,accepted?1:0);
-  assert.ok(!JSON.stringify(w.dataLayer).includes('Test Homeowner'));
+  assert.equal((w.dataLayer||[]).filter(x=>x.event==='generate_lead').length,accepted&&!ownerTest?1:0);
+  assert.equal(ga4Events.filter(x=>x[0]==='event'&&x[1]==='ads_conversion_Request_quote_1').length,accepted&&!ownerTest?1:0);
+  assert.equal((w.dataLayer||[]).filter(x=>x.event==='quote_test_success').length,accepted&&ownerTest?1:0);
+  assert.ok(!JSON.stringify(w.dataLayer).includes(submittedName));
+  assert.ok(!JSON.stringify(ga4Events).includes('charlesbgroup@gmail.com'));
   assert.ok(!JSON.stringify(ga4Events).includes('Test Homeowner'));
   assert.ok(!JSON.stringify(ga4Events).includes('6785551234'));
   if(accepted){
-   assert.equal(w.location.search,'?success=1');
+   assert.equal(w.location.search,'', 'accepted quotes must not also trigger a success-URL conversion rule');
    assert.equal(d.activeElement.id,'success-title');d.querySelector('.btn-reset').click();
    assert.equal(w.location.search,'');
    assert.equal(d.querySelector('.btn-submit').disabled,false);
-  } else { assert.equal(d.querySelector('#client-name').value,'Test Homeowner'); assert.equal(d.querySelector('.btn-submit').disabled,false); }
+  } else { assert.equal(d.querySelector('#client-name').value,submittedName); assert.equal(d.querySelector('.btn-submit').disabled,false); }
   dom.window.close();
  }
  console.log('PASS: accessible validation, main + fallback, one request, accepted/rejected responses, preserved failure entries, context, modal reset, privacy.');
