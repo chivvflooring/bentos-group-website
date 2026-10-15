@@ -94,3 +94,18 @@ test('partial, duplicate and unknown profile parameters are not attributed', () 
     dom.window.close();
   }
 });
+
+test('Nextdoor profile label survives service navigation to the quote without carrying private parameters', () => {
+  const landing = page('index.html', 'https://bentos-group.com/?utm_source=nextdoor&utm_medium=organic_social&utm_campaign=business_profile&email=private@example.com');
+  const serviceLink = landing.window.document.querySelector('a[href*="flooring"]');
+  assert.ok(!serviceLink.href.includes('private'));
+  const service = page('flooring.html', serviceLink.href);
+  const quote = page('free-quote.html', service.window.document.querySelector('a[href*="free-quote"]').href);
+  const data = new quote.window.FormData(quote.window.document.getElementById('reformaForm'));
+  assert.equal(data.get('Campaign Tag'), 'nextdoor-profile-organic');
+  assert.equal(data.get('Campaign Label'), 'Nextdoor organic — Business profile');
+  for (const dom of [landing, service, quote]) dom.window.close();
+  const ambiguous = page('free-quote.html', 'https://bentos-group.com/free-quote?utm_source=nextdoor&utm_source=instagram&utm_medium=organic_social&utm_campaign=business_profile');
+  assert.equal(ambiguous.window.document.querySelector('[name="Campaign Tag"]'), null);
+  ambiguous.window.close();
+});

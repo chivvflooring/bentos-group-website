@@ -5,6 +5,7 @@
   // A label describes a link, not proof that a paid impression/click occurred.
   const campaigns = new Map([
     ['instagram-profile-organic', 'Instagram organic — Profile'],
+    ['nextdoor-profile-organic', 'Nextdoor organic — Business profile'],
     ['flooring-instagram-organic', 'Instagram organic — Flooring'],
     ['flooring-facebook-organic', 'Facebook organic — Flooring'],
     ['flooring-google-business', 'Google Business Profile — Flooring'],
@@ -20,9 +21,15 @@
       const values = landingParams.getAll(key);
       return values.length === 1 && values[0] === value;
     });
+  const nextdoorProfile = [['utm_source', 'nextdoor'], ['utm_medium', 'organic_social'], ['utm_campaign', 'business_profile']]
+    .every(([key, value]) => {
+      const values = landingParams.getAll(key);
+      return values.length === 1 && values[0] === value;
+    });
   const campaignId = campaignValues.length === 1 && campaigns.has(campaignValues[0])
     ? campaignValues[0]
-    : campaignValues.length === 0 && instagramProfile ? 'instagram-profile-organic' : '';
+    : campaignValues.length === 0 && instagramProfile ? 'instagram-profile-organic'
+    : campaignValues.length === 0 && nextdoorProfile ? 'nextdoor-profile-organic' : '';
 
   function decorateCampaignLink(link) {
     if (!campaignId || link.hasAttribute('download')) return;
