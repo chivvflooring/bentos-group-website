@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
       span.id = errorId;
       span.className = "error-message";
       span.style.cssText = "color: #b91c1c; font-family: 'JetBrains Mono'; font-size: 0.75rem; margin-top: 4px; display: block; font-weight: bold;";
-      span.textContent = `> ERR: ${message}`;
+      span.textContent = message;
       input.insertAdjacentElement("afterend", span);
     }
     input.setAttribute("aria-invalid", "true");
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const errors = [];
     if (!data.name || data.name.length < 2) errors.push({ field: "client-name", message: "Name too short." });
     if ((data.email || document.getElementById("contact-preference").value === "Email") && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.push({ field: "client-email", message: "Invalid address." });
-    if (!data.phone || data.phone.replace(/\D/g, "").length < 7) errors.push({ field: "client-phone", message: "Check phone number." });
+    if ((data.phone || document.getElementById("contact-preference").value !== "Email") && data.phone.replace(/\D/g, "").length < 7) errors.push({ field: "client-phone", message: "Check phone number." });
     if (!data.location || data.location.length < 2) errors.push({ field: "location", message: "Required field." });
     return errors;
   }
