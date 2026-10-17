@@ -91,7 +91,8 @@
     // becoming business leads. Inspect locally; never forward these fields.
     const name = form.querySelector('#client-name')?.value.trim() || '';
     const email = form.querySelector('#client-email')?.value.trim().toLowerCase() || '';
-    const ownerTest = name.startsWith('SYSTEM TEST NOT A CUSTOMER BENTO-QA') && email === 'charlesbgroup@gmail.com';
+    const testLabel = name.replace(/[—–-]+/g, ' ').replace(/\s+/g, ' ').toUpperCase();
+    const ownerTest = testLabel.startsWith('SYSTEM TEST NOT A CUSTOMER BENTO QA') && email === 'charlesbgroup@gmail.com';
     window.bentosTrack(ownerTest ? 'quote_test_success' : 'generate_lead', {
       lead_category: window.bentosLeadCategory?.(form) || 'other'
     });
