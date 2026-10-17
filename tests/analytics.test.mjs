@@ -22,6 +22,7 @@ test('a success URL alone never records a quote or opens a confirmation', async 
 test('QA exclusion requires both the explicit test label and owner address', t => {
  for (const [name, email, expected] of [
   ['SYSTEM TEST NOT A CUSTOMER BENTO-QA-FRESH', ' CharlesBGroup@gmail.com ', 'quote_test_success'],
+  ['SYSTEM TEST — NOT A CUSTOMER — BENTO-QA-20261012-1651', 'charlesbgroup@gmail.com', 'quote_test_success'],
   ['Charles Silva', 'charlesbgroup@gmail.com', 'generate_lead'],
   ['SYSTEM TEST NOT A CUSTOMER BENTO-QA-FRESH', 'customer@example.com', 'generate_lead']
  ]) {
