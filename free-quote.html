@@ -10,7 +10,7 @@
 
     <title>Quote Request | Bento's Group</title>
     <meta name="description"
-        content="Request a free quote for flooring, remodeling, and home improvement services with Bento’s Group. Fast response and no obligation.">
+        content="Request a free quote for flooring, remodeling, and home improvement services with Bento’s Group. Choose phone, text or email contact. Measurements and budget are optional.">
     <link rel="canonical" href="https://bentos-group.com/free-quote" />
 
     <style>
@@ -20,9 +20,9 @@
         body { background-color:#f1f5f9; font-family:'Outfit',sans-serif; display:flex; flex-direction:column; align-items:center; padding:20px 20px 40px; color:var(--slate-800); min-height:100dvh; }
         .back-btn { margin-bottom:20px; border-radius:50%; width:36px; height:36px; background:#1e293b; color:white; text-decoration:none; display:flex; justify-content:center; align-items:center; align-self:start; }
         .scroll-container { width:100%; display:flex; justify-content:center;  padding-bottom:40px; scrollbar-width:thin; scrollbar-color:var(--grid-color) transparent; }
-        .blueprint-canvas { background-color:#fff; width:100%; max-width:850px; height:fit-content; border:2px solid var(--border-color); position:relative; box-shadow:15px 15px 0 rgba(0,0,0,.05); background-image:linear-gradient(var(--grid-color) 1px,transparent 1px),linear-gradient(90deg,var(--grid-color) 1px,transparent 1px); background-size:20px 20px; padding:60px 50px; }
+        .blueprint-canvas { background-color:#fff; width:100%; max-width:850px; height:fit-content; border:2px solid var(--border-color); position:relative; box-shadow:15px 15px 0 rgba(0,0,0,.05);  padding:32px; }
         .blueprint-border { position:absolute; top:15px; left:15px; right:15px; bottom:15px; border:1px solid var(--border-color); pointer-events:none; opacity:.5; }
-        .header-section { border-bottom:3px solid var(--border-color); margin-bottom:40px; padding-bottom:20px; display:flex; justify-content:space-between; align-items:flex-end; }
+        .header-section { border-bottom:3px solid var(--border-color); margin-bottom:20px; padding-bottom:16px; display:flex; justify-content:space-between; align-items:flex-end; }
         .header-title h1 { font-size:1.8rem; text-transform:uppercase; letter-spacing:-1px; font-weight:700; }
         .tech-label { font-family:'JetBrains Mono',monospace; font-size:.7rem; text-transform:uppercase; color:var(--blueprint-green); font-weight:bold; margin-bottom:5px; display:block; }
         .status-badge { text-align:right; }
@@ -36,17 +36,18 @@
         .next-steps { margin-top:24px; line-height:1.6; }
         .modal-content { width:min(600px,100%); padding:24px; max-height:90dvh; overflow:auto; }
         .modal-content a { color:white; }
-        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:25px; }
+        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
         .full-row { grid-column:span 2; }
         .input-group { display:flex; flex-direction:column; }
-        .form-control { background:rgba(255,255,255,.7); border:1px solid #cbd5e1; border-bottom:2px solid var(--border-color); padding:12px; font-family:'JetBrains Mono',monospace; font-size:.9rem; transition:all .2s ease; }
+        .form-control { background:rgba(255,255,255,.7); border:1px solid #cbd5e1; border-bottom:2px solid var(--border-color); min-height:48px; padding:12px; font-family:'Outfit',sans-serif; font-size:1rem; transition:all .2s ease; }
         .form-control:focus { outline:none; background:#fff; border-bottom-color:var(--accent-orange); }
         textarea.form-control { resize:vertical; min-height:120px; }
         .services-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:10px; }
         .checkbox-item { display:flex; align-items:center; font-size:.85rem; cursor:pointer; }
         .checkbox-item input { margin-right:8px; accent-color:var(--accent-orange); }
-        .stamp-area { margin-top:50px; display:flex; justify-content:flex-end; }
-        .stamp-box { border:2px solid var(--border-color); padding:20px; background:white; text-align:center; min-width:250px; }
+        .stamp-area { margin-top:24px; display:flex; justify-content:flex-end; }
+        .stamp-box { width:100%; border:2px solid var(--border-color); padding:20px; background:white; text-align:center; min-width:0; }
+        .form-privacy { font-size:.9rem; line-height:1.5; margin-bottom:14px; }
         .stamp-signature { font-size:.7rem; color:var(--slate-400); font-style:italic; margin:10px 0 15px; }
         .btn-submit { background-color:var(--blueprint-green); color:white; border:none; padding:12px 25px; font-family:'JetBrains Mono',monospace; font-weight:bold; text-transform:uppercase; cursor:pointer; width:100%; transition:background .3s; }
         .btn-submit:hover { background-color:var(--accent-orange); }
@@ -66,7 +67,7 @@
         .service-specific[hidden] { display:none; }
         .focus-note { margin:0 0 1rem; padding:12px; border-left:4px solid var(--blueprint-green); background:#eef6ef; }
         .text-photos { display:inline-block; margin-top:14px; padding:10px 14px; border:1px solid currentColor; font-weight:600; }
-        @media (max-width:640px) { .form-grid{grid-template-columns:1fr}.full-row{grid-column:span 1}.blueprint-canvas{padding:40px 20px}.header-section{flex-direction:column;align-items:flex-start;gap:10px}.status-badge{text-align:left} }
+        @media (max-width:640px) { .form-grid{grid-template-columns:1fr}.full-row{grid-column:span 1}.blueprint-canvas{padding:28px 18px}.header-section{flex-direction:column;align-items:flex-start;gap:10px}.status-badge{text-align:left} }
     </style>
     <link rel="icon" type="image/png" href="./assets/favicons/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="./assets/favicons/favicon.svg" />
@@ -75,24 +76,21 @@
     <meta name="apple-mobile-web-app-title" content="Bento's Group" />
 </head>
 <body>
-    <a class="back-btn" href="/">❮</a>
+    <a class="back-btn" href="/" aria-label="Back to Bento’s Group">❮</a>
     <div class="scroll-container"><div class="blueprint-canvas"><div class="blueprint-border"></div>
-        <div class="ruler"><span>0</span><span>|</span><span>|</span><span>|</span><span>|</span><span>5</span><span>|</span><span>|</span><span>|</span><span>|</span><span>10</span></div>
-        <header class="header-section"><div class="header-title"><span class="tech-label">Tell us about your project</span><h1>Request Your Estimate</h1></div><div class="status-badge"><span class="tech-label">Current Status</span><span class="status-text">Quote Request</span></div></header>
-        <p style="margin-bottom: 1.5rem;">Only your name, phone number and project city or ZIP are required. Measurements, budget and project details are optional. Share any other details you know; our team will follow up to discuss the scope and next steps. Prefer to speak with us? <a href="tel:+16785717028">Call (678) 571-7028</a>.</p>
+        <header class="header-section"><div class="header-title"><span class="tech-label">Bento’s Group · North Atlanta</span><h1>Request Your Estimate</h1></div></header>
+        <p style="margin-bottom:1rem;line-height:1.6">Start with your name, project city or ZIP, and your preferred way to hear from us. Measurements, budget and project details are optional.</p>
+        <p style="margin-bottom:1.5rem;line-height:1.6"><a href="https://www.google.com/maps/place/?q=place_id:ChIJMZqmpDSd9YgRtpdKVZnWEsc" target="_blank" rel="noopener noreferrer">Read our Google customer reviews</a> · <a href="tel:+16785717028">Call (678) 571-7028</a></p>
         <form id="reformaForm" action="https://formsubmit.co/charlesbgroup@gmail.com" method="POST">
             <input type="hidden" name="_captcha" value="false"><input type="hidden" name="_next" id="nextField"><input type="hidden" name="_template" value="table"><input type="hidden" name="_subject" value="New Quote Request"><input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
-            <fieldset><legend>Quick Contact</legend><div class="form-grid">
-                <div class="input-group"><label for="client-name" class="tech-label">Full Name *</label><input type="text" id="client-name" name="Name" class="form-control" autocomplete="name" placeholder="John Doe" required></div>
-                <div class="input-group"><label for="client-email" class="tech-label">Email Address (optional)</label><input type="email" id="client-email" name="Email" class="form-control" autocomplete="email" placeholder="email@example.com"></div>
+            <fieldset><legend>Your project contact</legend><div class="form-grid">
+                <div class="input-group"><label for="client-name" class="tech-label">Full Name *</label><input type="text" id="client-name" name="Name" class="form-control" autocomplete="name" placeholder="Your name" required></div>
+                <div class="input-group"><label for="location" class="tech-label">Project City or ZIP *</label><input type="text" id="location" name="Location" class="form-control" autocomplete="postal-code" placeholder="For example: Alpharetta or 30005" required></div>
+                <div class="input-group full-row"><label for="contact-preference" class="tech-label">How should we contact you?</label><select id="contact-preference" name="Preferred Contact Method" class="form-control" aria-describedby="contact-help"><option>No preference</option><option>Phone call</option><option>Text message</option><option>Email</option></select><p id="contact-help" style="margin-top:8px;line-height:1.5" aria-live="polite">Enter your phone number, or choose Email to use only your email address.</p></div>
                 <div class="input-group"><label for="client-phone" class="tech-label">Phone Number *</label><input type="tel" id="client-phone" name="Phone" class="form-control" autocomplete="tel" inputmode="tel" placeholder="(678) 000-0000" required></div>
-                <div class="input-group"><label for="location" class="tech-label">Project Location (City/Zip) *</label><input type="text" id="location" name="Location" class="form-control" autocomplete="postal-code" placeholder="Alpharetta, GA" required></div>
+                <div class="input-group"><label for="client-email" class="tech-label">Email Address (optional)</label><input type="email" id="client-email" name="Email" class="form-control" autocomplete="email" placeholder="email@example.com"></div>
             </div></fieldset>
-            <details class="optional-section"><summary>Contact preferences (optional)</summary><fieldset><legend>How should we follow up?</legend><div class="form-grid">
-                <div class="input-group"><label for="contact-preference" class="tech-label">Preferred Contact Method</label><select id="contact-preference" name="Preferred Contact Method" class="form-control"><option>No preference</option><option>Phone call</option><option>Text message</option><option>Email</option></select></div>
-                <div class="input-group"><label for="contact-time" class="tech-label">Best Time to Reach You</label><input id="contact-time" name="Best Contact Time" class="form-control" placeholder="For example: weekday afternoons"></div>
-            </div></fieldset>
-            </details>
+            <details class="optional-section"><summary>Best time to contact you (optional)</summary><div class="input-group"><label for="contact-time" class="tech-label">Best Time to Reach You</label><input id="contact-time" name="Best Contact Time" class="form-control" placeholder="For example: weekday afternoons"></div></details>
             <details id="custom-home-options" class="optional-section"><summary>Custom home planning details (optional)</summary><fieldset><legend>Your Custom Home</legend>
                 <p>Share what you know now. You can request a conversation before choosing a lot or finishing your plans.</p>
                 <div class="form-grid">
@@ -106,7 +104,7 @@
             <details id="project-details" class="optional-section"><summary>Add project details (optional)</summary><fieldset><legend>Project Details (Optional)</legend><div class="form-grid">
                 <div class="input-group"><label for="floor-area" class="tech-label">Approx. Area (sq ft)</label><input type="number" id="floor-area" name="Square Footage" class="form-control" placeholder="Ex: 2500" min="1"></div>
                 <div id="flooring-details" class="full-row service-specific" hidden>
-                    <p class="focus-note"><strong>Flooring estimate:</strong> approximate information is enough to begin. We will confirm measurements and existing conditions before finalizing the scope.</p>
+                    <p class="focus-note"><strong>Flooring estimate:</strong> approximate information is enough to begin. We will confirm measurements and existing conditions before finalizing the scope. Residential projects focus on hardwood, engineered wood and tile. Vinyl is available for commercial projects.</p>
                     <div class="form-grid">
                         <div class="input-group"><label for="flooring-project-type" class="tech-label">Flooring Project</label><select id="flooring-project-type" name="Flooring Project Type" class="form-control"><option value="">Select the closest match...</option><option>New flooring installation</option><option>Replace existing flooring</option><option>Hardwood refinishing</option><option>Stairs and railings</option><option>Not sure / Need guidance</option></select></div>
                         <div class="input-group"><label for="existing-floor" class="tech-label">Existing Floor</label><select id="existing-floor" name="Existing Flooring" class="form-control"><option value="">Select if known...</option><option>Carpet</option><option>Hardwood</option><option>Engineered hardwood</option><option>Luxury vinyl / Laminate</option><option>Tile</option><option>Concrete / Subfloor</option><option>Mixed surfaces</option><option>Not sure</option></select></div>
@@ -136,7 +134,7 @@
                 <p id="appointment-confirmation" style="margin-top: 1rem;"><strong>This is an appointment request.</strong> Please wait for our team to confirm the date and time before visiting. For your confirmed visit, tell the showroom team you are working with Bento's Group / CHIVV Flooring.</p>
             </fieldset>
             </details><p class="next-steps"><strong>What happens next?</strong> We review your request, contact you about the scope, and arrange a measurement or consultation if appropriate. Showroom visits are confirmed separately.</p>
-            <div class="stamp-area"><div class="stamp-box"><span class="tech-label">Request Estimate</span><p class="stamp-signature">Your details help us respond to your project request</p><p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. The form is processed by FormSubmit.</p><button type="submit" class="btn-submit">Submit Request</button><p id="formStatus" role="status" aria-live="polite"></p>
+            <div class="stamp-area"><div class="stamp-box"><span class="tech-label">Request Estimate</span><p class="stamp-signature">We’ll use your preferred contact method to discuss your project</p><p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. This does not subscribe you to marketing. The form is processed by FormSubmit.</p><button type="submit" class="btn-submit">Submit Request</button><p id="formStatus" role="status" aria-live="polite"></p>
                 <div class="quote-contact-options">
                     <p><strong>Prefer a conversation?</strong><br>Call to discuss your project, or text photos and your city.</p>
                     <nav aria-label="Contact Bento's Group directly">
@@ -153,6 +151,32 @@
       // Carry only known campaign labels and page paths into the inquiry.
       (function prepareQuoteContext() {
         const form = document.getElementById('reformaForm');
+        // Keep native validation and both submit handlers aligned with the
+        // contact method chosen by the visitor. No second contact is required.
+        const contactPreference = document.getElementById('contact-preference');
+        const phoneField = document.getElementById('client-phone');
+        const emailField = document.getElementById('client-email');
+        function updateContactRequirements() {
+          const emailPreferred = contactPreference.value === 'Email';
+          phoneField.required = !emailPreferred;
+          emailField.required = emailPreferred;
+          document.querySelector('label[for="client-phone"]').textContent = emailPreferred ? 'Phone Number (optional)' : 'Phone Number *';
+          document.querySelector('label[for="client-email"]').textContent = emailPreferred ? 'Email Address *' : 'Email Address (optional)';
+          document.getElementById('contact-help').textContent = emailPreferred
+            ? 'We’ll reply by email. You do not need to share a phone number.'
+            : contactPreference.value === 'Text message' ? 'We’ll text about your project. Email is optional.'
+            : contactPreference.value === 'Phone call' ? 'We’ll call about your project. Email is optional.'
+            : 'Enter your phone number, or choose Email to use only your email address.';
+          // Clear errors made obsolete by a change of contact method.
+          [phoneField, emailField].forEach(field => {
+            field.removeAttribute('aria-invalid');
+            field.removeAttribute('aria-describedby');
+            document.getElementById(field.id + '-error')?.remove();
+          });
+        }
+        contactPreference.addEventListener('change', updateContactRequirements);
+        form.addEventListener('reset', () => { setTimeout(updateContactRequirements, 0); });
+        updateContactRequirements();
         const params = new URLSearchParams(window.location.search);
         const services = {flooring: 'Flooring', kitchen: 'Kitchen Remodeling', bathroom: 'Bathroom Remodeling', 'new-construction': 'New Construction', 'site-development': 'Site Development', 'full-renovation': 'Full Renovation', 'home-addition': 'Home Addition', roofing: 'Roofing', painting: 'painting'};
         const cities = {roswell: 'Roswell, GA', alpharetta: 'Alpharetta, GA', 'johns-creek': 'Johns Creek, GA', cumming: 'Cumming, GA', 'sandy-springs': 'Sandy Springs, GA', dunwoody: 'Dunwoody, GA', buckhead: 'Buckhead, Atlanta, GA', atlanta: 'Atlanta, GA', marietta: 'Marietta, GA', woodstock: 'Woodstock, GA', acworth: 'Acworth, GA', milton: 'Milton, GA'};
@@ -281,9 +305,10 @@
           event.preventDefault();
           if (submitButton.disabled || form.elements._honey.value) return;
           if (!form.reportValidity()) return;
+          const emailPreferred = document.getElementById('contact-preference').value === 'Email';
           const requiredDetails = [
             ['client-name', value => value.trim().length >= 2, 'Please enter your name.'],
-            ['client-phone', value => value.replace(/\D/g, '').length >= 7, 'Please enter a usable phone number.'],
+            ['client-phone', value => (emailPreferred && !value.trim()) || value.replace(/\D/g, '').length >= 7, 'Please enter a usable phone number, or choose Email.'],
             ['location', value => value.trim().length >= 2, 'Please enter your project city or ZIP.']
           ];
           for (const [id, valid, message] of requiredDetails) {
@@ -296,9 +321,9 @@
             }
           }
           const email = document.getElementById('client-email');
-          if (document.getElementById('contact-preference').value === 'Email' && !email.value.trim()) {
+          if ((emailPreferred || email.value.trim()) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
             window.bentosTrack?.('estimate_form_error', { error_type: 'validation' });
-            status.textContent = 'Please enter an email address or choose phone/text contact.'; email.focus(); return;
+            status.textContent = 'Please enter a valid email address or choose phone/text contact.'; email.focus(); return;
           }
           window.bentosTrack?.('estimate_form_attempt');
 
