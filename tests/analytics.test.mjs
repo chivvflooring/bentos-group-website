@@ -2,6 +2,38 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { JSDOM } from 'jsdom';
+
+test('remodeling pages use the shared consent and privacy configuration only', t => {
+ for (const file of ['kitchen-remodeling-service.html', 'home-remodeling-alpharetta-ga.html']) {
+  for (const origin of ['https://bentos-group.com', 'https://deploy-preview-83--bentos-group-test.netlify.app']) {
+   const dom = new JSDOM(fs.readFileSync(file, 'utf8'), {
+    url: `${origin}/${file.replace('.html', '')}?email=private@example.com`, runScripts: 'outside-only'
+   });
+   t.after(() => dom.window.close());
+   const w = dom.window;
+   // Execute the real page's head scripts without loading remote resources.
+   for (const script of w.document.head.querySelectorAll('script')) {
+    if (script.type === 'application/ld+json') continue;
+    if (script.getAttribute('src') === '/js/analytics.js') w.eval(fs.readFileSync('js/analytics.js', 'utf8'));
+    else if (!script.src) w.eval(script.textContent);
+   }
+   const configs = (w.dataLayer || []).filter(e => e[0] === 'config');
+   const tags = w.document.querySelectorAll('script[src*="googletagmanager.com/gtag/js"]');
+   if (origin === 'https://bentos-group.com') {
+    assert.equal(configs.length, 1, file);
+    assert.equal(configs[0][1], 'G-XRBMTBNP58');
+    assert.equal(tags.length, 1);
+    assert.equal(w.dataLayer[0][0], 'consent');
+    assert.equal(w.dataLayer[0][2].analytics_storage, 'denied');
+    assert.ok(!JSON.stringify(w.dataLayer).includes('private@example.com'));
+   } else {
+    assert.equal(configs.length, 0, file);
+    assert.equal(tags.length, 0, file);
+   }
+  }
+ }
+});
+
 test('a success URL alone never records a quote or opens a confirmation', async t => {
  const dom = new JSDOM(fs.readFileSync('free-quote.html', 'utf8'), {url:'https://bentos-group.com/free-quote?success=1',runScripts:'outside-only'});
  t.after(() => dom.window.close());
