@@ -8,7 +8,7 @@ for (const [page,source] of [['index','home'],['gallery','gallery']]) {
     const dom = new JSDOM(fs.readFileSync(`${page}.html`,'utf8'));
     const links = [...dom.window.document.querySelectorAll('.project-choice')];
     assert.equal(links.length,4);
-    assert.equal(new URL(links[0].getAttribute('href'),'https://bentos-group.com').searchParams.get('service'),'new-construction');
+    assert.equal(new URL(links[0].getAttribute('href'),'https://bentos-group.com').searchParams.get('service'),page==='index'?'flooring':'new-construction');
     for (const link of links) {
       const href = new URL(link.getAttribute('href'),'https://bentos-group.com');
       assert.equal(href.pathname,'/free-quote');
