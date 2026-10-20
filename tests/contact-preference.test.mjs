@@ -49,6 +49,10 @@ for (const moduleEnabled of [true, false]) {
     assert.equal(w.dataLayer.filter(e => e.event === 'generate_lead').length, 1);
     assert.ok(!JSON.stringify(w.dataLayer).includes('private@example.com'));
     // A successful reset restores the default phone path for another request.
+    // The reset listener updates requirements in a later task, after native
+    // controls reset. Wait for that observable state instead of a 10ms race.
+    const resetDeadline = Date.now() + 1000;
+    while (!d.getElementById('client-phone').required && Date.now() < resetDeadline) await tick();
     assert.equal(d.getElementById('client-phone').required, true);
     assert.equal(d.getElementById('client-email').required, false);
   });
