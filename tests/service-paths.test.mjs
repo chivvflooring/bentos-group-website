@@ -73,6 +73,8 @@ test('kitchen service inquiry buttons select kitchen and preserve the source', (
   assert.equal(form.window.document.querySelector('input[name="Inquiry Source Page"]').value,'/kitchen-remodeling-service');
   form.window.close();
  }
- assert.ok(links.some(a => new URL(a.href).pathname === '/services'));
+ const projectLink = links.find(a => new URL(a.href).hash === '#green-stone-kitchen-title');
+ assert.ok(projectLink, 'hero lets visitors inspect kitchen project evidence before inquiring');
+ assert.ok(page.window.document.querySelector(new URL(projectLink.href).hash), 'project link reaches an existing section');
  page.window.close();
 });
