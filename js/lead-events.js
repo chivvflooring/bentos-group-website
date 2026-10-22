@@ -59,7 +59,7 @@
   }
 
   const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'quote_test_success', 'phone_click', 'text_click', 'email_click', 'interest_signup', 'project_video_play', 'booking_click']);
-  const services = new Set(['new-construction', 'full-renovation', 'site-development', 'flooring', 'kitchen', 'bathroom', 'painting', 'roofing', 'home-addition']);
+  const services = new Set(['new-construction', 'full-renovation', 'site-development', 'flooring', 'kitchen', 'bathroom', 'painting', 'roofing', 'home-addition', 'decks']);
   const topics = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
   const leadCategories = new Set(['new-construction', 'site-development', 'renovations', 'kitchens', 'bathrooms', 'flooring', 'other']);
   window.bentosTrack = function (event, details = {}) {
@@ -131,7 +131,8 @@
       [/kitchen/, 'kitchen'],
       [/bathroom/, 'bathroom'],
       [/floor/, 'flooring'],
-      [/paint/, 'painting']
+      [/paint/, 'painting'],
+      [/deck/, 'decks']
     ];
     return serviceRules.find(([pattern]) => pattern.test(path))?.[1] || '';
   }
