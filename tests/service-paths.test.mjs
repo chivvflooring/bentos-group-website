@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { JSDOM } from 'jsdom';
-for (const [slug, service, value] of [['flooring','flooring','Flooring'],['painting','painting','painting'],['custom-homes','new-construction','New Construction']]) {
+for (const [slug, service, value] of [['flooring','flooring','Flooring'],['painting','painting','painting'],['custom-homes','new-construction','New Construction'],['decks','decks','Decks & Porches']]) {
  test(`${slug} inquiry preserves service selection and source`, () => {
   const page = new JSDOM(fs.readFileSync(`${slug}.html`,'utf8'),{url:`https://bentos-group.com/${slug}`});
   const href=page.window.document.querySelector('.hub-actions a').href;
