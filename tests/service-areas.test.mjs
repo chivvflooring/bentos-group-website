@@ -10,10 +10,10 @@ test('priority service areas expose contextual estimate paths', async () => {
   global.document = dom.window.document;
   await import(`../js/service-areas.js?test=${Date.now()}`);
 
-  const expected = ['alpharetta', 'johns-creek', 'sandy-springs', 'dunwoody', 'buckhead', 'atlanta', 'marietta', 'woodstock', 'acworth'];
+  const expected = ['alpharetta', 'johns-creek', 'sandy-springs', 'dunwoody', 'buckhead', 'atlanta', 'marietta', 'woodstock', 'acworth', 'canton'];
   for (const city of expected) {
     const links = [...document.querySelectorAll(`[data-city="${city}"] .card-actions a`)];
-    assert.equal(links.length, 3);
+    assert.equal(links.length, 8);
     for (const link of links) {
       const url = new URL(link.href);
       assert.equal(url.searchParams.get('city'), city);
