@@ -3,11 +3,27 @@ import { createSubmissionGuard } from './form-submit.js';
 export const INTEREST_TOPICS = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
 
 export async function sendInterestSignup(payload, fetchImpl = fetch) {
-  const response = await fetchImpl('/.netlify/functions/subscribe', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  const controller = new AbortController();
+  let timer;
+  let response;
+  try {
+    response = await Promise.race([
+      fetchImpl('/.netlify/functions/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      }),
+      new Promise((_, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error('Signup confirmation timed out.'));
+          controller.abort();
+        }, 15000);
+      })
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
 
   let result = {};
   try { result = await response.json(); } catch { /* The status still determines the user-facing result. */ }
@@ -51,7 +67,7 @@ document.querySelectorAll('[data-interest-signup]').forEach(form => {
     } catch (error) {
       status.textContent = error.status === 429
         ? 'Please wait a moment before trying again.'
-        : 'We could not save your signup. Your entries are still here; please try again later.';
+        : 'We could not save your signup. Your entries are still here; please try again later. For a project request, use Request an Estimate or call us.';
     } finally {
       button.disabled = false;
       guard.finish();
