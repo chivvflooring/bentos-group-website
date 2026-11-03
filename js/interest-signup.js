@@ -5,15 +5,25 @@ export const INTEREST_TOPICS = new Set(['new-construction', 'renovations', 'site
 export async function sendInterestSignup(payload, fetchImpl = fetch) {
   const controller = new AbortController();
   let timer;
-  let response;
   try {
-    response = await Promise.race([
-      fetchImpl('/.netlify/functions/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      }),
+    return await Promise.race([
+      (async () => {
+        const response = await fetchImpl('/.netlify/functions/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        let result;
+        try { result = await response.json(); }
+        catch { throw new Error('Signup confirmation was not received.'); }
+        if (!response.ok || result?.ok !== true) {
+          const error = new Error(result?.error || 'Signup request was not confirmed.');
+          error.status = response.status;
+          throw error;
+        }
+        return result;
+      })(),
       new Promise((_, reject) => {
         timer = setTimeout(() => {
           reject(new Error('Signup confirmation timed out.'));
@@ -24,15 +34,6 @@ export async function sendInterestSignup(payload, fetchImpl = fetch) {
   } finally {
     clearTimeout(timer);
   }
-
-  let result = {};
-  try { result = await response.json(); } catch { /* The status still determines the user-facing result. */ }
-  if (!response.ok) {
-    const error = new Error(result.error || 'Signup request was not accepted.');
-    error.status = response.status;
-    throw error;
-  }
-  return result;
 }
 
 document.querySelectorAll('[data-interest-signup]').forEach(form => {
@@ -40,6 +41,10 @@ document.querySelectorAll('[data-interest-signup]').forEach(form => {
   const status = form.querySelector('[role="status"]');
   const button = form.querySelector('button[type="submit"]');
   const startedAt = Date.now();
+  const showMissingFields = () => {
+    status.textContent = 'Please enter a valid email address, choose one topic, and check the consent box to receive project ideas. For an estimate, use the separate project request form.';
+  };
+  form.addEventListener('invalid', showMissingFields, true);
 
   form.addEventListener('submit', async event => {
     event.preventDefault();
@@ -68,6 +73,13 @@ document.querySelectorAll('[data-interest-signup]').forEach(form => {
       status.textContent = error.status === 429
         ? 'Please wait a moment before trying again.'
         : 'We could not save your signup. Your entries are still here; please try again later. For a project request, use Request an Estimate or call us.';
+      const estimate = document.createElement('a');
+      estimate.href = '/free-quote';
+      estimate.textContent = 'Request an estimate';
+      const call = document.createElement('a');
+      call.href = 'tel:+16785717028';
+      call.textContent = 'Call (678) 571-7028';
+      status.append(' ', estimate, ' or ', call, '.');
     } finally {
       button.disabled = false;
       guard.finish();
