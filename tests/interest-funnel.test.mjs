@@ -62,3 +62,42 @@ test('rejected signup leaves values available for retry', async () => {
   assert.match(form.querySelector('[role="status"]').textContent, /could not save/i);
   dom.window.close();
 });
+
+test('incomplete signup explains missing fields without creating a subscription', () => {
+  const dom = new JSDOM(fs.readFileSync('index.html', 'utf8'), { url: 'https://bentos-group.com/', runScripts: 'outside-only' });
+  installSignup(dom, () => assert.fail('invalid form must not send'));
+  const form = dom.window.document.querySelector('[data-interest-signup]');
+  form.reportValidity();
+  assert.match(form.querySelector('[role="status"]').textContent, /valid email address, choose one topic, and check the consent box/);
+  dom.window.close();
+});
+
+test('unconfirmed signup responses never claim success or discard entries', async () => {
+  const dom = new JSDOM(fs.readFileSync('index.html', 'utf8'), { url: 'https://bentos-group.com/', runScripts: 'outside-only' });
+  const w = dom.window;
+  w.AbortController = AbortController;
+  w.createSubmissionGuard = createSubmissionGuard;
+  w.HTMLFormElement.prototype.reportValidity = function () { return this.checkValidity(); };
+  w.eval(fs.readFileSync('js/interest-signup.js', 'utf8').replace(/^import .*;\n/, '').replace(/export /g, ''));
+  for (const reply of [
+    { ok: true, status: 200, json: async () => { throw new Error('HTML response'); } },
+    { ok: true, status: 200, json: async () => ({}) },
+    { ok: true, status: 200, json: async () => ({ ok: false }) }
+  ]) {
+    await assert.rejects(w.sendInterestSignup({}, async () => reply));
+  }
+  assert.equal((await w.sendInterestSignup({}, async () => ({ ok: true, status: 201, json: async () => ({ ok: true }) }))).ok, true);
+  w.fetch = async () => ({ ok: true, status: 200, json: async () => ({}) });
+  w.bentosTrack = () => assert.fail('unconfirmed signup must not track a conversion');
+  const form = w.document.querySelector('[data-interest-signup]');
+  form.elements.email.value = 'bento-qa@example.com';
+  form.querySelector('[value="kitchens"]').checked = true;
+  form.elements.consent.checked = true;
+  form.dispatchEvent(new w.Event('submit', { cancelable: true }));
+  await new Promise(resolve => setTimeout(resolve, 0));
+  assert.equal(form.elements.email.value, 'bento-qa@example.com');
+  assert.equal(form.querySelector('button[type="submit"]').disabled, false);
+  assert.equal(form.querySelector('[role="status"] a').getAttribute('href'), '/free-quote');
+  assert.equal(form.querySelector('[role="status"] a:last-of-type').getAttribute('href'), 'tel:+16785717028');
+  dom.window.close();
+});
