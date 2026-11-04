@@ -109,3 +109,18 @@ test('Nextdoor profile label survives service navigation to the quote without ca
   assert.equal(ambiguous.window.document.querySelector('[name="Campaign Tag"]'), null);
   ambiguous.window.close();
 });
+
+test('the exact existing Nextdoor flooring-post link retains its label without private query values', () => {
+  for (const [query, expected] of [
+    ['utm_source=nextdoor&utm_medium=organic_social&utm_campaign=hardwood_oct27&email=private@example.com', 'flooring-nextdoor-organic'],
+    ['utm_source=nextdoor&utm_medium=organic_social&utm_campaign=hardwood_oct27&utm_campaign=other', null],
+    ['utm_source=nextdoor&utm_medium=organic_social&utm_campaign=arbitrary', null]
+  ]) {
+    const dom = page('flooring.html', 'https://bentos-group.com/flooring?' + query);
+    const link = dom.window.document.querySelector('a[href^="/free-quote"]');
+    assert.equal(new URL(link.href).searchParams.get('campaign'), expected);
+    assert.ok(!link.href.includes('private'));
+    assert.ok(!dom.window.dataLayer?.some(item => item.event === 'generate_lead'));
+    dom.window.close();
+  }
+});

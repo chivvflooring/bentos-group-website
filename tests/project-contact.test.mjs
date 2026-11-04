@@ -30,3 +30,16 @@ test('one contact panel replaces the overlapping local chat, routes service inte
     dom.window.close();
   }
 });
+
+test('new service pages preserve shower and basement intent in desktop and mobile estimate links', () => {
+  for (const [path, service] of [['/shower-reconstruction', 'bathroom'], ['/basement-remodeling', 'basement']]) {
+    const dom = new JSDOM('<head></head><body></body>', { url: 'https://bentos-group.com' + path, runScripts: 'outside-only' });
+    const w = dom.window;
+    w.eval(fs.readFileSync('js/lead-events.js', 'utf8'));
+    w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
+    for (const link of w.document.querySelectorAll('a[href^="/free-quote"]')) {
+      assert.equal(new URL(link.href).searchParams.get('service'), service, path);
+    }
+    dom.window.close();
+  }
+});
