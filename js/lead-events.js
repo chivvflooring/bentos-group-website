@@ -26,10 +26,19 @@
       const values = landingParams.getAll(key);
       return values.length === 1 && values[0] === value;
     });
+  // Exact public link from the approved October 27 flooring post. A matching
+  // label identifies this link only; it does not establish lead quality or revenue.
+  const nextdoorFlooringPost = window.location.pathname.replace(/\.html$/, '') === '/flooring' &&
+    [['utm_source', 'nextdoor'], ['utm_medium', 'organic_social'], ['utm_campaign', 'hardwood_oct27']]
+      .every(([key, value]) => {
+        const values = landingParams.getAll(key);
+        return values.length === 1 && values[0] === value;
+      });
   const campaignId = campaignValues.length === 1 && campaigns.has(campaignValues[0])
     ? campaignValues[0]
     : campaignValues.length === 0 && instagramProfile ? 'instagram-profile-organic'
-    : campaignValues.length === 0 && nextdoorProfile ? 'nextdoor-profile-organic' : '';
+    : campaignValues.length === 0 && nextdoorProfile ? 'nextdoor-profile-organic'
+    : campaignValues.length === 0 && nextdoorFlooringPost ? 'flooring-nextdoor-organic' : '';
 
   function decorateCampaignLink(link) {
     if (!campaignId || link.hasAttribute('download')) return;
@@ -129,7 +138,8 @@
       [/(custom-home|new-construction)/, 'new-construction'],
       [/home-addition/, 'home-addition'],
       [/kitchen/, 'kitchen'],
-      [/bathroom/, 'bathroom'],
+      [/(bathroom|shower-reconstruction)/, 'bathroom'],
+      [/basement/, 'basement'],
       [/floor/, 'flooring'],
       [/paint/, 'painting'],
       [/deck/, 'decks']
