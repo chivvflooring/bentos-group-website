@@ -98,7 +98,18 @@ export async function handler(event, _context, dependencies = {}) {
     // Never turn a previously unsubscribed contact back on through this public form.
     if (resendResponse.status === 409) return response(409, { error: 'This address is already registered. Please manage its email preferences in a previous email.' });
     const providerRequestId = resendResponse.headers?.get?.('x-request-id') || null;
-    console.error('Resend rejected contact request.', { status: resendResponse.status, providerRequestId, consent: consentRecord });
+    // Keep provider diagnostics server-side, without credentials or submitted data.
+    let providerError = null;
+    try {
+      const failure = await resendResponse.json();
+      if (typeof failure?.message === 'string') {
+        providerError = failure.message
+          .replaceAll(env.RESEND_API_KEY, '[redacted]')
+          .replaceAll(email, '[email]')
+          .slice(0, 400);
+      }
+    } catch { /* A non-JSON provider error must still return the safe public error. */ }
+    console.error('Resend rejected contact request.', { status: resendResponse.status, providerRequestId, providerError });
     return response(502, { error: 'Email signup is temporarily unavailable.' });
   }
 

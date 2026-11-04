@@ -78,3 +78,21 @@ test('an existing contact is not silently resubscribed', async () => {
   assert.equal(result.statusCode, 409);
   assert.match(JSON.parse(result.body).error, /already registered/i);
 });
+
+test('provider diagnostics redact credentials and email and never reach the public response', async () => {
+  const originalError = console.error;
+  let diagnostic;
+  console.error = (_message, details) => { diagnostic = details; };
+  try {
+    const result = await handler(event(), {}, {
+      env: { RESEND_API_KEY: 'private-key', RESEND_SEGMENT_ID: 'seg_test' },
+      fetch: async () => ({ ok: false, status: 400, headers: new Headers(),
+        json: async () => ({ message: 'Invalid private-key for homeowner@example.com' }) })
+    });
+    assert.equal(result.statusCode, 502);
+    assert.equal(diagnostic.providerError, 'Invalid [redacted] for [email]');
+    assert.ok(!JSON.stringify(diagnostic).includes('homeowner@example.com'));
+    assert.ok(!result.body.includes('private-key'));
+    assert.ok(!result.body.includes('Invalid'));
+  } finally { console.error = originalError; }
+});
