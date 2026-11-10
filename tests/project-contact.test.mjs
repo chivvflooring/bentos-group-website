@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import { JSDOM } from 'jsdom';
 
 test('one contact panel replaces the overlapping local chat, routes service intent and never claims a lead', () => {
-  for (const [path, service] of [['/flooring', 'flooring'], ['/custom-homes', 'new-construction'], ['/kitchen-remodeling-service', 'kitchen'], ['/bathroom-remodeling-alpharetta-ga', 'bathroom']]) {
+  for (const [path, service] of [['/flooring', 'flooring'], ['/custom-homes', 'new-construction'], ['/kitchen-remodeling-service', 'kitchen'], ['/cabinet-renovation', 'kitchen'], ['/bathroom-remodeling-alpharetta-ga', 'bathroom']]) {
     const dom = new JSDOM('<head></head><body><button class="chat-fab">Open chat</button><div class="chat-container"><input></div></body>',
       {url:'https://bentos-group.com' + path + '?email=private@example.com',runScripts:'outside-only'});
     const w = dom.window;
@@ -32,7 +32,7 @@ test('one contact panel replaces the overlapping local chat, routes service inte
 });
 
 test('new service pages preserve shower and basement intent in desktop and mobile estimate links', () => {
-  for (const [path, service] of [['/shower-reconstruction', 'bathroom'], ['/basement-remodeling', 'basement']]) {
+  for (const [path, service] of [['/shower-reconstruction', 'bathroom'], ['/basement-remodeling', 'basement'], ['/cabinet-renovation', 'kitchen']]) {
     const dom = new JSDOM('<head></head><body></body>', { url: 'https://bentos-group.com' + path, runScripts: 'outside-only' });
     const w = dom.window;
     w.eval(fs.readFileSync('js/lead-events.js', 'utf8'));
