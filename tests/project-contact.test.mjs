@@ -43,3 +43,25 @@ test('new service pages preserve shower and basement intent in desktop and mobil
     dom.window.close();
   }
 });
+
+test('site-wide planner records the actual referring page without inventing a source', () => {
+  for (const [referrer, expected] of [
+    ['https://bentos-group.com/kitchen-remodeling-service?email=private@example.com', '/kitchen-remodeling-service'],
+    ['https://bentos-group.com/bathroom-remodeling-alpharetta-ga', '/bathroom-remodeling-alpharetta-ga'],
+    ['https://bentos-group.com/', '/'],
+    ['https://elsewhere.example/services', 'Direct or unreported'],
+    ['', 'Direct or unreported'],
+  ]) {
+    const dom = new JSDOM(fs.readFileSync('free-quote.html', 'utf8'), {
+      url: 'https://bentos-group.com/free-quote?source=project-helper&service=bathroom',
+      ...(referrer ? {referrer} : {}), runScripts: 'outside-only',
+    });
+    const w = dom.window;
+    for (const script of w.document.querySelectorAll('script:not([src])')) w.eval(script.textContent);
+    assert.equal(w.document.querySelector('input[name="Inquiry Source Page"]').value, expected);
+    assert.equal(w.document.querySelector('input[name="Campaign Source"]').value, 'Website project helper');
+    assert.equal(w.document.querySelector('input[name="Service"]:checked').value, 'Bathroom Remodeling');
+    assert.ok(!w.document.querySelector('input[name="Inquiry Source Page"]').value.includes('private'));
+    w.close();
+  }
+});
