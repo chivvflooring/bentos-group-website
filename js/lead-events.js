@@ -137,7 +137,7 @@
       [/roof/, 'roofing'],
       [/(custom-home|new-construction)/, 'new-construction'],
       [/home-addition/, 'home-addition'],
-      [/kitchen/, 'kitchen'],
+      [/(kitchen|cabinet)/, 'kitchen'],
       [/(bathroom|shower-reconstruction)/, 'bathroom'],
       [/basement/, 'basement'],
       [/floor/, 'flooring'],
