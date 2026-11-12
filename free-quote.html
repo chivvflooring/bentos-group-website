@@ -136,7 +136,7 @@
                 <p id="appointment-confirmation" style="margin-top: 1rem;"><strong>This is an appointment request.</strong> Please wait for our team to confirm the date and time before visiting. For your confirmed visit, tell the showroom team you are working with Bento's Group / CHIVV Flooring.</p>
             </fieldset>
             </details><p class="next-steps"><strong>What happens next?</strong> We review your request, contact you about the scope, and arrange a measurement or consultation if appropriate. Showroom visits are confirmed separately.</p>
-            <div class="stamp-area"><div class="stamp-box"><span class="tech-label">Request Estimate</span><p class="stamp-signature">We’ll use your preferred contact method to discuss your project</p><p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. This does not subscribe you to marketing. The form is processed by FormSubmit.</p><button type="submit" class="btn-submit">Submit Request</button><p id="formStatus" role="status" aria-live="polite"></p>
+            <div class="stamp-area"><div class="stamp-box"><span class="tech-label">Request Estimate</span><p class="stamp-signature">We’ll use your preferred contact method to discuss your project</p><p class="form-privacy">By submitting, you agree that Bento’s Group may contact you about this request. This does not subscribe you to marketing. Your request is sent securely to our team.</p><button type="submit" class="btn-submit">Submit Request</button><p id="formStatus" role="status" aria-live="polite"></p>
                 <div class="quote-contact-options">
                     <p><strong>Prefer a conversation?</strong><br>Call to discuss your project, or text photos and your city.</p>
                     <nav aria-label="Contact Bento's Group directly">
@@ -148,7 +148,7 @@
             </div></div>
         </form>
     </div></div>
-    <div id="successModal" class="modal-success"><div class="modal-content"><h2 id="success-title" tabindex="-1">Request Accepted</h2><p>The form service accepted your request for delivery. If you requested a showroom visit, our team will contact you to confirm availability and the appointment time. Please wait for confirmation before visiting.</p><p style="margin-top:20px">Have another detail to share? <a href="tel:+16785717028">Call (678) 571-7028</a> or <a href="sms:+16785717028">text us</a>.</p><a id="success-text-link" class="text-photos" href="sms:+16785717028">Text project photos or details</a><button type="button" class="btn-reset">Close confirmation</button></div></div>
+    <div id="successModal" class="modal-success"><div class="modal-content"><h2 id="success-title" tabindex="-1">Request Delivered</h2><p>Your request was delivered to Bento’s Group. If you requested a showroom visit, our team will contact you to confirm availability and the appointment time. Please wait for confirmation before visiting.</p><p style="margin-top:20px">Have another detail to share? <a href="tel:+16785717028">Call (678) 571-7028</a> or <a href="sms:+16785717028">text us</a>.</p><a id="success-text-link" class="text-photos" href="sms:+16785717028">Text project photos or details</a><button type="button" class="btn-reset">Close confirmation</button></div></div>
     <script>
       // Carry only known campaign labels and page paths into the inquiry.
       (function prepareQuoteContext() {
@@ -276,7 +276,7 @@
     <script src="./js/free-quote-form.js" type="module"></script>
     <script>
       // Resilient fallback: if the module above fails to load for any reason,
-      // keep the visitor on Bento's site and submit through FormSubmit's AJAX endpoint.
+      // keep the visitor on Bento's site and submit through the configured endpoint.
       document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('reformaForm');
         const submitButton = form?.querySelector('.btn-submit');
