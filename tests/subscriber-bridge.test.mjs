@@ -35,6 +35,24 @@ test('subscriber bridge creates a normalized contact in the dedicated segment an
   });
 });
 
+test('painting and deck signups use their separate opt-in topics', async () => {
+  for (const [interest, topicId] of [
+    ['painting', '74d4ce88-f869-4e5e-987e-519f7ee425df'],
+    ['decks', '90d4b3cb-7070-41af-8962-2843e6d8f437']
+  ]) {
+    let request;
+    const result = await handler(event({ ...validPayload, interest }), {}, {
+      env: { RESEND_API_KEY: 'secret-test-key', RESEND_SEGMENT_ID: 'seg_test' },
+      fetch: async (url, options) => {
+        request = { url, options };
+        return { ok: true, status: 201, headers: new Headers() };
+      }
+    });
+    assert.equal(result.statusCode, 201);
+    assert.deepEqual(JSON.parse(request.options.body).topics, [{ id: topicId, subscription: 'opt_in' }]);
+  }
+});
+
 test('consent, topic, completion time, and configuration are required', async () => {
   for (const change of [
     { consent: false },
