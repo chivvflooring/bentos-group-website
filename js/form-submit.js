@@ -19,6 +19,24 @@ export function formSubmitAjaxUrl(action) {
   return url.toString();
 }
 
+export function submissionRequest(action, formData) {
+  const url = formSubmitAjaxUrl(action);
+  const target = new URL(url);
+  const isFormSubmit = target.hostname === "formsubmit.co";
+  if (isFormSubmit || !formData || typeof formData.entries !== "function") {
+    return { url, body: formData, headers: { Accept: "application/json" } };
+  }
+
+  return {
+    url,
+    body: new URLSearchParams(Array.from(formData.entries())),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+    }
+  };
+}
+
 export function combineRepeatedFormDataValues(formData) {
   if (!formData || typeof formData.keys !== "function" || typeof formData.getAll !== "function") {
     return formData;
@@ -38,6 +56,7 @@ export function combineRepeatedFormDataValues(formData) {
 
 export async function sendFormSubmit(action, formData, fetchImpl = fetch, timeoutMs = 15000) {
   combineRepeatedFormDataValues(formData);
+  const request = submissionRequest(action, formData);
   const controller = new AbortController();
   let timer;
   const timeout = new Promise((_, reject) => {
@@ -48,15 +67,15 @@ export async function sendFormSubmit(action, formData, fetchImpl = fetch, timeou
   });
   try {
     return await Promise.race([timeout, (async () => {
-      const response = await fetchImpl(formSubmitAjaxUrl(action), {
-        method: "POST", body: formData, signal: controller.signal,
-        headers: { Accept: "application/json" }
+      const response = await fetchImpl(request.url, {
+        method: "POST", body: request.body, signal: controller.signal,
+        headers: request.headers
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`, { cause: "http" });
       let result;
       try { result = await response.json(); }
       catch { throw new Error("Unconfirmed form response", { cause: "http" }); }
-      if (result.success !== true && result.success !== "true") {
+      if (result.success !== true && result.success !== "true" && result.ok !== true) {
         throw new Error("Form service did not accept request", { cause: "http" });
       }
       return response;
