@@ -82,6 +82,35 @@ test('Instagram profile UTM link survives service navigation into quote payload'
   for (const dom of [landing, service, quote]) dom.window.close();
 });
 
+test('ChatGPT search referral survives service navigation into the quote payload', () => {
+  const landing = page('cabinet-renovation.html', 'https://bentos-group.com/cabinet-renovation?utm_source=chatgpt.com&private=do-not-carry');
+  const serviceLink = landing.window.document.querySelector('a[href^="/painting"]');
+  assert.equal(new URL(serviceLink.href).searchParams.get('campaign'), 'chatgpt-organic');
+  assert.ok(!serviceLink.href.includes('private'));
+  const service = page('painting.html', serviceLink.href);
+  const quote = page('free-quote.html', service.window.document.querySelector('a[href*="free-quote"]').href);
+  const w = quote.window;
+  const data = new w.FormData(w.document.getElementById('reformaForm'));
+  assert.equal(data.get('Campaign Tag'), 'chatgpt-organic');
+  assert.equal(data.get('Campaign Label'), 'ChatGPT search — Organic');
+  w.bentosTrack('generate_lead');
+  assert.equal(w.dataLayer.at(-1).bentos_campaign, 'chatgpt-organic');
+  for (const dom of [landing, service, quote]) dom.window.close();
+});
+
+test('ambiguous or lookalike ChatGPT source values are not attributed', () => {
+  for (const query of [
+    'utm_source=chatgpt.com&utm_source=example.com',
+    'utm_source=chatgpt',
+    'utm_source=private-chatgpt.com',
+    'utm_source=chatgpt.com.evil.example'
+  ]) {
+    const dom = page('free-quote.html', 'https://bentos-group.com/free-quote?' + query);
+    assert.equal(dom.window.document.querySelector('[name="Campaign Tag"]'), null);
+    dom.window.close();
+  }
+});
+
 test('partial, duplicate and unknown profile parameters are not attributed', () => {
   for (const query of [
     'utm_source=instagram&utm_medium=organic_social',
