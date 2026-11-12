@@ -1,5 +1,5 @@
 const RESEND_CONTACTS_URL = 'https://api.resend.com/contacts';
-const ALLOWED_TOPICS = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
+const ALLOWED_TOPICS = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'painting', 'decks', 'home-care']);
 const TOPIC_IDS = {
   'new-construction': '76355a32-6c8a-4c76-8ed3-1d3e37930240',
   renovations: '85bb47f9-2cdd-4d83-bf6f-93949a8f1e79',
@@ -7,6 +7,8 @@ const TOPIC_IDS = {
   flooring: '5e762e5e-d1b7-4065-82dd-f96ad7c96d14',
   bathrooms: '82c46f25-c172-444a-9846-33883f112c84',
   kitchens: 'b332b94f-efb2-40fd-90b0-b636f4db727e',
+  painting: '74d4ce88-f869-4e5e-987e-519f7ee425df',
+  decks: '90d4b3cb-7070-41af-8962-2843e6d8f437',
   'home-care': '8c9736c9-3322-4624-a147-a840f0b67eb3'
 };
 const CONSENT_VERSION = 'email-marketing-v1-2026-09-29';
