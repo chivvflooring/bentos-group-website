@@ -4,6 +4,7 @@
   // along internal page links; no cookies, storage or cross-site identification.
   // A label describes a link, not proof that a paid impression/click occurred.
   const campaigns = new Map([
+    ['chatgpt-organic', 'ChatGPT search — Organic'],
     ['instagram-profile-organic', 'Instagram organic — Profile'],
     ['nextdoor-profile-organic', 'Nextdoor organic — Business profile'],
     ['flooring-instagram-organic', 'Instagram organic — Flooring'],
@@ -15,6 +16,13 @@
   ]);
   const landingParams = new URLSearchParams(window.location.search);
   const campaignValues = landingParams.getAll('campaign');
+  // OpenAI appends this exact UTM source to ChatGPT search referral URLs.
+  // Preserve only the documented public value so quote notifications can
+  // distinguish an AI-search referral without carrying arbitrary query text.
+  const chatgptSearch = (() => {
+    const values = landingParams.getAll('utm_source');
+    return values.length === 1 && values[0].toLowerCase() === 'chatgpt.com';
+  })();
   // Recognize only the exact public profile link; never carry arbitrary UTM text.
   const instagramProfile = [['utm_source', 'instagram'], ['utm_medium', 'organic_social'], ['utm_campaign', 'profile']]
     .every(([key, value]) => {
@@ -36,6 +44,7 @@
       });
   const campaignId = campaignValues.length === 1 && campaigns.has(campaignValues[0])
     ? campaignValues[0]
+    : campaignValues.length === 0 && chatgptSearch ? 'chatgpt-organic'
     : campaignValues.length === 0 && instagramProfile ? 'instagram-profile-organic'
     : campaignValues.length === 0 && nextdoorProfile ? 'nextdoor-profile-organic'
     : campaignValues.length === 0 && nextdoorFlooringPost ? 'flooring-nextdoor-organic' : '';
