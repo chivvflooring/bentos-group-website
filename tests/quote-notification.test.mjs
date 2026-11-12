@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { handler } from '../netlify/functions/quote.mjs';
+import { readFileSync } from 'node:fs';
 
 function event(params, contentType = 'application/x-www-form-urlencoded') {
   return {
@@ -9,6 +10,14 @@ function event(params, contentType = 'application/x-www-form-urlencoded') {
     body: contentType === 'application/json' ? JSON.stringify(params) : new URLSearchParams(params).toString()
   };
 }
+
+test('public quote page uses the verified same-origin delivery path and accurate status copy', () => {
+  const html = readFileSync(new URL('../free-quote.html', import.meta.url), 'utf8');
+  assert.match(html, /action="\/\.netlify\/functions\/quote"/);
+  assert.match(html, /Your request is sent securely to our team\./);
+  assert.match(html, /Request Delivered/);
+  assert.doesNotMatch(html, /form is processed by FormSubmit/);
+});
 
 test('valid quote emails only the owner and keeps the verified customer reply address', async () => {
   let outbound;
