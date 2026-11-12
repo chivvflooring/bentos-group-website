@@ -81,7 +81,7 @@
         <header class="header-section"><div class="header-title"><span class="tech-label">Bento’s Group · North Atlanta</span><h1>Request Your Estimate</h1></div></header>
         <p style="margin-bottom:1rem;line-height:1.6">Start with your name, project city or ZIP, and your preferred way to hear from us. Measurements, budget and project details are optional.</p>
         <p style="margin-bottom:1.5rem;line-height:1.6"><a href="https://www.google.com/maps/place/?q=place_id:ChIJMZqmpDSd9YgRtpdKVZnWEsc" target="_blank" rel="noopener noreferrer">Read our Google customer reviews</a> · <a href="tel:+16785717028">Call (678) 571-7028</a></p>
-        <form id="reformaForm" action="https://formsubmit.co/charlesbgroup@gmail.com" method="POST">
+        <form id="reformaForm" action="/.netlify/functions/quote" method="POST">
             <input type="hidden" name="_captcha" value="false"><input type="hidden" name="_next" id="nextField"><input type="hidden" name="_template" value="table"><input type="hidden" name="_subject" value="New Quote Request"><input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
             <fieldset><legend>Your project contact</legend><div class="form-grid">
                 <div class="input-group"><label for="client-name" class="tech-label">Full Name *</label><input type="text" id="client-name" name="Name" class="form-control" autocomplete="name" placeholder="Your name" required></div>
@@ -347,7 +347,11 @@
             }, 15000);
           });
           try {
-            const ajaxUrl = form.action.replace('https://formsubmit.co/', 'https://formsubmit.co/ajax/');
+            const actionUrl = new URL(form.action);
+            const isFormSubmit = actionUrl.hostname === 'formsubmit.co';
+            const ajaxUrl = isFormSubmit
+              ? form.action.replace('https://formsubmit.co/', 'https://formsubmit.co/ajax/')
+              : form.action;
             // Match the module handler: FormSubmit needs repeated checkbox
             // values combined into one field to retain every selected service.
             const formData = new FormData(form);
@@ -362,15 +366,20 @@
             // Keep a real deadline across both the request and response body.
             // Late provider responses must not reset the form or count a lead.
             await Promise.race([deadline, (async () => {
+              const requestBody = isFormSubmit
+                ? formData
+                : new URLSearchParams(Array.from(formData.entries()));
               const response = await fetch(ajaxUrl, {
                 method: 'POST',
-                body: formData,
+                body: requestBody,
                 signal: controller.signal,
-                headers: { Accept: 'application/json' }
+                headers: isFormSubmit
+                  ? { Accept: 'application/json' }
+                  : { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' }
               });
               if (!response.ok) throw new Error('HTTP ' + response.status);
               const result = await response.json();
-              if (result.success !== true && result.success !== 'true') throw new Error('Request not accepted');
+              if (result.success !== true && result.success !== 'true' && result.ok !== true) throw new Error('Request not accepted');
             })()]);
             window.bentosTrackQuote?.(form);
             markQuoteSuccess();

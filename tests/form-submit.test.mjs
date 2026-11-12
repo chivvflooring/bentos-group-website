@@ -13,6 +13,23 @@ test("accepted JSON response uses the AJAX endpoint", async () => {
   assert.equal(requestedUrl, "https://formsubmit.co/ajax/example@example.com");
 });
 
+test("same-origin quote endpoint uses URL encoded data and accepts ok response", async () => {
+  const formData = new FormData();
+  formData.append("Service", "Flooring");
+  formData.append("Service", "Painting");
+  let requestedUrl;
+  let requestOptions;
+  const response = await sendFormSubmit("https://bentos-group.com/.netlify/functions/quote", formData, async (url, options) => {
+    requestedUrl = url;
+    requestOptions = options;
+    return { ok: true, status: 201, json: async () => ({ ok: true }) };
+  });
+  assert.equal(response.status, 201);
+  assert.equal(requestedUrl, "https://bentos-group.com/.netlify/functions/quote");
+  assert.equal(requestOptions.headers["Content-Type"], "application/x-www-form-urlencoded;charset=UTF-8");
+  assert.equal(requestOptions.body.get("Service"), "Flooring\nPainting");
+});
+
 test("HTTP 200 rejection or unconfirmed response does not become a lead", async () => {
   for (const success of [false, "false", undefined]) {
     await assert.rejects(sendFormSubmit("https://formsubmit.co/example@example.com", {}, async () => ({
