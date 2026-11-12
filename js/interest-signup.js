@@ -1,6 +1,6 @@
 import { createSubmissionGuard } from './form-submit.js';
 
-export const INTEREST_TOPICS = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'home-care']);
+export const INTEREST_TOPICS = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'painting', 'decks', 'home-care']);
 
 export async function sendInterestSignup(payload, fetchImpl = fetch) {
   const controller = new AbortController();
