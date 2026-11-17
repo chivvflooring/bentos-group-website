@@ -4,6 +4,7 @@ export async function handler(event,context,deps={}){
  if(event.httpMethod!=='POST')return reply(405,{error:'Method not allowed'});
  if(!event.body||Buffer.byteLength(event.body)>4500000)return reply(413,{error:'Please keep photos under 3 MB total.'});
  let d;try{d=JSON.parse(event.body);}catch{return reply(400,{error:'Invalid request'});}
+ if(!d||typeof d!=='object'||Array.isArray(d))return reply(400,{error:'Invalid request'});
  if(d.website)return reply(202,{ok:true});
  const clean=(v,max=3000)=>typeof v==='string'?v.replace(/[\u0000-\u001f]/g,' ').trim().slice(0,max):'';
  const name=clean(d.name,120),email=clean(d.email,254),zip=clean(d.zip,10),phone=clean(d.phone,40);
