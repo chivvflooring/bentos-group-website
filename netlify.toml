@@ -1,4 +1,5 @@
 [build]
+  command = "node scripts/verify-email-tracking.mjs"
   # This repository is the deployable static site; no generated build output is
   # required. Keeping the publish directory explicit prevents Netlify from
   # publishing an empty or stale subdirectory when site settings are changed.
