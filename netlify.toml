@@ -44,3 +44,15 @@
   for = "/admin/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
+
+[[redirects]]
+  from = "/homecare-membership"
+  to = "/punch-list"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/punchlist"
+  to = "/punch-list"
+  status = 301
+  force = true
