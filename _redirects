@@ -1,3 +1,6 @@
+/punch-list.html /punch-list 301!
+/punchlist /punch-list 301!
+/homecare-membership /punch-list 301!
 # Redirect legacy HTML URLs even when the source file exists.
 # Extensionless destinations match each page canonical; host redirects stay in Netlify.
 /about-us.html /about-us 301!
