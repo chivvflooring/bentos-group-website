@@ -3,9 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --require ./tests/node-compat.cjs --test"
+    "test": "node --require ./tests/node-compat.cjs --test",
+    "check:website": "node scripts/check-website.mjs"
   },
   "devDependencies": {
     "jsdom": "^30.0.1"
+  },
+  "dependencies": {
+    "@netlify/blobs": "11.1.10",
+    "svix": "2.11.1"
   }
 }

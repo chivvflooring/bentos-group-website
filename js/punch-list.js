@@ -135,6 +135,7 @@ form.addEventListener('submit', async event => {
       window.bentosTrack?.(ownerTest ? 'punch_list_test_success' : 'punch_list_submitted');
     }
   } catch (error) {
+    window.bentosTrack?.('punch_list_submit_error', {error_type: error.name === 'AbortError' ? 'timeout' : 'delivery'});
     status.dataset.error = 'true';
     status.textContent = `${error.name === 'AbortError' ? 'Confirmation timed out. You can retry the same request or call us.' : error.message} Your entries are still here.`;
   } finally {

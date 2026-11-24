@@ -1,0 +1,13 @@
+:root { color-scheme: light; font: 100%/1.5 system-ui, sans-serif; color: #173326; background: #f5f5eb; }
+main { max-width: 64rem; margin: auto; padding: 1rem 1.5rem 3rem; }
+section { margin-top: 1.5rem; }
+form, fieldset { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; }
+label { display: grid; gap: .25rem; }
+input, select, button { font: inherit; padding: .45em .6em; }
+button { color: white; background: #21553b; border: 1px solid #21553b; border-radius: .3rem; cursor: pointer; }
+dl { display: grid; grid-template-columns: minmax(8rem, 1fr) 2fr; gap: .4rem .75rem; }
+dt { font-weight: 600; }
+dd { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+li { margin-bottom: .5rem; }
+fieldset { flex: 1 0 100%; box-sizing: border-box; }
+[hidden] { display: none !important; }
