@@ -30,10 +30,10 @@ test('cabinet request waits for acceptance, prevents duplicates and sends select
  assert.equal(f.requests.length,1);
  assert.equal(f.d.querySelector('button[type=submit]').disabled,true);
  assert.equal(f.d.querySelector('#success-screen').getAttribute('aria-hidden'),'true');
- assert.equal(f.requests[0].url,'https://formsubmit.co/ajax/charlesbgroup@gmail.com');
+ assert.equal(f.requests[0].url,'https://bentos-group.com/.netlify/functions/quote');
  assert.equal(f.requests[0].data.get('Cabinet Style'),'Sample cabinet');
- assert.equal(f.requests[0].data.get('linearFeet'),'20');
- assert.equal(f.requests[0].data.get('fullName'),'Test Homeowner');
+ assert.equal(f.requests[0].data.get('Estimated Cabinet Linear Feet'),'20');
+ assert.equal(f.requests[0].data.get('Name'),'Test Homeowner');
  accept();await new Promise(resolve=>setTimeout(resolve,0));
  assert.equal(f.d.querySelector('#success-screen').getAttribute('aria-hidden'),'false');
  assert.equal(f.events.filter(([event])=>event==='generate_lead').length,1);

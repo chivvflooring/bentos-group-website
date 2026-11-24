@@ -214,7 +214,7 @@ async function handleFormSubmit(e) {
     }
 
     const formData = new FormData(DOM.form);
-    const linearFeet = parseFloat(formData.get('linearFeet'));
+    const linearFeet = parseFloat(formData.get('Estimated Cabinet Linear Feet'));
 
     if (isNaN(linearFeet) || linearFeet <= 0) {
         DOM.errorMsg.textContent = 'Please enter a valid number for linear feet.';
@@ -229,12 +229,14 @@ async function handleFormSubmit(e) {
     formData.set('Cabinet Style', selectedModel.name);
     formData.set('Cabinet Series', selectedModel.series);
     formData.set('Inquiry Source Page', '/cabinetry');
-    formData.set('Service', 'Cabinetry');
     window.bentosTrack?.('estimate_form_attempt');
     try {
-        await sendFormSubmit(DOM.form.action, formData);
+        const response = await sendFormSubmit(DOM.form.action, formData);
         calculateAndShowEstimate(linearFeet);
-        window.bentosTrack?.('generate_lead', { lead_category: 'kitchens' });
+        if (response.status !== 202) {
+            const ownerTest = formData.get('Email').trim().toLowerCase() === 'charlesbgroup@gmail.com';
+            window.bentosTrack?.(ownerTest ? 'quote_test_success' : 'generate_lead', { lead_category: 'kitchens' });
+        }
     } catch (error) {
         DOM.errorMsg.textContent = error.cause === 'timeout'
             ? 'We could not confirm your request in time. Your details are still here. Please call or text (678) 571-7028 before submitting again.'

@@ -89,7 +89,7 @@
     }
   }
 
-  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'quote_test_success', 'phone_click', 'text_click', 'email_click', 'interest_signup', 'project_video_play', 'booking_click', 'punch_list_cta_click', 'punch_list_started', 'punch_list_submitted', 'punch_list_test_success']);
+  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'quote_test_success', 'phone_click', 'text_click', 'email_click', 'interest_signup', 'project_video_play', 'booking_click', 'punch_list_cta_click', 'punch_list_started', 'punch_list_submitted', 'punch_list_test_success', 'punch_list_submit_error']);
   const services = new Set(['new-construction', 'full-renovation', 'site-development', 'flooring', 'kitchen', 'bathroom', 'painting', 'roofing', 'home-addition', 'decks', 'basement']);
   const topics = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'painting', 'decks', 'home-care']);
   const leadCategories = new Set(['new-construction', 'site-development', 'renovations', 'kitchens', 'bathrooms', 'flooring', 'other']);
@@ -105,6 +105,7 @@
     if (topics.has(details.interest_topic)) params.interest_topic = details.interest_topic;
     if (event === 'generate_lead' && leadCategories.has(details.lead_category)) params.lead_category = details.lead_category;
     if (event === 'estimate_form_error' && ['validation', 'delivery'].includes(details.error_type)) params.error_type = details.error_type;
+    if (event === 'punch_list_submit_error' && ['timeout', 'delivery'].includes(details.error_type)) params.error_type = details.error_type;
     window.dataLayer.push({ event, ...params });
     if (window.bentosAnalyticsReady && typeof window.gtag === 'function') {
       window.gtag('event', event, { send_to: 'G-XRBMTBNP58', ...params });

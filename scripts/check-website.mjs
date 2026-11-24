@@ -39,6 +39,18 @@ for (const route of routes) {
   for (const element of doc.querySelectorAll('img[src], a[href]')) {
     const image = element.localName === 'img';
     const target = new URL(element.getAttribute(image ? 'src' : 'href'), route);
+    if (!image && ['tel:', 'sms:'].includes(target.protocol)) {
+      check(target.pathname === '+16785717028', `Unexpected phone or text destination in ${page}`);
+    }
+    if (!image && target.protocol === 'mailto:') {
+      check(target.pathname.toLowerCase() === 'charlesbgroup@gmail.com', `Unexpected email destination in ${page}`);
+    }
+    if (image && element.hasAttribute('srcset')) {
+      for (const candidate of element.getAttribute('srcset').split(',')) {
+        const imageUrl = new URL(candidate.trim().split(/\s+/)[0], route);
+        if (imageUrl.origin === origin) check(routeExists(imageUrl.pathname), `Missing responsive image ${imageUrl.pathname} from ${page}`);
+      }
+    }
     if (target.origin !== origin) continue;
     check(routeExists(target.pathname) || (!image && redirects.has(target.pathname)),
       `Missing ${image ? 'image' : 'link'} ${target.pathname} from ${page}`);
@@ -68,7 +80,7 @@ if (process.env.HEALTH_SITE) {
       signal: AbortSignal.timeout(20_000)
     });
     assert.equal(response.status, 200, 'Lead operations health');
-    const report = await response.json();
+    const {rolling30Days: report} = await response.json();
     assert.equal(report.pendingNotification, 0, 'Pending owner notifications');
     assert.equal(report.notification.bounced + report.notification.failed + report.notification.complained + report.notification.suppressed,
       0, 'Failed owner notifications');

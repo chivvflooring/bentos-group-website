@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Sales operations | Bento’s Group</title>
+  <link rel="stylesheet" href="/sales/dashboard.css">
+  <script type="module" src="/sales/dashboard.js"></script>
+</head>
+<body>
+<main>
+  <h1>Bento’s Group sales operations</h1>
+  <form id="access">
+    <label>Owner access token <input name="token" type="password" required autocomplete="off"></label>
+    <button>Open dashboard</button>
+    <button type="button" id="lock" hidden>Lock</button>
+  </form>
+  <p id="status" role="status"></p>
+  <section id="dashboard" hidden>
+    <h2>Last 30 days</h2>
+    <dl id="metrics"></dl>
+    <div id="breakdowns"></div>
+    <h2>Website projects</h2>
+    <form id="period">
+      <label>Intake month <input type="month" name="month" required></label>
+      <button>Load projects</button>
+    </form>
+    <p>Open a project to record follow-up, estimates, contracts and payments. Mark another submission for the same project as excluded after reconciling its details.</p>
+    <ul id="projects"></ul>
+    <section id="detail" hidden>
+      <h3>Project details</h3>
+      <dl id="lead"></dl>
+      <form id="update">
+        <label>Action <select name="stage">
+          <option value="classify">Classify source and customer</option>
+          <option value="qualified">Record qualification</option>
+          <option value="followed-up">Record follow-up</option>
+          <option value="appointment">Record appointment</option>
+          <option value="estimate">Record estimate</option>
+          <option value="signed">Record signed contract</option>
+          <option value="revenue">Record payment</option>
+          <option value="stop-follow-up">Stop follow-up</option>
+          <option value="exclude">Exclude this record</option>
+        </select></label>
+        <fieldset id="classification">
+          <legend>Channel and customer type</legend>
+          <label>Channel <select name="channel">
+            <option value="unknown">Unknown</option><option value="organic-search">Organic search</option>
+            <option value="organic-social">Organic social</option><option value="referral">Referral</option>
+            <option value="email">Email</option><option value="paid">Paid</option>
+            <option value="direct">Direct</option><option value="other">Other</option>
+          </select></label>
+          <label><input name="repeat" type="checkbox"> Repeat customer</label>
+        </fieldset>
+        <fieldset id="payment" hidden>
+          <legend>Payment received</legend>
+          <label>Amount (USD) <input name="amount" type="number" min="0.01" step="0.01"></label>
+          <label>Payment ID <input name="paymentId" maxlength="64"></label>
+        </fieldset>
+        <button>Save</button>
+      </form>
+    </section>
+  </section>
+</main>
+</body>
+</html>

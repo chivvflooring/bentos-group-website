@@ -36,7 +36,7 @@ Register the signed Resend endpoint at `/.netlify/functions/resend-events` for s
 
 ## Organic search and platform access
 
-The site check audits canonical URLs, sitemap membership, structured-data syntax, and same-site links and images. The production sampling found all 47 indexed sitemap entries returned HTTP 200. Search-engine indexing, impressions and rankings require verified property access. Maintain the existing high-intent local routes for Alpharetta, Roswell, Johns Creek, Sandy Springs, Dunwoody and Buckhead. Add original project evidence and service-specific answers to those pages when available so each route answers its own local intent.
+The site check audits canonical URLs, sitemap membership, structured-data syntax, and same-site links and images. The production sampling found all 47 sitemap entries returned HTTP 200. Search-engine indexing, impressions and rankings require verified property access. Maintain the existing high-intent local routes for Alpharetta, Roswell, Johns Creek, Sandy Springs, Dunwoody and Buckhead. Add original project evidence and service-specific answers to those pages when available so each route answers its own local intent.
 
 | Platform | Supported no-additional-cost path |
 | --- | --- |

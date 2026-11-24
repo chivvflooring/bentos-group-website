@@ -12,7 +12,7 @@ const ALLOWED_FIELDS = [
   'Showroom Appointment Request', 'Preferred Showroom Date',
   'Preferred Showroom Time (America/New_York)', 'Showroom Alternative Times and Notes',
   'Custom Home Lot Status', 'Custom Home Plans Status', 'Custom Home Size Sq Ft',
-  'Custom Home Budget Scope'
+  'Custom Home Budget Scope', 'Cabinet Style', 'Cabinet Series', 'Estimated Cabinet Linear Feet'
 ];
 
 function response(statusCode, body) {
@@ -35,7 +35,7 @@ const contactOptions = ['No preference', 'Phone call', 'Text message', 'Email'];
 const serviceOptions = [
   'Decks & Porches', 'New Construction', 'Site Development', 'Home Addition', 'Roofing',
   'Basement Remodeling', 'Full Renovation', 'Kitchen Remodeling', 'Bathroom Remodeling',
-  'Flooring', 'outdoor', 'painting', 'Handyman / Repair', 'Deck'
+  'Flooring', 'outdoor', 'painting', 'Handyman / Repair', 'Deck', 'Cabinetry'
 ];
 
 function validDate(value) {
@@ -107,6 +107,8 @@ export async function handler(event, _context, dependencies = {}) {
   if (!env.RESEND_API_KEY) return response(503, { error: 'Quote delivery is temporarily unavailable.' });
 
   const fields = submittedFields(data);
+  const revision = fields.filter(([label]) =>
+    !['Name', 'Location', 'Phone', 'Email', 'Service', 'Project Description', 'Customer Reported Discovery'].includes(label));
   const tag = campaignValue(data['Campaign Tag']);
   if (tag) fields.push(['Campaign link (unverified)', tag]);
   const services = selectedServices.join('\n') || 'Project consultation';
@@ -137,8 +139,8 @@ export async function handler(event, _context, dependencies = {}) {
       scope: clean(data['Project Description']), campaign: tag,
       source: sourcePath(data['Inquiry Source Page']),
       reportedSource: clean(data['Customer Reported Discovery'], 100),
-      test: email === ownerEmail, followUpConsent: false
-    });
+      test: email === ownerEmail, followUpConsent: false, projectDetails: Object.fromEntries(revision)
+    }, revision);
     const {reference, duplicate} = await deliverRecordedLead({
       store, lead, notify: deliveryKey => sendLead('quote', payload, {...dependencies, deliveryKey})
     });

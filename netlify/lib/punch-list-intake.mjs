@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { deliverRecordedLead, ledger, recordLead } from './lead-ledger.mjs';
 import { services, estimate } from '../../js/punch-pricing.js';
 import { MAX_PHOTOS, MAX_PHOTO_BYTES } from '../../js/repair-photos.js';
@@ -91,14 +92,16 @@ export async function handler(event, _context, deps = {}) {
 
   try {
     const store = ledger(event, deps);
+    const photoDigests = attachments.map(({content}) =>
+      createHash('sha256').update(content, 'base64').digest('hex')).sort();
     const lead = store && await recordLead(store, env.LEAD_LEDGER_KEY, {
       kind: 'punch-list', name, email, phone, location: zip, contact,
       categories: data.items.map(item => item.id),
       scope: [details, ...items.sort()].join('\n'), source: '/punch-list',
       campaign: campaignValue(data.campaignTag) || campaignValue(data.campaign),
       utmSource: campaignValue(data.source), utmMedium: campaignValue(data.medium),
-      test: email === ownerEmail, followUpConsent: true
-    });
+      test: email === ownerEmail, followUpConsent: true, timing, photoCount: attachments.length
+    }, [contact, timing, photoDigests]);
     const {reference, duplicate} = await deliverRecordedLead({
       store, lead,
       notify: deliveryKey => sendLead('punch-list', {
@@ -107,7 +110,7 @@ export async function handler(event, _context, deps = {}) {
       acknowledge: async reference => {
         const id = await sendLead(`punch-list-ack-${reference}`, {
           to: [email], reply_to: ownerEmail, subject: 'Bento’s Group received your Punch List',
-          text: 'Thank you for sending us your Punch List. Our team will review the details and contact you to confirm the scope and pricing. You can reply to this email or call (678) 571-7028.'
+          text: 'Thank you for sending us your Punch List. Our team will review the details and contact you to confirm the scope and pricing. You can reply to this email or call (678) 571-7028.\n\nContact options: https://bentos-group.com/contact'
         }, deps);
         console.info('punch_list_acknowledgment', {reference, accepted: Boolean(id)});
         return id;

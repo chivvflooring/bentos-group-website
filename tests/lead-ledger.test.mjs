@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {Webhook} from 'svix';
 import {handler as quote} from '../netlify/lib/quote-intake.mjs';
+import {handler as punch} from '../netlify/lib/punch-list-intake.mjs';
 import {handler as events} from '../netlify/functions/resend-events.mjs';
 import {handler as operations} from '../netlify/functions/lead-operations.mjs';
 import {recordLead, updateLead} from '../netlify/lib/lead-ledger.mjs';
@@ -120,4 +121,74 @@ test('follow-up queue requires contact consent and delivered acknowledgment, and
   assert.deepEqual(await queue(), []);
   await updateLead(store, lead.path, current => ({...current, test:true}));
   assert.equal(body(await operations(operation('GET'), {}, deps)).received, 0);
+});
+
+test('additional and replacement photos reach the owner while equivalent retries stay deduplicated', async () => {
+  const store = new MemoryStore();
+  const notifications = [];
+  const deps = {env, store, fetch: async (_url, {body: raw}) => {
+    const payload = JSON.parse(raw);
+    if (payload.attachments) notifications.push(payload);
+    return Response.json({id: 'message-' + notifications.length});
+  }};
+  const data = {
+    name: 'Photo QA', email: 'charlesbgroup@gmail.com', phone: '6785717028', zip: '30004',
+    timing: 'Flexible', contactMethod: 'Email', consent: 'yes', items: [{id: 'paint', quantity: 1}]
+  };
+  const photo = value => ({content: Buffer.from([255,216,255,value,255,217]).toString('base64')});
+  const first = photo(1);
+  const second = photo(2);
+  const third = photo(3);
+  const submit = (photos, updates = {}) => punch({
+    httpMethod: 'POST', body: JSON.stringify({...data, photos, ...updates})
+  }, {}, deps);
+  for (const [photos, expected, updates] of [
+    [[], 201], [[first], 201], [[first], 202], [[first, second], 201],
+    [[second, first], 202], [[first, third], 201], [[first, third], 201, {timing: 'Within a month'}]
+  ]) {
+    assert.equal((await submit(photos, updates)).statusCode, expected);
+  }
+  assert.deepEqual(notifications.map(({attachments}) => attachments.map(({content}) => content)), [
+    [], [first.content], [first.content, second.content], [first.content, third.content], [first.content, third.content]
+  ]);
+  assert.equal(body(await operations(operation('GET'), {}, deps)).received, 0);
+  assert.ok(!JSON.stringify([...store.rows]).includes(first.content));
+});
+
+test('rolling organic reporting requires staff classification and separates returning customers', async () => {
+  const store = new MemoryStore();
+  const deps = {env, store, fetch: async () => Response.json({id: providerReference})};
+  const data = {Name: 'Project QA', Location: 'Roswell, GA', Email: 'private@example.com',
+    Service: 'Flooring', 'Project Description': 'Replace entry floor', 'Customer Reported Discovery': 'Google Search or Maps'};
+  const request = details => ({httpMethod: 'POST', headers: {'content-type': 'application/json'},
+    body: JSON.stringify({...data, ...details})});
+  assert.equal((await quote(request({}), {}, deps)).statusCode, 201);
+  const [, first] = [...store.rows.keys()][0].split('/');
+  const patch = (id, stage, details) => operations(operation('PATCH', {}, {id, stage, ...details}), {}, deps);
+  await patch(first, 'qualified');
+  const rolling = async () => body(await operations(operation('GET'), {}, deps)).rolling30Days;
+  assert.equal((await rolling()).qualifiedOrganic, 0);
+  await patch(first, 'classify', {channel: 'organic-search', repeatCustomer: false});
+  await patch(first, 'estimate');
+  assert.equal((await rolling()).qualifiedOrganic, 1);
+
+  assert.equal((await quote(request({'Project Description': 'Refinish second floor'}), {}, deps)).statusCode, 201);
+  assert.equal((await quote(request({'Project Description': 'Refinish second floor'}), {}, deps)).statusCode, 202);
+  const [, repeat] = [...store.rows.keys()][1].split('/');
+  await patch(repeat, 'classify', {channel: 'direct', repeatCustomer: true});
+  await patch(repeat, 'qualified');
+  await patch(repeat, 'followed-up');
+  const report = await rolling();
+  assert.deepEqual([report.qualifiedOrganic, report.repeatCustomers, report.qualified, report.estimate], [1, 1, 2, 1]);
+  assert.deepEqual(report.byService[0], {label: 'Flooring', received: 2, qualified: 2, appointment: 0,
+    estimate: 1, signed: 0, cohortEstimate: 1, cohortSigned: 0});
+});
+
+test('the production ledger configuration cannot silently fall back to email-only intake', async () => {
+  const data = {Name: 'Project QA', Location: 'Roswell, GA', Email: 'private@example.com',
+    Service: 'Flooring'};
+  const request = {httpMethod: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(data)};
+  const result = await quote(request, {}, {env: {RESEND_API_KEY: 'control', LEAD_LEDGER_NAMESPACE: 'production'},
+    fetch: async () => assert.fail('Must not call the provider without production storage')});
+  assert.equal(result.statusCode, 502);
 });

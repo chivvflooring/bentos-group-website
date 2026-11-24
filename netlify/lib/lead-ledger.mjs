@@ -5,7 +5,10 @@ export const stages = ['qualified', 'appointment', 'estimate', 'signed', 'revenu
 
 export function ledger(event, {env = process.env, store} = {}) {
   if (store) return store;
-  if (!env.LEAD_LEDGER_KEY) return null;
+  if (!env.LEAD_LEDGER_KEY) {
+    if (env.LEAD_LEDGER_NAMESPACE === 'production') throw new Error('Production lead storage is not configured');
+    return null;
+  }
   if (event.blobs) connectLambda(event);
   return getStore({
     name: env.LEAD_LEDGER_NAMESPACE === 'production' ? 'lead-ledger-v1' : 'lead-ledger-preview-v1',
@@ -22,9 +25,10 @@ export function authorized(request, token) {
 
 const normalize = value => value.trim().replace(/\s+/g, ' ').toLowerCase();
 
-export async function recordLead(store, key, input) {
+export async function recordLead(store, key, input, revision = []) {
   const identity = [input.kind, input.email, input.phone.replace(/\D/g, '').replace(/^1(?=\d{10}$)/, ''),
     normalize(input.location), [...input.categories].map(normalize).sort(), normalize(input.scope)];
+  if (revision.length) identity.push(revision);
   const id = createHmac('sha256', key).update(JSON.stringify(identity)).digest('hex');
   const path = 'leads/' + id;
   const record = { ...input, id, receivedAt: new Date().toISOString(), milestones: {}, followUpStopped: false };
