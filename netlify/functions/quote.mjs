@@ -1,6 +1,9 @@
 import { campaignValue, clean, looksLikePromotion, ownerEmail, sendLead, validEmail, validPhone } from '../lib/lead-delivery.mjs';
 
-export const config = { rateLimit: { windowLimit: 10, windowSize: 60, aggregateBy: ['ip'] } };
+export const config = {
+  path: '/.netlify/functions/quote',
+  rateLimit: { windowLimit: 10, windowSize: 60, aggregateBy: ['ip'] }
+};
 
 const MAX_BODY_BYTES = 20_000;
 const ALLOWED_FIELDS = [

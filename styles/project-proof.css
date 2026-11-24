@@ -6,3 +6,12 @@
 .home-designs a.home-designs__estimate{display:inline-flex;align-items:center;min-height:48px;margin:.3rem 0;padding:.8rem 1rem;background:#254c31;color:#fff;border-radius:6px;text-decoration:none}
 .home-designs a.home-designs__estimate:hover{background:#193721}
 @media(max-width:700px){.home-designs .project-grid{grid-template-columns:1fr}.home-designs a.home-designs__estimate{width:100%;justify-content:center}}
+
+.construction-portfolio { scroll-margin-top: 8rem; }
+.construction-portfolio h3 { margin: 1.5rem 0 .5rem; }
+.construction-portfolio details { background: #fff; border: 1px solid #d4ddd4; border-radius: 8px; padding: 0 1rem; }
+.construction-portfolio details + details { margin-top: .75rem; }
+.construction-portfolio summary { cursor: pointer; font-weight: 700; padding: .9rem 0; }
+.construction-portfolio summary:focus-visible { outline: 3px solid #214126; outline-offset: 3px; }
+.construction-portfolio figure { margin: 0; }
+.construction-portfolio figcaption { padding: .75rem 1rem; }

@@ -2,7 +2,10 @@ import { services, estimate } from '../../js/punch-pricing.js';
 import { MAX_PHOTOS, MAX_PHOTO_BYTES } from '../../js/repair-photos.js';
 import { campaignValue, clean, looksLikePromotion, ownerEmail, sendLead, validEmail, validPhone } from '../lib/lead-delivery.mjs';
 
-export const config = { rateLimit: { windowLimit: 10, windowSize: 60, aggregateBy: ['ip'] } };
+export const config = {
+  path: '/.netlify/functions/punch-list',
+  rateLimit: { windowLimit: 10, windowSize: 60, aggregateBy: ['ip'] }
+};
 
 const reply = (statusCode, body) => ({
   statusCode,
