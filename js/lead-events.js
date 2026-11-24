@@ -5,6 +5,10 @@
   // A label describes a link, not proof that a paid impression/click occurred.
   const campaigns = new Map([
     ['holiday-home-refresh', 'Holiday Home Refresh — Email'],
+    ['painting-email-photo', 'Painting email — Photo request'],
+    ['painting-email-consultation', 'Painting email — Consultation'],
+    ['realtor-pre-listing', 'Realtor referral — Pre-listing and inspection repairs'],
+    ['neighborhood-home-refresh', 'Neighborhood referral — Home refresh'],
     ['chatgpt-organic', 'ChatGPT search — Organic'],
     ['instagram-profile-organic', 'Instagram organic — Profile'],
     ['nextdoor-profile-organic', 'Nextdoor organic — Business profile'],

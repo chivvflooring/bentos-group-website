@@ -63,14 +63,17 @@ async function load() {
     ['Acknowledgments with recorded clicks', rolling.acknowledgment.clicked]
   ]);
   $('breakdowns').replaceChildren(...[
-    ['By marketing channel', rolling.byChannel], ['By service', rolling.byService]
-  ].map(([title, rows]) => {
+    ['By staff-classified channel', rolling.byChannel, true], ['By public campaign label', rolling.byCampaign, true],
+    ['By service', rolling.byService, false]
+  ].map(([title, rows, showRevenue]) => {
     const section = document.createElement('section');
     const list = document.createElement('ul');
-    for (const row of rows) {
+    for (const row of rows || []) {
       const rates = row.received ? (100 * row.cohortEstimate / row.received).toFixed(0) + '% estimated, ' +
         (100 * row.cohortSigned / row.received).toFixed(0) + '% signed' : 'no new projects in period';
-      list.append(textElement('li', row.label + ' · ' + row.received + ' received · ' + rates));
+      const stages = row.qualified + ' qualified · ' + row.estimate + ' estimates · ' + row.signed + ' signed';
+      const revenue = showRevenue ? ' · ' + dollars(row.revenueCents || 0) + ' received revenue' : '';
+      list.append(textElement('li', row.label + ' · ' + row.received + ' received · ' + stages + revenue + ' · ' + rates));
     }
     section.append(textElement('h3', title), list);
     return section;

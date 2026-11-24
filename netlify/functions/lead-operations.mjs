@@ -3,7 +3,7 @@ import { authorized, json, ledger, stages, updateLead } from '../lib/lead-ledger
 const monthFormat = new Intl.DateTimeFormat('en-CA', {year: 'numeric', month: '2-digit', timeZone: 'America/New_York'});
 const monthOf = value => monthFormat.format(new Date(value)).slice(0, 7);
 const targets = {qualified: 20, estimate: 12, signed: 4};
-const channels = ['unknown', 'organic-search', 'organic-social', 'referral', 'email', 'paid', 'direct', 'other'];
+const channels = ['unknown', 'organic-search', 'organic-social', 'referral', 'realtor-referral', 'neighborhood-referral', 'email', 'paid', 'direct', 'other'];
 const stageCounts = () => ({received: 0, qualified: 0, appointment: 0, estimate: 0, signed: 0});
 const mailTypes = ['sent', 'delivered', 'bounced', 'complained', 'clicked', 'failed', 'suppressed'];
 const isSuppressed = types => types.some(type => ['bounced', 'complained', 'suppressed', 'failed'].includes(type));
@@ -37,10 +37,11 @@ export async function report(store, month, now = Date.now()) {
   const withinWindow = value => Date.parse(value) >= cutoff && Date.parse(value) <= now;
   const rolling30Days = {...stageCounts(), qualifiedOrganic: 0, repeatCustomers: 0, revenueCents: 0,
     pendingNotification: 0, notification: newCounts(), acknowledgment: newCounts()};
-  const breakdowns = {byChannel: new Map(), byService: new Map()};
-  const addBreakdown = (group, label, stages) => {
+  const breakdowns = {byChannel: new Map(), byService: new Map(), byCampaign: new Map()};
+  const addBreakdown = (group, label, stages, revenueCents) => {
     const counts = group.get(label) || {...stageCounts(), cohortEstimate: 0, cohortSigned: 0};
     for (const stage of stages) counts[stage]++;
+    if (revenueCents !== undefined) counts.revenueCents = (counts.revenueCents || 0) + revenueCents;
     group.set(label, counts);
   };
   const result = {month, timeZone: 'America/New_York', targets, received: 0, pendingNotification: 0,
@@ -50,6 +51,7 @@ export async function report(store, month, now = Date.now()) {
   for (const lead of await listRecords(store)) {
     if (lead.test || lead.excluded) continue;
     const stagesInWindow = [];
+    let revenueInWindow = 0;
     const recent = withinWindow(lead.receivedAt);
     const channel = lead.channel || 'unknown';
     if (recent) {
@@ -72,11 +74,13 @@ export async function report(store, month, now = Date.now()) {
       }
       for (const payment of Object.values(lead.payments || {})) {
         if (monthOf(payment.at) === month) result.revenueCents += payment.cents;
-        if (withinWindow(payment.at)) rolling30Days.revenueCents += payment.cents;
+        if (withinWindow(payment.at)) revenueInWindow += payment.cents;
       }
     }
-    if (stagesInWindow.length) {
-      addBreakdown(breakdowns.byChannel, channel, stagesInWindow);
+    rolling30Days.revenueCents += revenueInWindow;
+    if (stagesInWindow.length || revenueInWindow) {
+      addBreakdown(breakdowns.byChannel, channel, stagesInWindow, revenueInWindow);
+      if (lead.campaign) addBreakdown(breakdowns.byCampaign, lead.campaign, stagesInWindow, revenueInWindow);
       for (const service of new Set(lead.categories)) addBreakdown(breakdowns.byService, service, stagesInWindow);
     }
     const inMonth = monthOf(lead.receivedAt) === month;

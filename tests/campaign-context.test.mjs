@@ -153,3 +153,17 @@ test('the exact existing Nextdoor flooring-post link retains its label without p
     dom.window.close();
   }
 });
+
+test('painting email variants and referral links preserve distinct public labels across intake navigation', () => {
+  for (const campaign of ['painting-email-photo', 'painting-email-consultation', 'realtor-pre-listing', 'neighborhood-home-refresh']) {
+    const landing = page('painting.html', 'https://bentos-group.com/painting?campaign=' + campaign);
+    const photo = landing.window.document.querySelector('main a[href^="/punch-list"]');
+    const estimate = landing.window.document.querySelector('main a[href^="/free-quote"]');
+    assert.equal(new URL(photo.href).searchParams.get('campaign'), campaign);
+    assert.equal(new URL(estimate.href).searchParams.get('campaign'), campaign);
+    const quote = page('free-quote.html', estimate.href);
+    assert.equal(new quote.window.FormData(quote.window.document.getElementById('reformaForm')).get('Campaign Tag'), campaign);
+    quote.window.close();
+    landing.window.close();
+  }
+});

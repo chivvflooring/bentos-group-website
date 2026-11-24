@@ -72,7 +72,7 @@ test('ledger deduplicates equivalent quotes and reports signed, paid and deliver
   }};
   const data = {Name:'Internal Control', Location:'Roswell, GA', Email:'private@example.com',
     Service:'Flooring', 'Project Description':'Replace the entry floor', 'Preferred Contact Method':'Email',
-    'Inquiry Source Page':'/gallery'};
+    'Inquiry Source Page':'/gallery', 'Campaign Tag':'painting-email-consultation'};
   const request = {httpMethod:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(data)};
   assert.equal((await quote(request, {}, deps)).statusCode, 201);
   assert.equal((await quote({...request, body:JSON.stringify({...data, Location:'roswell, GA'})}, {}, deps)).statusCode, 202);
@@ -83,6 +83,8 @@ test('ledger deduplicates equivalent quotes and reports signed, paid and deliver
   for (const stage of ['qualified','appointment','estimate','signed']) {
     assert.equal((await operations(operation('PATCH', {}, {id, stage}), {}, deps)).statusCode, 200);
   }
+  assert.equal((await operations(operation('PATCH', {}, {id, stage:'classify',
+    channel:'realtor-referral', repeatCustomer:false}), {}, deps)).statusCode, 200);
   const payment = operation('PATCH', {}, {id, stage:'revenue', cents:152000, paymentId:'invoice-1'});
   for (let repeat=0; repeat<2; repeat++) assert.equal((await operations(payment, {}, deps)).statusCode, 200);
   assert.equal((await events(mailEvent('delivered'), {}, deps)).statusCode, 204);
@@ -99,7 +101,14 @@ test('ledger deduplicates equivalent quotes and reports signed, paid and deliver
   assert.equal(report.notification.delivered, 1);
   assert.equal(report.notification.clicked, 1);
   assert.equal(report.notification.bounced, 0);
-  assert.deepEqual(report.sources, [{source:'/gallery', received:1}]);
+  assert.deepEqual(report.sources, [{source:'painting-email-consultation', received:1}]);
+  for (const [rows, label] of [
+    [report.rolling30Days.byCampaign, 'painting-email-consultation'],
+    [report.rolling30Days.byChannel, 'realtor-referral']
+  ]) {
+    assert.equal(rows[0].label, label);
+    assert.deepEqual([rows[0].qualified, rows[0].estimate, rows[0].signed, rows[0].revenueCents], [1, 1, 1, 152000]);
+  }
   assert.ok(!JSON.stringify([...store.rows]).includes('https://example.com/private'));
   assert.equal((await operations(operation('PATCH', {}, {id, stage:'exclude'}), {}, deps)).statusCode, 200);
   assert.equal(body(await operations(operation('GET'), {}, deps)).received, 0);
