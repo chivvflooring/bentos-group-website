@@ -4,6 +4,7 @@
   // along internal page links; no cookies, storage or cross-site identification.
   // A label describes a link, not proof that a paid impression/click occurred.
   const campaigns = new Map([
+    ['holiday-home-refresh', 'Holiday Home Refresh — Email'],
     ['chatgpt-organic', 'ChatGPT search — Organic'],
     ['instagram-profile-organic', 'Instagram organic — Profile'],
     ['nextdoor-profile-organic', 'Nextdoor organic — Business profile'],
@@ -42,12 +43,15 @@
         const values = landingParams.getAll(key);
         return values.length === 1 && values[0] === value;
       });
+  const holidayCampaign = landingParams.getAll('utm_campaign');
   const campaignId = campaignValues.length === 1 && campaigns.has(campaignValues[0])
     ? campaignValues[0]
     : campaignValues.length === 0 && chatgptSearch ? 'chatgpt-organic'
     : campaignValues.length === 0 && instagramProfile ? 'instagram-profile-organic'
     : campaignValues.length === 0 && nextdoorProfile ? 'nextdoor-profile-organic'
-    : campaignValues.length === 0 && nextdoorFlooringPost ? 'flooring-nextdoor-organic' : '';
+    : campaignValues.length === 0 && nextdoorFlooringPost ? 'flooring-nextdoor-organic'
+    : campaignValues.length === 0 && holidayCampaign.length === 1 && holidayCampaign[0] === 'holiday_home_refresh' ? 'holiday-home-refresh' : '';
+  window.bentosCampaign = campaignId;
 
   function decorateCampaignLink(link) {
     if (!campaignId || link.hasAttribute('download')) return;
@@ -60,6 +64,15 @@
       // An explicitly tagged destination takes precedence over the incoming link.
       if (url.searchParams.has('campaign')) return;
       url.searchParams.set('campaign', campaignId);
+      if (campaignId === 'holiday-home-refresh' && !url.searchParams.has('utm_campaign')) {
+        url.searchParams.set('utm_campaign', 'holiday_home_refresh');
+        const media = landingParams.getAll('utm_medium');
+        if (media.length === 1 && media[0] === 'email') url.searchParams.set('utm_medium', media[0]);
+        const sources = landingParams.getAll('utm_source');
+        if (sources.length === 1 && ['resend', 'newsletter'].includes(sources[0])) {
+          url.searchParams.set('utm_source', sources[0]);
+        }
+      }
       link.setAttribute('href', url.pathname + url.search + url.hash);
     } catch (_) { /* Leave invalid or non-page links unchanged. */ }
   }
@@ -76,7 +89,7 @@
     }
   }
 
-  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'quote_test_success', 'phone_click', 'text_click', 'email_click', 'interest_signup', 'project_video_play', 'booking_click']);
+  const allowed = new Set(['estimate_cta_click', 'estimate_form_attempt', 'estimate_form_start', 'estimate_form_error', 'generate_lead', 'quote_test_success', 'phone_click', 'text_click', 'email_click', 'interest_signup', 'project_video_play', 'booking_click', 'punch_list_cta_click', 'punch_list_started', 'punch_list_submitted', 'punch_list_test_success']);
   const services = new Set(['new-construction', 'full-renovation', 'site-development', 'flooring', 'kitchen', 'bathroom', 'painting', 'roofing', 'home-addition', 'decks', 'basement']);
   const topics = new Set(['new-construction', 'renovations', 'site-development', 'flooring', 'bathrooms', 'kitchens', 'painting', 'decks', 'home-care']);
   const leadCategories = new Set(['new-construction', 'site-development', 'renovations', 'kitchens', 'bathrooms', 'flooring', 'other']);
@@ -128,6 +141,8 @@
         const url = new URL(href, window.location.href);
         if (url.origin === 'https://calendar.google.com' && url.pathname === '/calendar/u/0/appointments/schedules/AcZssZ0WzFNYeLnSrqZ7bTHH7KuuMQJz7Uwdghut5WXWOweOw7VPk9SiM-dgWpv6QFMz3T6HQTDRIA0L' && link.hasAttribute('data-booking-service')) {
           window.bentosTrack('booking_click', { project_service: link.dataset.bookingService });
+        } else if (url.origin === window.location.origin && /^\/punch-list(?:\.html)?\/?$/.test(url.pathname)) {
+          window.bentosTrack('punch_list_cta_click');
         } else if (url.origin === window.location.origin && /^\/free-quote(?:\.html)?\/?$/.test(url.pathname)) {
           const values = url.searchParams.getAll('service');
           window.bentosTrack('estimate_cta_click', { project_service: values.length === 1 ? values[0] : undefined });

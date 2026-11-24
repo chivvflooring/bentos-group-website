@@ -124,8 +124,8 @@ document.addEventListener("DOMContentLoaded", function () {
       // Never send an empty or unvalidated reply header.
       formData.delete('_replyto');
       if (data.email) formData.set('_replyto', data.email);
-      await sendFormSubmit(form.action, formData);
-      window.bentosTrackQuote?.(form);
+      const response = await sendFormSubmit(form.action, formData);
+      if (response.status !== 202) window.bentosTrackQuote?.(form);
       markQuoteSuccess();
       formStatus.textContent = "";
       delete formStatus.dataset.state;

@@ -15,7 +15,7 @@ test('public quote page uses the verified same-origin delivery path and accurate
   const html = readFileSync(new URL('../free-quote.html', import.meta.url), 'utf8');
   assert.match(html, /action="\/\.netlify\/functions\/quote"/);
   assert.match(html, /Your request is sent securely to our team\./);
-  assert.match(html, /Request Delivered/);
+  assert.match(html, /Request Received/);
   assert.doesNotMatch(html, /form is processed by FormSubmit/);
 });
 
@@ -29,7 +29,7 @@ test('valid quote emails only the owner and keeps the verified customer reply ad
     env: { RESEND_API_KEY: 'test-key' },
     fetch: async (_url, options) => {
       outbound = JSON.parse(options.body);
-      return { ok: true, status: 200, headers: { get: () => null } };
+      return { ok: true, status: 200, json: async () => ({ id: 'provider-quote' }) };
     }
   });
   assert.equal(result.statusCode, 201);
@@ -46,7 +46,7 @@ test('phone-only quote is accepted without inventing a reply email', async () =>
     env: { RESEND_API_KEY: 'test-key' },
     fetch: async (_url, options) => {
       outbound = JSON.parse(options.body);
-      return { ok: true, status: 200, headers: { get: () => null } };
+      return { ok: true, status: 200, json: async () => ({ id: 'provider-quote' }) };
     }
   });
   assert.equal(result.statusCode, 201);
@@ -78,4 +78,34 @@ test('provider failure cannot be presented as a successful quote', async () => {
   });
   assert.equal(result.statusCode, 502);
   assert.equal(JSON.parse(result.body).ok, undefined);
+});
+
+test('quote rejects out-of-area, malformed dates and promotional markup before notifying', async () => {
+  const base = { Name: 'Fixture', Location: 'Alpharetta 30005', Phone: '6785550100', Service: 'Flooring' };
+  const deps = { env: { RESEND_API_KEY: 'test-key' }, fetch: async () => assert.fail('Unexpected notification') };
+  for (const changes of [
+    { Location: 'New Zealand' },
+    { 'Preferred Showroom Date': '1981-01-00' },
+    { 'Preferred Showroom Date': '2026-02-29' },
+    { 'Project Description': '<a href="https://example.invalid">Promotion</a>' },
+    { Service: 'Unrecognized service' }
+  ]) assert.equal((await handler(event({ ...base, ...changes }), {}, deps)).statusCode, 400);
+  assert.equal((await handler(event(null, 'application/json'), {}, deps)).statusCode, 400);
+});
+
+test('quote requires provider acceptance ID and uses a stable retry key', async () => {
+  const keys = [];
+  const data = { Name: 'Fixture', Location: 'Alpharetta', Phone: '6785550100', 'Campaign Tag': 'nextdoor-profile-organic' };
+  const deps = {
+    env: { RESEND_API_KEY: 'test-key' },
+    fetch: async (_url, options) => {
+      keys.push(options.headers['Idempotency-Key']);
+      assert.match(JSON.parse(options.body).text, /Campaign link \(unverified\): nextdoor-profile-organic/);
+      return { ok: true, json: async () => keys.length === 1 ? {} : { id: 'quote-fixture' } };
+    }
+  };
+  assert.equal((await handler(event(data), {}, deps)).statusCode, 502);
+  assert.equal((await handler(event(data), {}, deps)).statusCode, 201);
+  assert.match(keys[0], /^quote\/[a-f\d]{64}$/);
+  assert.equal(keys[0], keys[1]);
 });

@@ -1,6 +1,7 @@
-const RESEND_EMAILS_URL = 'https://api.resend.com/emails';
-const OWNER_EMAIL = 'charlesbgroup@gmail.com';
-const SENDER = "Bento's Group Website <leads@bentos-group.com>";
+import { campaignValue, clean, looksLikePromotion, ownerEmail, sendLead, validEmail, validPhone } from '../lib/lead-delivery.mjs';
+
+export const config = { rateLimit: { windowLimit: 10, windowSize: 60, aggregateBy: ['ip'] } };
+
 const MAX_BODY_BYTES = 20_000;
 const ALLOWED_FIELDS = [
   'Name', 'Location', 'Phone', 'Email', 'Preferred Contact Method', 'Best Contact Time',
@@ -22,20 +23,25 @@ function response(statusCode, body) {
   };
 }
 
-function clean(value, max = 2_000) {
-  return typeof value === 'string'
-    ? value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').trim().slice(0, max)
-    : '';
-}
-
 function escapeHtml(value) {
   return value.replace(/[&<>"']/g, character => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   })[character]);
 }
 
-function validEmail(value) {
-  return value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+const localCity = /^(?:acworth|alpharetta|atlanta|brookhaven|buckhead|canton|cumming|decatur|dunwoody|east cobb|johns creek|kennesaw|lawrenceville|marietta|milton|norcross|peachtree corners|roswell|sandy springs|smyrna|suwanee|woodstock)(?:[, ]|$)/i;
+const georgiaZip = /\b(?:3[01]\d|39[89])\d{2}(?:-\d{4})?\b/;
+const contactOptions = ['No preference', 'Phone call', 'Text message', 'Email'];
+const serviceOptions = [
+  'Decks & Porches', 'New Construction', 'Site Development', 'Home Addition', 'Roofing',
+  'Basement Remodeling', 'Full Renovation', 'Kitchen Remodeling', 'Bathroom Remodeling',
+  'Flooring', 'outdoor', 'painting', 'Handyman / Repair', 'Deck'
+];
+
+function validDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 function parseBody(event) {
@@ -66,29 +72,44 @@ export async function handler(event, _context, dependencies = {}) {
   try { data = parseBody(event); }
   catch (error) { return response(error.status || 400, { error: error.message }); }
 
-  // Do not reveal the honeypot to automated senders and never email its contents.
-  if (clean(data._honey)) return response(202, { ok: true });
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return response(400, { error: 'Invalid request.' });
+  if (data._honey) {
+    console.info('spam_rejected', { kind: 'quote', reason: 'honeypot' });
+    return response(202, { ok: true });
+  }
 
-  const name = clean(data.Name, 120);
-  const location = clean(data.Location, 160);
+  const name = clean(data.Name, 120).replace(/\s+/g, ' ');
+  const location = clean(data.Location, 160).replace(/\s+/g, ' ');
   const phone = clean(data.Phone, 60);
   const email = clean(data.Email, 254).toLowerCase();
-  if (name.length < 2 || location.length < 2 || (!phone && !email) || (email && !validEmail(email))) {
+  const contact = clean(data['Preferred Contact Method']);
+  if (name.length < 2 || location.length < 2 || (!phone && !email) || (email && !validEmail(email)) ||
+      (phone && !validPhone(phone)) || (contact && !contactOptions.includes(contact)) ||
+      (contact === 'Email' && !email) || (['Phone call', 'Text message'].includes(contact) && !phone)) {
     return response(400, { error: 'Please provide a name, project city or ZIP, and valid contact details.' });
   }
-  if (phone && phone.replace(/\D/g, '').length < 7) {
-    return response(400, { error: 'Please provide a valid phone number.' });
+  const date = clean(data['Preferred Showroom Date']);
+  const time = clean(data['Preferred Showroom Time (America/New_York)']);
+  const selectedServices = clean(data.Service).split(/\r?\n/).filter(Boolean);
+  if ((date && !validDate(date)) || (time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) ||
+      selectedServices.some(service => !serviceOptions.some(option => option.toLowerCase() === service.toLowerCase()))) {
+    return response(400, { error: 'Check your selected services and preferred showroom date or time.' });
+  }
+  if (!localCity.test(location) && !georgiaZip.test(location) && !/(?:,|\s)\s*(?:GA|Georgia)$/i.test(location)) {
+    return response(400, { error: 'Enter a Georgia project city with GA, or a Georgia ZIP code.' });
+  }
+  if (submittedFields(data).some(([label, value]) => label !== 'Email' && looksLikePromotion(value))) {
+    console.info('spam_rejected', { kind: 'quote', reason: 'links' });
+    return response(400, { error: 'Please remove website links from your request.' });
   }
 
   const env = dependencies.env || process.env;
-  const fetchImpl = dependencies.fetch || fetch;
-  if (!env.RESEND_API_KEY) {
-    console.error('Quote notification is missing Resend configuration.');
-    return response(503, { error: 'Quote delivery is temporarily unavailable.' });
-  }
+  if (!env.RESEND_API_KEY) return response(503, { error: 'Quote delivery is temporarily unavailable.' });
 
   const fields = submittedFields(data);
-  const services = clean(data.Service, 300) || 'Project consultation';
+  const tag = campaignValue(data['Campaign Tag']);
+  if (tag) fields.push(['Campaign link (unverified)', tag]);
+  const services = selectedServices.join('\n') || 'Project consultation';
   const subject = `Website quote request — ${services.split('\n')[0].slice(0, 80)} — ${location}`;
   const text = [
     'New website quote request', '',
@@ -101,36 +122,21 @@ export async function handler(event, _context, dependencies = {}) {
   ).join('');
 
   const payload = {
-    from: SENDER,
-    to: [OWNER_EMAIL],
+    to: [ownerEmail],
     subject,
     text,
     html: `<h1>New website quote request</h1><table style="border-collapse:collapse">${htmlRows}</table><p>Source: Bento’s Group estimate form</p>`
   };
   if (email) payload.reply_to = email;
 
-  let providerResponse;
   try {
-    providerResponse = await fetchImpl(RESEND_EMAILS_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-  } catch (error) {
-    console.error('Quote notification could not connect to email provider.', { message: error.message });
-    return response(502, { error: 'Quote delivery is temporarily unavailable.' });
+    const reference = await sendLead('quote', payload, dependencies);
+    if (reference) {
+      console.info('submission_received', { kind: 'quote', reference, qa: email === ownerEmail });
+      return response(201, { ok: true });
+    }
+  } catch {
+    console.warn('lead_provider_unavailable', { kind: 'quote' });
   }
-
-  if (!providerResponse.ok) {
-    const requestId = providerResponse.headers?.get?.('x-request-id') || null;
-    console.error('Quote notification provider rejected request.', { status: providerResponse.status, requestId });
-    return response(502, { error: 'Quote delivery is temporarily unavailable.' });
-  }
-
-  console.info('Website quote notification accepted.', { service: services.slice(0, 100), hasEmail: Boolean(email) });
-  return response(201, { ok: true });
+  return response(502, { error: 'Quote delivery is temporarily unavailable.' });
 }
