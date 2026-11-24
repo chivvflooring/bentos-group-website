@@ -98,7 +98,9 @@ async function openProject(id) {
     ['Project', lead.categories.join(', ')], ['Location', lead.location], ['Customer', lead.name],
     ['Email', lead.email], ['Phone', lead.phone], ['Preferred contact', lead.contact], ['Scope', lead.scope],
     ['Source page or campaign', lead.utmSource || lead.campaign || lead.source || lead.reportedSource],
-    ['Staff-classified channel', lead.channel], ['Last follow-up', lead.lastFollowUpAt],
+    ['Staff-classified channel', lead.channel], ['First human response', lead.firstResponseAt],
+    ['Response time', lead.firstResponseAt ? Math.round((Date.parse(lead.firstResponseAt) - Date.parse(lead.receivedAt)) / 60_000) + ' minutes' : null],
+    ['Last follow-up', lead.lastFollowUpAt],
     ...Object.entries(lead.milestones), ...Object.entries(lead.projectDetails || {})
   ]);
   update.reset();

@@ -167,3 +167,16 @@ test('painting email variants and referral links preserve distinct public labels
     landing.window.close();
   }
 });
+
+test('growth experiment labels flow to the estimate and analytics without exposing private parameters', () => {
+  for (const id of ['test-message-painting', 'test-message-remodeling', 'test-proof-reviews', 'test-proof-projects', 'test-scope-small', 'test-scope-large']) {
+    const dom = page('free-quote.html', 'https://bentos-group.com/free-quote?campaign=' + id + '&email=private@example.com');
+    const w = dom.window;
+    const fields = new w.FormData(w.document.getElementById('reformaForm'));
+    assert.equal(fields.get('Campaign Tag'), id);
+    w.bentosTrack('generate_lead');
+    assert.equal(w.dataLayer.at(-1).bentos_campaign, id);
+    assert.ok(!JSON.stringify(w.dataLayer).includes('private@example.com'));
+    dom.window.close();
+  }
+});

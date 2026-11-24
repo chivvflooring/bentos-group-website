@@ -73,6 +73,9 @@ if (process.env.HEALTH_SITE) {
     assert.equal(response.status, 405, path);
     await response.body?.cancel();
   }
+  if (process.env.REQUIRE_LEAD_HEALTH === 'true') {
+    assert.ok(process.env.LEAD_OPERATIONS_TOKEN, 'Lead health is required but the read token is missing');
+  }
   if (process.env.LEAD_OPERATIONS_TOKEN) {
     const response = await fetch(new URL('/.netlify/functions/lead-operations', site), {
       headers: {Authorization: 'Bearer ' + process.env.LEAD_OPERATIONS_TOKEN},

@@ -222,3 +222,23 @@ test('concurrent exact retries share one claim, and an identical project can ret
   assert.equal(sent.size, 2);
   assert.equal([...store.rows.keys()].filter(key => key.startsWith('leads/')).length, 2);
 });
+
+test('staff can classify school referrals and preserve the first response across retries', async () => {
+  const store = new MemoryStore();
+  const deps = {env, store, fetch: async () => Response.json({id: providerReference})};
+  const data = {Name: 'Internal fixture', Location: 'Roswell, GA', Email: 'private@example.com',
+    Service: 'Painting', 'Project Description': 'Refresh the living room'};
+  const request = {httpMethod: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(data)};
+  assert.equal((await quote(request, {}, deps)).statusCode, 201);
+  const key = [...store.rows.keys()].find(value => value.startsWith('leads/'));
+  const id = key.split('/')[1];
+  const lead = await store.get(key);
+  const patch = (stage, details, token) => operations(operation('PATCH', {}, {id, stage, ...details}, token), {}, deps);
+  assert.equal((await patch('responded', {}, env.LEAD_OPERATIONS_READ_TOKEN)).statusCode, 401);
+  assert.equal((await patch('classify', {channel: 'school-referral', repeatCustomer: false})).statusCode, 200);
+  assert.equal((await patch('responded', {at: lead.receivedAt})).statusCode, 200);
+  assert.equal((await patch('responded', {})).statusCode, 200);
+  const updated = await store.get(key);
+  assert.equal(updated.firstResponseAt, lead.receivedAt);
+  assert.equal(updated.channel, 'school-referral');
+});

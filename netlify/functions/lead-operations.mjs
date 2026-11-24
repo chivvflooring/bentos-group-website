@@ -3,7 +3,7 @@ import { authorized, json, ledger, stages, updateLead } from '../lib/lead-ledger
 const monthFormat = new Intl.DateTimeFormat('en-CA', {year: 'numeric', month: '2-digit', timeZone: 'America/New_York'});
 const monthOf = value => monthFormat.format(new Date(value)).slice(0, 7);
 const targets = {qualified: 20, estimate: 12, signed: 4};
-const channels = ['unknown', 'organic-search', 'organic-social', 'referral', 'realtor-referral', 'neighborhood-referral', 'email', 'paid', 'direct', 'other'];
+const channels = ['unknown', 'organic-search', 'organic-social', 'referral', 'realtor-referral', 'neighborhood-referral', 'school-referral', 'email', 'paid', 'direct', 'other'];
 const stageCounts = () => ({received: 0, qualified: 0, appointment: 0, estimate: 0, signed: 0});
 const mailTypes = ['sent', 'delivered', 'bounced', 'complained', 'clicked', 'failed', 'suppressed'];
 const isSuppressed = types => types.some(type => ['bounced', 'complained', 'suppressed', 'failed'].includes(type));
@@ -149,7 +149,7 @@ export async function handler(event, _context, deps = {}) {
     try { data = JSON.parse(event.body || ''); } catch { return json(400, {error: 'Invalid JSON'}); }
     if (typeof data?.id !== 'string' || !/^[a-f0-9]{64}$/.test(data.id)) return json(400, {error: 'Invalid lead ID'});
     const validStage = stages.includes(data.stage);
-    if (!validStage && !['exclude', 'stop-follow-up', 'classify', 'followed-up'].includes(data.stage)) return json(400, {error: 'Invalid stage'});
+    if (!validStage && !['exclude', 'stop-follow-up', 'classify', 'followed-up', 'responded'].includes(data.stage)) return json(400, {error: 'Invalid stage'});
     if (data.stage === 'classify' && (!channels.includes(data.channel) || typeof data.repeatCustomer !== 'boolean')) {
       return json(400, {error: 'Select a channel and customer type'});
     }
@@ -164,6 +164,7 @@ export async function handler(event, _context, deps = {}) {
       if (data.stage === 'stop-follow-up') return {...lead, followUpStopped: true};
       if (lead.test || lead.excluded || !lead.notificationId || at < new Date(lead.receivedAt)) return lead;
       if (data.stage === 'classify') return {...lead, channel: data.channel, repeatCustomer: data.repeatCustomer};
+      if (data.stage === 'responded') return lead.firstResponseAt ? lead : {...lead, firstResponseAt: at.toISOString()};
       if (data.stage === 'followed-up') return {...lead, lastFollowUpAt: at.toISOString()};
       if (data.stage === 'revenue') {
         if (!lead.milestones.signed || at < new Date(lead.milestones.signed)) return lead;
@@ -173,6 +174,7 @@ export async function handler(event, _context, deps = {}) {
     });
     if (!updated) return json(404, {error: 'Lead not found'});
     const recorded = data.stage === 'classify' ? updated.channel === data.channel && updated.repeatCustomer === data.repeatCustomer :
+      data.stage === 'responded' ? updated.firstResponseAt :
       data.stage === 'followed-up' ? updated.lastFollowUpAt === at.toISOString() : data.stage === 'exclude' ? updated.excluded : data.stage === 'stop-follow-up' ? updated.followUpStopped :
       data.stage === 'revenue' ? updated.payments?.[data.paymentId]?.cents === data.cents : updated.milestones[data.stage];
     return recorded ? json(200, {id: updated.id, stage: data.stage}) : json(409, {error: 'Stage or payment could not be recorded'});
