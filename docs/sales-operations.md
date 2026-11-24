@@ -28,6 +28,8 @@ Register the signed Resend endpoint at `/.netlify/functions/resend-events` for s
 
 ## Private reporting and follow-up
 
+- Open `/sales/` with the staff bearer token. The dashboard keeps the token in memory and clears lead details when locked. Use the calendar-month project view and the rolling 30-day results. Select an attribution channel and whether the customer is returning based on staff reconciliation. Review additional submissions for the same project before recording qualified sales milestones.
+
 - `GET /.netlify/functions/lead-operations?month=YYYY-MM` returns monthly aggregate counts for the New York time zone. Targets are 20 qualified leads, 12 estimates and 4 signed jobs. Stage dates and payment dates determine their respective months. Delivery and source summaries describe leads received in the selected month.
 - An admin token also allows `?view=pipeline&month=YYYY-MM` and `?id=LEAD_ID` for details. Send the token as an Authorization bearer header. The read token grants aggregates only. Keep tokens out of URLs, browser storage and public dashboards.
 - Staff record actual milestone decisions using `PATCH` with JSON containing `id`, `stage` and optional ISO `at`. Stages are `qualified`, `appointment`, `estimate`, `signed`, `revenue`, `exclude` and `stop-follow-up`. Qualify after confirming service fit, geography and a reachable customer. Record revenue only when received, using integer `cents` and a stable `paymentId` for each payment on that lead. Mark discovered spam or duplicates excluded. Exact equivalent requests and owner-address tests are handled at intake.

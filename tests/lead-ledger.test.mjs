@@ -77,7 +77,7 @@ test('ledger deduplicates equivalent quotes and reports signed, paid and deliver
   assert.equal((await quote(request, {}, deps)).statusCode, 201);
   assert.equal((await quote({...request, body:JSON.stringify({...data, Location:'roswell, GA'})}, {}, deps)).statusCode, 202);
   assert.equal(sends, 1);
-  const id = [...store.rows.keys()][0].split('/')[1];
+  const id = [...store.rows.keys()].find(key => key.startsWith('leads/')).split('/')[1];
   assert.equal((await operations(operation('GET', {id}, null, env.LEAD_OPERATIONS_READ_TOKEN), {}, deps)).statusCode, 401);
   assert.equal((await operations(operation('PATCH', {}, {id, stage:'qualified'}, env.LEAD_OPERATIONS_READ_TOKEN), {}, deps)).statusCode, 401);
   for (const stage of ['qualified','appointment','estimate','signed']) {
@@ -163,7 +163,7 @@ test('rolling organic reporting requires staff classification and separates retu
   const request = details => ({httpMethod: 'POST', headers: {'content-type': 'application/json'},
     body: JSON.stringify({...data, ...details})});
   assert.equal((await quote(request({}), {}, deps)).statusCode, 201);
-  const [, first] = [...store.rows.keys()][0].split('/');
+  const [, first] = [...store.rows.keys()].filter(key => key.startsWith('leads/'))[0].split('/');
   const patch = (id, stage, details) => operations(operation('PATCH', {}, {id, stage, ...details}), {}, deps);
   await patch(first, 'qualified');
   const rolling = async () => body(await operations(operation('GET'), {}, deps)).rolling30Days;
@@ -174,7 +174,7 @@ test('rolling organic reporting requires staff classification and separates retu
 
   assert.equal((await quote(request({'Project Description': 'Refinish second floor'}), {}, deps)).statusCode, 201);
   assert.equal((await quote(request({'Project Description': 'Refinish second floor'}), {}, deps)).statusCode, 202);
-  const [, repeat] = [...store.rows.keys()][1].split('/');
+  const [, repeat] = [...store.rows.keys()].filter(key => key.startsWith('leads/'))[1].split('/');
   await patch(repeat, 'classify', {channel: 'direct', repeatCustomer: true});
   await patch(repeat, 'qualified');
   await patch(repeat, 'followed-up');
@@ -191,4 +191,25 @@ test('the production ledger configuration cannot silently fall back to email-onl
   const result = await quote(request, {}, {env: {RESEND_API_KEY: 'control', LEAD_LEDGER_NAMESPACE: 'production'},
     fetch: async () => assert.fail('Must not call the provider without production storage')});
   assert.equal(result.statusCode, 502);
+});
+
+test('concurrent exact retries share one claim, and an identical project can return after 24 hours', async () => {
+  const store = new MemoryStore();
+  const sent = new Map();
+  const deps = {env, store, fetch: async (_url, {headers}) => {
+    const key = headers['Idempotency-Key'];
+    if (!sent.has(key)) sent.set(key, 'provider-' + sent.size);
+    await new Promise(resolve => setImmediate(resolve));
+    return Response.json({id: sent.get(key)});
+  }};
+  const data = {Name: 'Project QA', Location: 'Roswell, GA', Email: 'private@example.com', Service: 'Flooring'};
+  const request = {httpMethod: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(data)};
+  const results = await Promise.all([quote(request, {}, deps), quote(request, {}, deps)]);
+  assert.deepEqual(results.map(response => response.statusCode).sort(), [201, 202]);
+  assert.equal(sent.size, 1);
+  const [claimKey, claim] = [...store.rows].find(([key]) => key.startsWith('retry/'));
+  await store.setJSON(claimKey, {...claim.data, receivedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()});
+  assert.equal((await quote(request, {}, deps)).statusCode, 201);
+  assert.equal(sent.size, 2);
+  assert.equal([...store.rows.keys()].filter(key => key.startsWith('leads/')).length, 2);
 });
