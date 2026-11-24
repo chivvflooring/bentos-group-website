@@ -21,7 +21,7 @@ async function setup(t, moduleEnabled) {
   w.fetch = async (_url, options) => { capture(options.body); return { ok: true, json: async () => ({ success: true }) }; };
   if (moduleEnabled) {
     w.createSubmissionGuard = createSubmissionGuard;
-    w.sendFormSubmit = async (_action, data) => { capture(data); };
+    w.sendFormSubmit = async (_action, data) => { capture(data); return { status: 201 }; };
     w.eval(fs.readFileSync('js/free-quote-form.js', 'utf8').replace(/^import .*;\n/, ''));
   }
   d.dispatchEvent(new w.Event('DOMContentLoaded'));

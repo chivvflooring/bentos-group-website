@@ -148,7 +148,7 @@
             </div></div>
         </form>
     </div></div>
-    <div id="successModal" class="modal-success"><div class="modal-content"><h2 id="success-title" tabindex="-1">Request Delivered</h2><p>Your request was delivered to Bento’s Group. If you requested a showroom visit, our team will contact you to confirm availability and the appointment time. Please wait for confirmation before visiting.</p><p style="margin-top:20px">Have another detail to share? <a href="tel:+16785717028">Call (678) 571-7028</a> or <a href="sms:+16785717028">text us</a>.</p><a id="success-text-link" class="text-photos" href="sms:+16785717028">Text project photos or details</a><button type="button" class="btn-reset">Close confirmation</button></div></div>
+    <div id="successModal" class="modal-success"><div class="modal-content"><h2 id="success-title" tabindex="-1">Request Received</h2><p>We received your request. If you requested a showroom visit, our team will contact you to confirm availability and the appointment time. Please wait for confirmation before visiting.</p><p style="margin-top:20px">Have another detail to share? <a href="tel:+16785717028">Call (678) 571-7028</a> or <a href="sms:+16785717028">text us</a>.</p><a id="success-text-link" class="text-photos" href="sms:+16785717028">Text project photos or details</a><button type="button" class="btn-reset">Close confirmation</button></div></div>
     <script>
       // Carry only known campaign labels and page paths into the inquiry.
       (function prepareQuoteContext() {
@@ -365,7 +365,7 @@
             }
             // Keep a real deadline across both the request and response body.
             // Late provider responses must not reset the form or count a lead.
-            await Promise.race([deadline, (async () => {
+            const responseStatus = await Promise.race([deadline, (async () => {
               const requestBody = isFormSubmit
                 ? formData
                 : new URLSearchParams(Array.from(formData.entries()));
@@ -380,8 +380,9 @@
               if (!response.ok) throw new Error('HTTP ' + response.status);
               const result = await response.json();
               if (result.success !== true && result.success !== 'true' && result.ok !== true) throw new Error('Request not accepted');
+              return response.status;
             })()]);
-            window.bentosTrackQuote?.(form);
+            if (responseStatus !== 202) window.bentosTrackQuote?.(form);
             markQuoteSuccess();
             status.textContent = '';
             delete status.dataset.state;

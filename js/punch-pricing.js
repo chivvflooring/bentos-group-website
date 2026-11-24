@@ -8,10 +8,13 @@ export const services = [
   {id:'bath',name:'Bathroom repairs & refresh',description:'Caulking, damaged tile, fixtures or a larger update. Show us each area.'},
   {id:'deck',name:'Deck repairs, stain & paint',description:'Boards, stairs, rails and weathered finishes. Share overall and close-up photos.'},
   {id:'water',name:'Gutters, driveway & water concerns',description:'Overflowing gutters, pooling water or stains. Photos help plan an inspection; concealed damage needs assessment.'},
+  {id:'exterior-paint',name:'Exterior painting & trim',description:'Siding, exterior doors or trim. Describe the surfaces and their condition.'},
+  {id:'tile-grout',name:'Tile & grout repairs',description:'Loose or cracked tiles, deteriorated grout or worn seals. Tell us which rooms are affected.'},
+  {id:'floor-repair',name:'Flooring repairs',description:'Damaged boards, loose transitions or a small area that needs attention.'},
   {id:'small',name:'Doors, trim & other small repairs',description:'Sticking doors, loose trim, cabinet adjustments or another item on your list.'}
 ];
 export function estimate(items) {
  let low=0,high=0,review=0;
- for(const item of items){const s=services.find(s=>s.id===item.id);if(!s||!Number.isFinite(item.quantity)||item.quantity<1||item.quantity>10000)throw new Error('Invalid repair quantity');if(s.min){low+=s.min*item.quantity;high+=s.max*item.quantity;}else review++;}
+ for(const item of items){const s=services.find(s=>s.id===item.id);if(!s||!Number.isInteger(item.quantity)||item.quantity<1||item.quantity>10000)throw new Error('Invalid repair quantity');if(s.min){low+=s.min*item.quantity;high+=s.max*item.quantity;}else review++;}
  return {low,high,review};
 }
