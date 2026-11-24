@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { handler } from '../netlify/functions/quote.mjs';
+import { handler } from '../netlify/lib/quote-intake.mjs';
 import { readFileSync } from 'node:fs';
 
 function event(params, contentType = 'application/x-www-form-urlencoded') {

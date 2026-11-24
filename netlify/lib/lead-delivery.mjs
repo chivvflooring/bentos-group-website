@@ -26,9 +26,9 @@ export function looksLikePromotion(value) {
   return /(?:https?:\/\/|www\.|<\/?(?:a|script|iframe|img)\b)/i.test(value);
 }
 
-export async function sendLead(kind, message, { env = process.env, fetch: fetchImpl = fetch }) {
+export async function sendLead(kind, message, { env = process.env, fetch: fetchImpl = fetch, deliveryKey }) {
   const body = JSON.stringify({ from: sender, ...message });
-  const idempotencyKey = createHmac('sha256', env.RESEND_API_KEY).update(body).digest('hex');
+  const idempotencyKey = createHmac('sha256', env.RESEND_API_KEY).update(deliveryKey || body).digest('hex');
   const response = await fetchImpl('https://api.resend.com/emails', {
     method: 'POST',
     headers: {

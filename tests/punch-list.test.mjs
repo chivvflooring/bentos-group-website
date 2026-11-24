@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {estimate} from '../js/punch-pricing.js';import {handler} from '../netlify/functions/punch-list.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import {estimate} from '../js/punch-pricing.js';import {handler} from '../netlify/lib/punch-list-intake.mjs';
 const request={name:'Website QA test',email:'charlesbgroup@gmail.com',phone:'6785717028',zip:'30005',consent:'yes',timing:'Flexible',contactMethod:'Email',items:[{id:'recoat',quantity:400},{id:'deck',quantity:1}],photos:[]};
 const event=d=>({httpMethod:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(d)});
 test('reference subtotal excludes reviewed work and rejects invalid quantities',()=>{assert.deepEqual(estimate(request.items),{low:800,high:800,review:1});assert.throws(()=>estimate([{id:'recoat',quantity:-1}]));});
