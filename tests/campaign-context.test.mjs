@@ -167,3 +167,51 @@ test('painting email variants and referral links preserve distinct public labels
     landing.window.close();
   }
 });
+
+test('growth experiment labels flow to the estimate and analytics without exposing private parameters', () => {
+  for (const id of ['test-message-painting', 'test-message-remodeling', 'test-proof-reviews', 'test-proof-projects', 'test-scope-small', 'test-scope-large']) {
+    const dom = page('free-quote.html', 'https://bentos-group.com/free-quote?campaign=' + id + '&email=private@example.com');
+    const w = dom.window;
+    const fields = new w.FormData(w.document.getElementById('reformaForm'));
+    assert.equal(fields.get('Campaign Tag'), id);
+    w.bentosTrack('generate_lead');
+    assert.equal(w.dataLayer.at(-1).bentos_campaign, id);
+    assert.ok(!JSON.stringify(w.dataLayer).includes('private@example.com'));
+    dom.window.close();
+  }
+});
+
+test('sent campaign UTMs and customer referral links carry private-ledger attribution', () => {
+  const landing = page('painting.html',
+    'https://bentos-group.com/painting?utm_source=resend&utm_medium=email&utm_campaign=love_the_home_nov2026');
+  const estimate = landing.window.document.querySelector('a[href*="free-quote"]');
+  const quote = page('free-quote.html', estimate.href);
+  const fields = new quote.window.FormData(quote.window.document.getElementById('reformaForm'));
+  assert.equal(fields.get('Campaign Tag'), 'love-the-home-email');
+  assert.equal(new URL(estimate.href).searchParams.get('utm_campaign'), 'love_the_home_nov2026');
+  const referrals = page('referrals.html', 'https://bentos-group.com/referrals#client');
+  const target = referrals.window.document.querySelector('#client a[href*="free-quote"]');
+  const referred = page('free-quote.html', target.href);
+  const refFields = new referred.window.FormData(referred.window.document.getElementById('reformaForm'));
+  assert.equal(refFields.get('Campaign Tag'), 'customer-referral');
+  for (const item of [landing, quote, referrals, referred]) item.window.close();
+});
+
+test('Roswell and Johns Creek estimate links select each advertised service and retain the landing page', () => {
+  const route = '/roswell-johns-creek-renovation-estimates';
+  const landing = page(route.slice(1) + '.html', 'https://bentos-group.com' + route);
+  const expected = {painting: 'painting', decks: 'Decks & Porches', kitchen: 'Kitchen Remodeling',
+    bathroom: 'Bathroom Remodeling', basement: 'Basement Remodeling', flooring: 'Flooring'};
+  const observed = new Set();
+  for (const link of landing.window.document.querySelectorAll('a[href^="/free-quote?service="]')) {
+    const service = new URL(link.href).searchParams.get('service');
+    const quote = page('free-quote.html', link.href);
+    const fields = new quote.window.FormData(quote.window.document.getElementById('reformaForm'));
+    assert.ok(fields.getAll('Service').includes(expected[service]), service);
+    assert.equal(fields.get('Inquiry Source Page'), route);
+    observed.add(service);
+    quote.window.close();
+  }
+  assert.deepEqual(observed, new Set(Object.keys(expected)));
+  landing.window.close();
+});

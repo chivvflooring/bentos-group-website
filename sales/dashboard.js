@@ -54,9 +54,12 @@ async function load() {
   const due = new Set(eligible.map(({id}) => id));
   const rolling = report.rolling30Days;
   displayPairs($('metrics'), [
-    ['Qualified organic search leads', rolling.qualifiedOrganic + ' / ' + report.targets.qualified],
+    ['Qualified leads from search, Maps or AI', rolling.qualifiedOrganic + ' / ' + report.targets.qualified],
     ['Appointments', rolling.appointment], ['Estimates', rolling.estimate + ' / ' + report.targets.estimate],
-    ['Signed jobs', rolling.signed + ' / ' + report.targets.signed], ['Revenue received', dollars(rolling.revenueCents)],
+    ['Signed organic contracts', rolling.signedOrganic + ' / ' + report.targets.signed],
+    ['All signed jobs', rolling.signed], ['Cash collected', dollars(rolling.revenueCents)],
+    ['Completed jobs with reconciled costs', rolling.closedJobs],
+    ['Gross profit on reconciled jobs', rolling.closedJobs ? dollars(rolling.grossProfitCents) : 'Unknown'],
     ['Repeat-customer projects', rolling.repeatCustomers], ['Follow-ups eligible', eligible.length],
     ['Notifications pending', rolling.pendingNotification],
     ['Owner emails delivered', rolling.notification.delivered], ['Customer acknowledgments delivered', rolling.acknowledgment.delivered],
@@ -97,13 +100,23 @@ async function openProject(id) {
   displayPairs($('lead'), [
     ['Project', lead.categories.join(', ')], ['Location', lead.location], ['Customer', lead.name],
     ['Email', lead.email], ['Phone', lead.phone], ['Preferred contact', lead.contact], ['Scope', lead.scope],
-    ['Source page or campaign', lead.utmSource || lead.campaign || lead.source || lead.reportedSource],
-    ['Staff-classified channel', lead.channel], ['Last follow-up', lead.lastFollowUpAt],
+    ['Source page or campaign', lead.utmSource || lead.campaign || lead.source],
+    ['Customer-reported discovery', lead.reportedSource],
+    ['Staff-classified channel', lead.channel], ['First human response', lead.firstResponseAt],
+    ['Response time', lead.firstResponseAt ? Math.round((Date.parse(lead.firstResponseAt) - Date.parse(lead.receivedAt)) / 60_000) + ' minutes' : null],
+    ['Last follow-up', lead.lastFollowUpAt],
+    ['Earned job revenue', lead.closeout ? dollars(lead.closeout.jobRevenueCents) : null],
+    ['Direct job costs', lead.closeout ? dollars(lead.closeout.directCostCents) : null],
+    ['Job gross profit', lead.closeout ? dollars(lead.closeout.jobRevenueCents - lead.closeout.directCostCents) : null],
     ...Object.entries(lead.milestones), ...Object.entries(lead.projectDetails || {})
   ]);
   update.reset();
   update.elements.channel.value = lead.channel || 'unknown';
   update.elements.repeat.checked = Boolean(lead.repeatCustomer);
+  if (lead.closeout) {
+    update.elements.jobRevenue.value = lead.closeout.jobRevenueCents / 100;
+    update.elements.directCost.value = lead.closeout.directCostCents / 100;
+  }
   toggleAction();
   $('detail').hidden = false;
   $('detail').scrollIntoView({block: 'nearest'});
@@ -112,6 +125,7 @@ async function openProject(id) {
 function toggleAction() {
   $('classification').hidden = stage.value !== 'classify';
   $('payment').hidden = stage.value !== 'revenue';
+  $('closeout').hidden = $('closeout').disabled = stage.value !== 'closeout';
 }
 
 async function run(action) {
@@ -144,10 +158,14 @@ $('period').addEventListener('submit', event => {
 stage.addEventListener('change', toggleAction);
 update.addEventListener('submit', event => {
   event.preventDefault();
-  const {channel, repeat, amount, paymentId} = update.elements;
+  const {channel, repeat, amount, paymentId, jobRevenue, directCost} = update.elements;
   const data = {id: selectedId, stage: stage.value};
   if (stage.value === 'classify') Object.assign(data, {channel: channel.value, repeatCustomer: repeat.checked});
   if (stage.value === 'revenue') Object.assign(data, {cents: Math.round(Number(amount.value) * 100), paymentId: paymentId.value});
+  if (stage.value === 'closeout') Object.assign(data, {
+    jobRevenueCents: Math.round(Number(jobRevenue.value) * 100),
+    directCostCents: Math.round(Number(directCost.value) * 100)
+  });
   if (stage.value === 'exclude' && !window.confirm('Exclude this project from sales reporting?')) return;
   run(async () => {
     await api({}, data);

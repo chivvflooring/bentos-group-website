@@ -1,0 +1,16 @@
+# Qualified lead and signed contract experiments
+
+Start with the estimate-method experiment. Run one comparison at a time within the same approved audience and acquisition channel. Use an even random split and keep each household or business in one arm. Keep the offer, delivery window, send time and other creative elements constant. For an approved email test, exclude suppression and use independent, non-overlapping segments. Avoid sending the second arm as a follow-up to the first.
+
+| Comparison | Variant A | Variant B | Only planned difference |
+| --- | --- | --- | --- |
+| Painting versus general remodeling | [Painting copy](https://bentos-group.com/free-quote?campaign=test-message-painting) | [Remodeling copy](https://bentos-group.com/free-quote?campaign=test-message-remodeling) | Lead headline and opening sentence. Both use the same general estimate form. |
+| Photos versus consultation | [Send project photos](https://bentos-group.com/punch-list?service=paint&campaign=painting-email-photo) | [Discuss a painting project](https://bentos-group.com/free-quote?service=painting&campaign=painting-email-consultation) | The first estimate step. The photo path needs a device that passes acceptance. |
+| Reviews versus project photos | [Customer review creative](https://bentos-group.com/free-quote?service=painting&campaign=test-proof-reviews) | [Project photo creative](https://bentos-group.com/free-quote?service=painting&campaign=test-proof-projects) | One proof block. Use an owner-approved, attributable genuine customer review or approved original project photo. |
+| Small improvements versus larger renovation | [Small improvement copy](https://bentos-group.com/free-quote?campaign=test-scope-small) | [Larger renovation copy](https://bentos-group.com/free-quote?campaign=test-scope-large) | The scope offered in the headline and example. Both use the same estimate form. |
+
+Keep a private assignment count and record successful delivery by arm. Use the existing campaign report to join received, staff-qualified, estimate and signed stages to public campaign codes. For phone and text, ask how the customer heard about the business and corroborate arm assignment where possible. Use one opportunity per project. Exclude staff QA, spam, duplicates and misattributed contacts. Keep ambiguous arm assignments in an unknown group.
+
+Report qualified inquiries and signed contracts per delivered message for email, or per assigned session for an on-site test. Record estimates, actual signed value, collected revenue and estimated and actual gross profit when the accounting record is available. Use clicks and open counts only as diagnostics. Review the qualification cohort at 30 days and signed work at 90 days after assignment. Use the same follow-up window for both arms. Treat thin or immature samples as inconclusive. Before declaring a winner, document uncertainty and check whether the observed difference in profitability is material for Bento’s.
+
+Use the same staff fit checks for both arms. A qualified opportunity is reachable, within coverage, and matches an offered service and workable timing and scope. Tag allocations are public link labels and can be forwarded. Reconcile the staff-confirmed source before presenting experimental results.

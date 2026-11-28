@@ -2,16 +2,23 @@ import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { connectLambda, getStore } from '@netlify/blobs';
 
 export const stages = ['qualified', 'appointment', 'estimate', 'signed', 'revenue'];
+const productionHosts = new Set(['bentos-group.com', 'www.bentos-group.com', 'bentos-group-test.netlify.app']);
 
 export function ledger(event, {env = process.env, store} = {}) {
   if (store) return store;
-  if (!env.LEAD_LEDGER_KEY) {
-    if (env.LEAD_LEDGER_NAMESPACE === 'production') throw new Error('Production lead storage is not configured');
-    return null;
+  const host = event.rawUrl ? new URL(event.rawUrl).hostname : '';
+  const production = env.LEAD_LEDGER_NAMESPACE === 'production';
+  if ((productionHosts.has(host) && !production) ||
+    (host.endsWith('--bentos-group-test.netlify.app') && production)) {
+    throw new Error('Lead storage namespace does not match the deployment');
+  }
+  if (!env.LEAD_LEDGER_KEY && !production) return null;
+  if (typeof env.LEAD_LEDGER_KEY !== 'string' || env.LEAD_LEDGER_KEY.length < 32) {
+    throw new Error('Lead storage key is missing or invalid');
   }
   if (event.blobs) connectLambda(event);
   return getStore({
-    name: env.LEAD_LEDGER_NAMESPACE === 'production' ? 'lead-ledger-v1' : 'lead-ledger-preview-v1',
+    name: production ? 'lead-ledger-v1' : 'lead-ledger-preview-v1',
     consistency: 'strong'
   });
 }

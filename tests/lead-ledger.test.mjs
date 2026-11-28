@@ -5,7 +5,7 @@ import {handler as quote} from '../netlify/lib/quote-intake.mjs';
 import {handler as punch} from '../netlify/lib/punch-list-intake.mjs';
 import {handler as events} from '../netlify/functions/resend-events.mjs';
 import {handler as operations} from '../netlify/functions/lead-operations.mjs';
-import {recordLead, updateLead} from '../netlify/lib/lead-ledger.mjs';
+import {ledger, recordLead, updateLead} from '../netlify/lib/lead-ledger.mjs';
 import quoteRoute, {config as quoteConfig} from '../netlify/functions/quote.mjs';
 import punchRoute, {config as punchConfig} from '../netlify/functions/punch-list.mjs';
 
@@ -221,4 +221,59 @@ test('concurrent exact retries share one claim, and an identical project can ret
   assert.equal((await quote(request, {}, deps)).statusCode, 201);
   assert.equal(sent.size, 2);
   assert.equal([...store.rows.keys()].filter(key => key.startsWith('leads/')).length, 2);
+});
+
+test('staff can classify school referrals and preserve the first response across retries', async () => {
+  const store = new MemoryStore();
+  const deps = {env, store, fetch: async () => Response.json({id: providerReference})};
+  const data = {Name: 'Internal fixture', Location: 'Roswell, GA', Email: 'private@example.com',
+    Service: 'Painting', 'Project Description': 'Refresh the living room'};
+  const request = {httpMethod: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(data)};
+  assert.equal((await quote(request, {}, deps)).statusCode, 201);
+  const key = [...store.rows.keys()].find(value => value.startsWith('leads/'));
+  const id = key.split('/')[1];
+  const lead = await store.get(key);
+  const patch = (stage, details, token) => operations(operation('PATCH', {}, {id, stage, ...details}, token), {}, deps);
+  assert.equal((await patch('responded', {}, env.LEAD_OPERATIONS_READ_TOKEN)).statusCode, 401);
+  assert.equal((await patch('classify', {channel: 'school-referral', repeatCustomer: false})).statusCode, 200);
+  assert.equal((await patch('responded', {at: lead.receivedAt})).statusCode, 200);
+  assert.equal((await patch('responded', {})).statusCode, 200);
+  const updated = await store.get(key);
+  assert.equal(updated.firstResponseAt, lead.receivedAt);
+  assert.equal(updated.channel, 'school-referral');
+});
+
+test('completed-job profit is reconciled once and separated from collected cash', async () => {
+  const store = new MemoryStore();
+  const deps = {env, store, fetch: async () => Response.json({id: providerReference})};
+  const data = {Name: 'Job control', Location: 'Alpharetta, GA', Email: 'private@example.com',
+    Service: 'Painting', 'Project Description': 'Interior painting and trim'};
+  const request = {httpMethod: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(data)};
+  assert.equal((await quote(request, {}, deps)).statusCode, 201);
+  const id = [...store.rows.keys()].find(key => key.startsWith('leads/')).split('/')[1];
+  const patch = (stage, fields = {}, token) => operations(operation('PATCH', {}, {id, stage, ...fields}, token), {}, deps);
+  const closeout = {jobRevenueCents: 350000, directCostCents: 230000};
+  assert.equal((await patch('closeout', closeout)).statusCode, 409);
+  assert.equal((await patch('classify', {channel: 'organic-search', repeatCustomer: false})).statusCode, 200);
+  assert.equal((await patch('signed')).statusCode, 200);
+  assert.equal((await patch('revenue', {paymentId: 'deposit', cents: 150000})).statusCode, 200);
+  assert.equal((await patch('closeout', {jobRevenueCents: 350000})).statusCode, 400);
+  assert.equal((await patch('closeout', closeout, env.LEAD_OPERATIONS_READ_TOKEN)).statusCode, 401);
+  assert.equal((await patch('closeout', closeout)).statusCode, 200);
+  assert.equal((await patch('closeout', closeout)).statusCode, 200);
+  assert.equal((await patch('closeout', {...closeout, directCostCents: 380000})).statusCode, 200);
+  const {rolling30Days: r} = body(await operations(operation('GET'), {}, deps));
+  assert.deepEqual([r.signedOrganic, r.closedJobs, r.revenueCents, r.jobRevenueCents, r.directCostCents, r.grossProfitCents],
+    [1, 1, 150000, 350000, 380000, -30000]);
+});
+
+test('production and hosted preview cannot silently use the other ledger namespace', () => {
+  const key = 'k'.repeat(32);
+  const production = {rawUrl: 'https://bentos-group.com/.netlify/functions/quote'};
+  const preview = {rawUrl: 'https://deploy-preview-126--bentos-group-test.netlify.app/.netlify/functions/quote'};
+  assert.throws(() => ledger(production, {env: {LEAD_LEDGER_KEY: key}}), /namespace/);
+  assert.throws(() => ledger(production, {env: {LEAD_LEDGER_NAMESPACE: 'production'}}), /storage key/);
+  assert.throws(() => ledger(preview, {env: {LEAD_LEDGER_NAMESPACE: 'production', LEAD_LEDGER_KEY: key}}), /namespace/);
+  assert.throws(() => ledger(preview, {env: {LEAD_LEDGER_KEY: 'short'}}), /storage key/);
+  assert.equal(ledger(preview, {env: {}}), null);
 });

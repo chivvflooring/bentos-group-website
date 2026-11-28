@@ -5,10 +5,18 @@
   // A label describes a link, not proof that a paid impression/click occurred.
   const campaigns = new Map([
     ['holiday-home-refresh', 'Holiday Home Refresh — Email'],
+    ['love-the-home-email', 'Love the home you live in — Email'],
+    ['customer-referral', 'Customer referral — Project estimate'],
     ['painting-email-photo', 'Painting email — Photo request'],
     ['painting-email-consultation', 'Painting email — Consultation'],
     ['realtor-pre-listing', 'Realtor referral — Pre-listing and inspection repairs'],
     ['neighborhood-home-refresh', 'Neighborhood referral — Home refresh'],
+    ['test-message-painting', 'Experiment — Painting-first message'],
+    ['test-message-remodeling', 'Experiment — Remodeling message'],
+    ['test-proof-reviews', 'Experiment — Customer reviews'],
+    ['test-proof-projects', 'Experiment — Project photography'],
+    ['test-scope-small', 'Experiment — Small improvements'],
+    ['test-scope-large', 'Experiment — Larger renovations'],
     ['chatgpt-organic', 'ChatGPT search — Organic'],
     ['instagram-profile-organic', 'Instagram organic — Profile'],
     ['nextdoor-profile-organic', 'Nextdoor organic — Business profile'],
@@ -47,14 +55,20 @@
         const values = landingParams.getAll(key);
         return values.length === 1 && values[0] === value;
       });
-  const holidayCampaign = landingParams.getAll('utm_campaign');
+  const emailCampaigns = new Map([
+    ['holiday_home_refresh', 'holiday-home-refresh'],
+    ['love_the_home_nov2026', 'love-the-home-email']
+  ]);
+  const campaignUtms = landingParams.getAll('utm_campaign');
+  const emailCampaign = campaignUtms.length === 1 ? emailCampaigns.get(campaignUtms[0]) : '';
+  const defaultEmailUtm = new Map([...emailCampaigns].map(([utm, campaign]) => [campaign, utm]));
   const campaignId = campaignValues.length === 1 && campaigns.has(campaignValues[0])
     ? campaignValues[0]
     : campaignValues.length === 0 && chatgptSearch ? 'chatgpt-organic'
     : campaignValues.length === 0 && instagramProfile ? 'instagram-profile-organic'
     : campaignValues.length === 0 && nextdoorProfile ? 'nextdoor-profile-organic'
     : campaignValues.length === 0 && nextdoorFlooringPost ? 'flooring-nextdoor-organic'
-    : campaignValues.length === 0 && holidayCampaign.length === 1 && holidayCampaign[0] === 'holiday_home_refresh' ? 'holiday-home-refresh' : '';
+    : campaignValues.length === 0 && emailCampaign ? emailCampaign : '';
   window.bentosCampaign = campaignId;
 
   function decorateCampaignLink(link) {
@@ -68,8 +82,8 @@
       // An explicitly tagged destination takes precedence over the incoming link.
       if (url.searchParams.has('campaign')) return;
       url.searchParams.set('campaign', campaignId);
-      if (campaignId === 'holiday-home-refresh' && !url.searchParams.has('utm_campaign')) {
-        url.searchParams.set('utm_campaign', 'holiday_home_refresh');
+      if (defaultEmailUtm.has(campaignId) && !url.searchParams.has('utm_campaign')) {
+        url.searchParams.set('utm_campaign', defaultEmailUtm.get(campaignId));
         const media = landingParams.getAll('utm_medium');
         if (media.length === 1 && media[0] === 'email') url.searchParams.set('utm_medium', media[0]);
         const sources = landingParams.getAll('utm_source');
