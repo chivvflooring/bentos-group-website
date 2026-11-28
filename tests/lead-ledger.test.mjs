@@ -5,7 +5,7 @@ import {handler as quote} from '../netlify/lib/quote-intake.mjs';
 import {handler as punch} from '../netlify/lib/punch-list-intake.mjs';
 import {handler as events} from '../netlify/functions/resend-events.mjs';
 import {handler as operations} from '../netlify/functions/lead-operations.mjs';
-import {recordLead, updateLead} from '../netlify/lib/lead-ledger.mjs';
+import {ledger, recordLead, updateLead} from '../netlify/lib/lead-ledger.mjs';
 import quoteRoute, {config as quoteConfig} from '../netlify/functions/quote.mjs';
 import punchRoute, {config as punchConfig} from '../netlify/functions/punch-list.mjs';
 
@@ -265,4 +265,15 @@ test('completed-job profit is reconciled once and separated from collected cash'
   const {rolling30Days: r} = body(await operations(operation('GET'), {}, deps));
   assert.deepEqual([r.signedOrganic, r.closedJobs, r.revenueCents, r.jobRevenueCents, r.directCostCents, r.grossProfitCents],
     [1, 1, 150000, 350000, 380000, -30000]);
+});
+
+test('production and hosted preview cannot silently use the other ledger namespace', () => {
+  const key = 'k'.repeat(32);
+  const production = {rawUrl: 'https://bentos-group.com/.netlify/functions/quote'};
+  const preview = {rawUrl: 'https://deploy-preview-126--bentos-group-test.netlify.app/.netlify/functions/quote'};
+  assert.throws(() => ledger(production, {env: {LEAD_LEDGER_KEY: key}}), /namespace/);
+  assert.throws(() => ledger(production, {env: {LEAD_LEDGER_NAMESPACE: 'production'}}), /storage key/);
+  assert.throws(() => ledger(preview, {env: {LEAD_LEDGER_NAMESPACE: 'production', LEAD_LEDGER_KEY: key}}), /namespace/);
+  assert.throws(() => ledger(preview, {env: {LEAD_LEDGER_KEY: 'short'}}), /storage key/);
+  assert.equal(ledger(preview, {env: {}}), null);
 });

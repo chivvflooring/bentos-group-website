@@ -2,6 +2,7 @@
 export async function intakeResponse(request, context, handle) {
   const event = {
     httpMethod: request.method,
+    rawUrl: request.url,
     headers: Object.fromEntries(request.headers),
     body: request.method === 'POST' ? await request.text() : undefined
   };

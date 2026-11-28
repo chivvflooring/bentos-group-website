@@ -196,3 +196,22 @@ test('sent campaign UTMs and customer referral links carry private-ledger attrib
   assert.equal(refFields.get('Campaign Tag'), 'customer-referral');
   for (const item of [landing, quote, referrals, referred]) item.window.close();
 });
+
+test('Roswell and Johns Creek estimate links select each advertised service and retain the landing page', () => {
+  const route = '/roswell-johns-creek-renovation-estimates';
+  const landing = page(route.slice(1) + '.html', 'https://bentos-group.com' + route);
+  const expected = {painting: 'painting', decks: 'Decks & Porches', kitchen: 'Kitchen Remodeling',
+    bathroom: 'Bathroom Remodeling', basement: 'Basement Remodeling', flooring: 'Flooring'};
+  const observed = new Set();
+  for (const link of landing.window.document.querySelectorAll('a[href^="/free-quote?service="]')) {
+    const service = new URL(link.href).searchParams.get('service');
+    const quote = page('free-quote.html', link.href);
+    const fields = new quote.window.FormData(quote.window.document.getElementById('reformaForm'));
+    assert.ok(fields.getAll('Service').includes(expected[service]), service);
+    assert.equal(fields.get('Inquiry Source Page'), route);
+    observed.add(service);
+    quote.window.close();
+  }
+  assert.deepEqual(observed, new Set(Object.keys(expected)));
+  landing.window.close();
+});
