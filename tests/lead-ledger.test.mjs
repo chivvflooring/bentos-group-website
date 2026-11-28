@@ -242,3 +242,27 @@ test('staff can classify school referrals and preserve the first response across
   assert.equal(updated.firstResponseAt, lead.receivedAt);
   assert.equal(updated.channel, 'school-referral');
 });
+
+test('completed-job profit is reconciled once and separated from collected cash', async () => {
+  const store = new MemoryStore();
+  const deps = {env, store, fetch: async () => Response.json({id: providerReference})};
+  const data = {Name: 'Job control', Location: 'Alpharetta, GA', Email: 'private@example.com',
+    Service: 'Painting', 'Project Description': 'Interior painting and trim'};
+  const request = {httpMethod: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(data)};
+  assert.equal((await quote(request, {}, deps)).statusCode, 201);
+  const id = [...store.rows.keys()].find(key => key.startsWith('leads/')).split('/')[1];
+  const patch = (stage, fields = {}, token) => operations(operation('PATCH', {}, {id, stage, ...fields}, token), {}, deps);
+  const closeout = {jobRevenueCents: 350000, directCostCents: 230000};
+  assert.equal((await patch('closeout', closeout)).statusCode, 409);
+  assert.equal((await patch('classify', {channel: 'organic-search', repeatCustomer: false})).statusCode, 200);
+  assert.equal((await patch('signed')).statusCode, 200);
+  assert.equal((await patch('revenue', {paymentId: 'deposit', cents: 150000})).statusCode, 200);
+  assert.equal((await patch('closeout', {jobRevenueCents: 350000})).statusCode, 400);
+  assert.equal((await patch('closeout', closeout, env.LEAD_OPERATIONS_READ_TOKEN)).statusCode, 401);
+  assert.equal((await patch('closeout', closeout)).statusCode, 200);
+  assert.equal((await patch('closeout', closeout)).statusCode, 200);
+  assert.equal((await patch('closeout', {...closeout, directCostCents: 380000})).statusCode, 200);
+  const {rolling30Days: r} = body(await operations(operation('GET'), {}, deps));
+  assert.deepEqual([r.signedOrganic, r.closedJobs, r.revenueCents, r.jobRevenueCents, r.directCostCents, r.grossProfitCents],
+    [1, 1, 150000, 350000, 380000, -30000]);
+});

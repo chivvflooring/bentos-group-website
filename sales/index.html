@@ -41,6 +41,7 @@
           <option value="estimate">Record estimate</option>
           <option value="signed">Record signed contract</option>
           <option value="revenue">Record payment</option>
+          <option value="closeout">Record completed job costs and revenue</option>
           <option value="stop-follow-up">Stop follow-up</option>
           <option value="exclude">Exclude this record</option>
         </select></label>
@@ -48,6 +49,7 @@
           <legend>Channel and customer type</legend>
           <label>Channel <select name="channel">
             <option value="unknown">Unknown</option><option value="organic-search">Organic search</option>
+            <option value="organic-maps">Organic Maps</option><option value="organic-ai">AI search referral</option>
             <option value="organic-social">Organic social</option><option value="referral">Other referral</option>
             <option value="realtor-referral">Realtor referral</option><option value="neighborhood-referral">Neighborhood referral</option>
             <option value="school-referral">School sponsorship referral</option>
@@ -60,6 +62,11 @@
           <legend>Payment received</legend>
           <label>Amount (USD) <input name="amount" type="number" min="0.01" step="0.01"></label>
           <label>Payment ID <input name="paymentId" maxlength="64"></label>
+        </fieldset>
+        <fieldset id="closeout" hidden disabled>
+          <legend>Completed job financials</legend>
+          <label>Earned job revenue (USD) <input name="jobRevenue" type="number" min="0" max="10000000" step="0.01" required></label>
+          <label>Actual direct job costs (USD) <input name="directCost" type="number" min="0" max="10000000" step="0.01" required></label>
         </fieldset>
         <button>Save</button>
       </form>

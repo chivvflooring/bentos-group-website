@@ -3,7 +3,8 @@ import { authorized, json, ledger, stages, updateLead } from '../lib/lead-ledger
 const monthFormat = new Intl.DateTimeFormat('en-CA', {year: 'numeric', month: '2-digit', timeZone: 'America/New_York'});
 const monthOf = value => monthFormat.format(new Date(value)).slice(0, 7);
 const targets = {qualified: 20, estimate: 12, signed: 4};
-const channels = ['unknown', 'organic-search', 'organic-social', 'referral', 'realtor-referral', 'neighborhood-referral', 'school-referral', 'email', 'paid', 'direct', 'other'];
+const channels = ['unknown', 'organic-search', 'organic-maps', 'organic-ai', 'organic-social', 'referral', 'realtor-referral', 'neighborhood-referral', 'school-referral', 'email', 'paid', 'direct', 'other'];
+const organicDiscovery = new Set(['organic-search', 'organic-maps', 'organic-ai']);
 const stageCounts = () => ({received: 0, qualified: 0, appointment: 0, estimate: 0, signed: 0});
 const mailTypes = ['sent', 'delivered', 'bounced', 'complained', 'clicked', 'failed', 'suppressed'];
 const isSuppressed = types => types.some(type => ['bounced', 'complained', 'suppressed', 'failed'].includes(type));
@@ -35,7 +36,8 @@ async function emailEvents(store, id) {
 export async function report(store, month, now = Date.now()) {
   const cutoff = now - 30 * 86_400_000;
   const withinWindow = value => Date.parse(value) >= cutoff && Date.parse(value) <= now;
-  const rolling30Days = {...stageCounts(), qualifiedOrganic: 0, repeatCustomers: 0, revenueCents: 0,
+  const rolling30Days = {...stageCounts(), qualifiedOrganic: 0, signedOrganic: 0, repeatCustomers: 0, revenueCents: 0,
+    closedJobs: 0, jobRevenueCents: 0, directCostCents: 0, grossProfitCents: 0,
     pendingNotification: 0, notification: newCounts(), acknowledgment: newCounts()};
   const breakdowns = {byChannel: new Map(), byService: new Map(), byCampaign: new Map()};
   const addBreakdown = (group, label, stages, revenueCents) => {
@@ -45,8 +47,15 @@ export async function report(store, month, now = Date.now()) {
     group.set(label, counts);
   };
   const result = {month, timeZone: 'America/New_York', targets, received: 0, pendingNotification: 0,
-    qualified: 0, appointment: 0, estimate: 0, signed: 0, revenueCents: 0, sources: [], rolling30Days,
+    qualified: 0, appointment: 0, estimate: 0, signed: 0, revenueCents: 0, closedJobs: 0, jobRevenueCents: 0, directCostCents: 0, grossProfitCents: 0,
+    sources: [], rolling30Days,
     notification: newCounts(), acknowledgment: newCounts(), emailFollowUpEligible: 0};
+  const addCloseout = (period, closeout) => {
+    period.closedJobs++;
+    period.jobRevenueCents += closeout.jobRevenueCents;
+    period.directCostCents += closeout.directCostCents;
+    period.grossProfitCents += closeout.jobRevenueCents - closeout.directCostCents;
+  };
   const sources = new Map();
   for (const lead of await listRecords(store)) {
     if (lead.test || lead.excluded) continue;
@@ -69,8 +78,15 @@ export async function report(store, month, now = Date.now()) {
         if (withinWindow(at)) {
           stagesInWindow.push(stage);
           rolling30Days[stage]++;
-          if (stage === 'qualified' && !lead.repeatCustomer && channel === 'organic-search') rolling30Days.qualifiedOrganic++;
+          if (!lead.repeatCustomer && organicDiscovery.has(channel)) {
+            if (stage === 'qualified') rolling30Days.qualifiedOrganic++;
+            if (stage === 'signed') rolling30Days.signedOrganic++;
+          }
         }
+      }
+      if (lead.closeout) {
+        if (monthOf(lead.closeout.at) === month) addCloseout(result, lead.closeout);
+        if (withinWindow(lead.closeout.at)) addCloseout(rolling30Days, lead.closeout);
       }
       for (const payment of Object.values(lead.payments || {})) {
         if (monthOf(payment.at) === month) result.revenueCents += payment.cents;
@@ -149,7 +165,7 @@ export async function handler(event, _context, deps = {}) {
     try { data = JSON.parse(event.body || ''); } catch { return json(400, {error: 'Invalid JSON'}); }
     if (typeof data?.id !== 'string' || !/^[a-f0-9]{64}$/.test(data.id)) return json(400, {error: 'Invalid lead ID'});
     const validStage = stages.includes(data.stage);
-    if (!validStage && !['exclude', 'stop-follow-up', 'classify', 'followed-up', 'responded'].includes(data.stage)) return json(400, {error: 'Invalid stage'});
+    if (!validStage && !['exclude', 'stop-follow-up', 'classify', 'followed-up', 'responded', 'closeout'].includes(data.stage)) return json(400, {error: 'Invalid stage'});
     if (data.stage === 'classify' && (!channels.includes(data.channel) || typeof data.repeatCustomer !== 'boolean')) {
       return json(400, {error: 'Select a channel and customer type'});
     }
@@ -159,6 +175,10 @@ export async function handler(event, _context, deps = {}) {
     if (!Number.isFinite(at.valueOf()) || at > now) return json(400, {error: 'Invalid timestamp'});
     if (data.stage === 'revenue' && (typeof data.paymentId !== 'string' || !/^[a-z\d_-]{1,64}$/i.test(data.paymentId) ||
       !Number.isSafeInteger(data.cents) || data.cents < 1 || data.cents > 1_000_000_000)) return json(400, {error: 'Invalid payment'});
+    if (data.stage === 'closeout' && ![data.jobRevenueCents, data.directCostCents]
+      .every(cents => Number.isSafeInteger(cents) && cents >= 0 && cents <= 1_000_000_000)) {
+      return json(400, {error: 'Enter actual earned revenue and direct job cost'});
+    }
     const updated = await updateLead(store, 'leads/' + data.id, lead => {
       if (data.stage === 'exclude') return {...lead, excluded: true};
       if (data.stage === 'stop-follow-up') return {...lead, followUpStopped: true};
@@ -166,6 +186,11 @@ export async function handler(event, _context, deps = {}) {
       if (data.stage === 'classify') return {...lead, channel: data.channel, repeatCustomer: data.repeatCustomer};
       if (data.stage === 'responded') return lead.firstResponseAt ? lead : {...lead, firstResponseAt: at.toISOString()};
       if (data.stage === 'followed-up') return {...lead, lastFollowUpAt: at.toISOString()};
+      if (data.stage === 'closeout') {
+        if (!lead.milestones.signed || at < new Date(lead.milestones.signed)) return lead;
+        return {...lead, closeout: {at: lead.closeout?.at || at.toISOString(),
+          jobRevenueCents: data.jobRevenueCents, directCostCents: data.directCostCents}};
+      }
       if (data.stage === 'revenue') {
         if (!lead.milestones.signed || at < new Date(lead.milestones.signed)) return lead;
         return {...lead, payments: {...lead.payments, [data.paymentId]: lead.payments?.[data.paymentId] || {at: at.toISOString(), cents: data.cents}}};
@@ -173,7 +198,8 @@ export async function handler(event, _context, deps = {}) {
       return {...lead, milestones: {...lead.milestones, [data.stage]: lead.milestones[data.stage] || at.toISOString()}};
     });
     if (!updated) return json(404, {error: 'Lead not found'});
-    const recorded = data.stage === 'classify' ? updated.channel === data.channel && updated.repeatCustomer === data.repeatCustomer :
+    const recorded = data.stage === 'closeout' ? updated.closeout?.jobRevenueCents === data.jobRevenueCents &&
+      updated.closeout?.directCostCents === data.directCostCents : data.stage === 'classify' ? updated.channel === data.channel && updated.repeatCustomer === data.repeatCustomer :
       data.stage === 'responded' ? updated.firstResponseAt :
       data.stage === 'followed-up' ? updated.lastFollowUpAt === at.toISOString() : data.stage === 'exclude' ? updated.excluded : data.stage === 'stop-follow-up' ? updated.followUpStopped :
       data.stage === 'revenue' ? updated.payments?.[data.paymentId]?.cents === data.cents : updated.milestones[data.stage];

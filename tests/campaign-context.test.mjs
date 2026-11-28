@@ -180,3 +180,19 @@ test('growth experiment labels flow to the estimate and analytics without exposi
     dom.window.close();
   }
 });
+
+test('sent campaign UTMs and customer referral links carry private-ledger attribution', () => {
+  const landing = page('painting.html',
+    'https://bentos-group.com/painting?utm_source=resend&utm_medium=email&utm_campaign=love_the_home_nov2026');
+  const estimate = landing.window.document.querySelector('a[href*="free-quote"]');
+  const quote = page('free-quote.html', estimate.href);
+  const fields = new quote.window.FormData(quote.window.document.getElementById('reformaForm'));
+  assert.equal(fields.get('Campaign Tag'), 'love-the-home-email');
+  assert.equal(new URL(estimate.href).searchParams.get('utm_campaign'), 'love_the_home_nov2026');
+  const referrals = page('referrals.html', 'https://bentos-group.com/referrals#client');
+  const target = referrals.window.document.querySelector('#client a[href*="free-quote"]');
+  const referred = page('free-quote.html', target.href);
+  const refFields = new referred.window.FormData(referred.window.document.getElementById('reformaForm'));
+  assert.equal(refFields.get('Campaign Tag'), 'customer-referral');
+  for (const item of [landing, quote, referrals, referred]) item.window.close();
+});
